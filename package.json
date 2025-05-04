@@ -5,7 +5,7 @@
   ],
   "packageManager": "yarn@4.3.1",
   "scripts": {
-    "build": "tsc -b packages/*",
+    "build": "yarn workspaces foreach --topological-dev --all run build",
     "clean": "rimraf packages/*/dist",
     "test": "jest -w 4",
     "changeset": "changeset",
