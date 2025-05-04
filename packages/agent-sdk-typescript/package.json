@@ -20,7 +20,7 @@
     "node": ">=18.0.0"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json  && cp package.json dist/",
     "prepublishOnly": "yarn build",
     "test": "echo \"add unit tests here\"",
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
