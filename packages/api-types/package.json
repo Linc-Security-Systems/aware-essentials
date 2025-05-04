@@ -1,0 +1,32 @@
+{
+  "name": "@awarevue/api-types",
+  "version": "1.0.0",
+  "description": "Common types between backend and frontend(s)",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "license": "MIT",
+  "peerDependencies": {
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/json-schema": "^7.0.15",
+    "@typescript-eslint/eslint-plugin": "^8.31.1",
+    "@typescript-eslint/parser": "^8.31.1",
+    "eslint": "^9.26.0",
+    "eslint-config-prettier": "^10.1.2",
+    "eslint-plugin-import": "^2.31.0",
+    "typescript": "~5.8.3",
+    "zod": "^3.24.2"
+  },
+  "scripts": {
+    "build": "tsc",
+    "prepare": "yarn run build",
+    "lint": "eslint packages --ext .ts,.tsx"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "directory": "dist"
+  }
+}
