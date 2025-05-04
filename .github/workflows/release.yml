@@ -9,6 +9,7 @@ on:
 permissions:
   contents: write             # allow creating tags / release commit
   packages: write             # (optional) for GH Packages; harmless for npm-only
+  pull-requests: write
 
 jobs:
   release:
