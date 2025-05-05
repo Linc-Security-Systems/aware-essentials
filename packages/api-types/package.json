@@ -1,9 +1,16 @@
 {
   "name": "@awarevue/api-types",
   "version": "0.0.0",
-  "description": "Common types between backend and frontend(s)",
+  "description": "Common types between backend, agent(s) and frontend(s)",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "license": "MIT",
   "peerDependencies": {
     "zod": "^3.24.2"
@@ -27,6 +34,7 @@
     "dist"
   ],
   "publishConfig": {
-    "directory": "dist"
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }
