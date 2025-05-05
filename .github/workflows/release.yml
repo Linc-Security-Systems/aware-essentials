@@ -13,28 +13,35 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout the repo (with tags if needed)
+      # Checkout the repo
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # 2️⃣ Set up Node and authenticate with npm
+      # Setup Node and npm auth
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           registry-url: 'https://registry.npmjs.org'
 
-      # 3️⃣ Enable Yarn and install dependencies
+      # Enable Yarn and install deps
       - run: |
           corepack enable
           corepack prepare yarn@4.3.1 --activate
           yarn config set nodeLinker node-modules
           yarn install --immutable
 
-      # 4️⃣ Build your project
+      # Build all packages (assuming you use a root build script)
       - run: yarn build
 
-      # 5️⃣ Publish packages to npm (only if version is new)
-      - run: npm publish --access public
+      - name: Publish agent-sdk-typescript
+        working-directory: packages/agent-sdk-typescript
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish api-types
+        working-directory: packages/api-types
+        run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
