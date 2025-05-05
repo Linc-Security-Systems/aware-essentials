@@ -13,29 +13,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1️⃣ Checkout the repo (with tags if needed)
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
+      # 2️⃣ Set up Node and authenticate with npm
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           registry-url: 'https://registry.npmjs.org'
 
+      # 3️⃣ Enable Yarn and install dependencies
       - run: |
           corepack enable
           corepack prepare yarn@4.3.1 --activate
           yarn config set nodeLinker node-modules
           yarn install --immutable
 
+      # 4️⃣ Build your project
       - run: yarn build
 
-      - run: yarn changeset version       # bump versions and commit
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - run: git push --follow-tags       # push commit and tags
-
-      - run: yarn changeset publish       # publish to npm
+      # 5️⃣ Publish packages to npm (only if version is new)
+      - run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
