@@ -17,6 +17,7 @@ import {
 } from 'rxjs';
 import { Transport } from './transport';
 import {
+  AccessControlCapabilityReport,
   FromAgent,
   Message,
   PayloadByKind,
@@ -33,6 +34,7 @@ export type DeviceActivity =
 export type AgentOptions = {
   version: number;
   providers: Record<string, ProviderSpecs>;
+  accessControlProviders?: Record<string, AccessControlCapabilityReport>;
   agentId: string;
   replyTimeout?: number;
   transport: Transport;
@@ -92,7 +94,7 @@ export class AgentApp {
 
   private runProvider$ = (context: RunContext) => {
     return merge(
-      // run the agent
+      // run the agent monitor
       this.agent
         .run$(context)
         .pipe(
@@ -102,6 +104,7 @@ export class AgentApp {
             ),
           ),
         ),
+      // handle messages to agent
       this.options.transport.messages$.pipe(
         mergeMap((message) => {
           switch (message.kind) {
@@ -145,6 +148,67 @@ export class AgentApp {
                 tap((rs) => this.options.transport.send(this.addEnvelope(rs))),
               );
 
+            case 'validate-change':
+              // validate access change
+              const validateOb$ = !this.agent.validateAccessChange$
+                ? throwError(
+                    () =>
+                      new Error(
+                        `Agent ${context.provider} does not support access change validation`,
+                      ),
+                  )
+                : this.agent.validateAccessChange$(context, message);
+
+              return validateOb$.pipe(
+                map((issues) => ({
+                  kind: 'validate-change-rs' as const,
+                  requestId: message.id,
+                  issues,
+                })),
+                catchError((error: Error) =>
+                  of({
+                    kind: 'error-rs' as const,
+                    requestId: message.id,
+                    error: error.message ?? 'Unknown error',
+                  }),
+                ),
+                tap((rs) => this.options.transport.send(this.addEnvelope(rs))),
+              );
+
+            case 'apply-change':
+              // apply access change
+              const applyOb$ = !this.agent.applyAccessChange$
+                ? throwError(
+                    () =>
+                      new Error(
+                        `Agent ${context.provider} does not support access change application`,
+                      ),
+                  )
+                : this.agent.applyAccessChange$(context, message);
+              return applyOb$.pipe(
+                map((result) =>
+                  typeof result === 'number'
+                    ? {
+                        kind: 'apply-change-progress' as const,
+                        requestId: message.id,
+                        mutationIndex: result,
+                      }
+                    : {
+                        kind: 'apply-change-complete' as const,
+                        requestId: message.id,
+                        refs: result,
+                      },
+                ),
+                catchError((error: Error) =>
+                  of({
+                    kind: 'error-rs' as const,
+                    requestId: message.id,
+                    error: error.message ?? 'Unknown error',
+                  }),
+                ),
+                tap((rs) => this.options.transport.send(this.addEnvelope(rs))),
+              );
+
             default:
               return EMPTY;
           }
@@ -160,6 +224,7 @@ export class AgentApp {
           ? this.getReply$('register-rs', {
               kind: 'register' as const,
               providers: this.options.providers,
+              accessControlProviders: this.options.accessControlProviders,
             }).pipe(retry({ delay: 3000 }))
           : EMPTY,
       ),

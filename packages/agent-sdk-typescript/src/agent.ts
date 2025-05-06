@@ -2,6 +2,9 @@ import {
   ValidateProviderConfigRs,
   DeviceDiscoveryDto,
   RunCommandRq,
+  AccessValidateChangeRq,
+  AccessChangeIssue,
+  AccessApplyChange,
 } from '@awarevue/api-types';
 import { Observable } from 'rxjs';
 import { DeviceActivity } from './agent-app';
@@ -23,4 +26,12 @@ export interface Agent {
   getDevicesAndRelations$: (context: Context) => Observable<DeviceDiscoveryDto>;
   run$: (context: RunContext) => Observable<DeviceActivity>;
   runCommand$: (context: Context, command: RunCommandRq) => Observable<unknown>;
+  validateAccessChange$?: (
+    context: Context,
+    change: AccessValidateChangeRq,
+  ) => Observable<AccessChangeIssue[]>;
+  applyAccessChange$?: (
+    context: Context,
+    change: AccessApplyChange,
+  ) => Observable<number | Record<string, Record<string, string>>>;
 }

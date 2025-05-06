@@ -69,6 +69,26 @@ export const sProviderSpecs = z.object({
     .describe('UI hints for configuration form visuals'),
 });
 
+export const sAccessObjectKind = z.enum([
+  'access-rule',
+  'schedule',
+  'zone',
+  'person',
+  'reader',
+]);
+
+export const sTokenSpecs = z.object({
+  type: z.enum(['card', 'pin', 'finger-print', 'face']), // etc, those map to a AWARE-standardized set of token types
+  regex: z.string().optional(),
+  formatDescription: z.string().optional(),
+  maxPerPerson: z.number().optional(),
+});
+
+export const sAccessControlCapabilityReport = z.object({
+  tokens: z.array(sTokenSpecs),
+  accessbjects: z.array(sAccessObjectKind),
+});
+
 export const sRegisterRq = z.object({
   kind: z.literal('register'),
   providers: z
@@ -76,6 +96,7 @@ export const sRegisterRq = z.object({
     .describe(
       'Map of providers and their specs, ones that the agent can handle',
     ),
+  accessControlProviders: z.record(sAccessControlCapabilityReport).optional(),
 });
 
 export const sRegisterRs = sResponsePayload(
@@ -228,40 +249,6 @@ export const sGetAvailableDevicesRs = sResponsePayload(
   'Response for getting available devices from a provider via an agent',
 );
 
-// REGISTER ACCESS CONTROL AGENT
-
-export const sAccessObjectKind = z.enum([
-  'access-rule',
-  'schedule',
-  'zone',
-  'person',
-  'reader',
-]);
-
-export const sTokenSpecs = z.object({
-  type: z.enum(['card', 'pin', 'finger-print', 'face']), // etc, those map to a AWARE-standardized set of token types
-  regex: z.string().optional(),
-  formatDescription: z.string().optional(),
-  maxPerPerson: z.number().optional(),
-});
-
-export const sCapabilityReport = z.object({
-  tokens: z.array(sTokenSpecs),
-  accessbjects: z.array(sAccessObjectKind),
-});
-
-export const sRegisterAccessControlAgentRq = z
-  .object({
-    kind: z.literal('register-access-control-agent'),
-    provider: z.string().nonempty(),
-  })
-  .and(sCapabilityReport);
-
-export const sRegisterAccessControlAgentRs = sResponsePayload(
-  z.literal('register-access-control-agent-rs'),
-  z.object({}),
-).describe('Response for registering an access control agent');
-
 // ACCESS SYNC SECTION
 
 export const sObjectMerge = z
@@ -376,15 +363,14 @@ export const sApplyChange = z
     provider: z.string().nonempty(),
     devices: sDeviceMap,
     mutations: z.array(sAccessMutation),
-    policyVersion: z.number().describe('Version of the access changes'),
   })
   .describe('Request to apply access changes');
 
 export const sApplyChangeComplete = sResponsePayload(
   z.literal('apply-change-complete'),
   z.object({
-    policyVersion: z.number().describe('Version of the access changes'),
-    error: z.string().optional().describe('Error message if request failed'),
+    requestId: z.string().nonempty(),
+    //error: z.string().optional().describe('Error message if request failed'),
     refs: z
       .record(z.record(z.string().nonempty()))
       .describe('Map of foreign references to object IDs'),
@@ -394,9 +380,12 @@ export const sApplyChangeComplete = sResponsePayload(
 export const sApplyChangeProgress = z
   .object({
     kind: z.literal('apply-change-progress'),
-    policyVersion: z.number().describe('Version of desired access snapshot'),
-    total: z.number().describe('Progress of the access changes'),
-    completed: z.number().describe('Progress of the access changes'),
+    requestId: z.string().nonempty(),
+    mutationIndex: z
+      .number()
+      .describe('Index of the finished mutation in the batch'),
+    // total: z.number().describe('Progress of the access changes'),
+    // completed: z.number().describe('Progress of the access changes'),
   })
   .describe('Progress of the access changes');
 
@@ -436,22 +425,24 @@ export type PushEventRq = z.infer<typeof sPushEventRq>;
 export type PushEventRs = z.infer<typeof sPushEventRs>;
 export type GetAvailableDevicesRq = z.infer<typeof sGetAvailableDevicesRq>;
 export type GetAvailableDevicesRs = z.infer<typeof sGetAvailableDevicesRs>;
-export type RegisterAccessControlAgentRq = z.infer<
-  typeof sRegisterAccessControlAgentRq
->;
-export type RegisterAccessControlAgentRs = z.infer<
-  typeof sRegisterAccessControlAgentRs
->;
+// export type RegisterAccessControlAgentRq = z.infer<
+//   typeof sRegisterAccessControlAgentRq
+// >;
+// export type RegisterAccessControlAgentRs = z.infer<
+//   typeof sRegisterAccessControlAgentRs
+// >;
 export type AccessMutation = z.infer<typeof sAccessMutation>;
-export type ValidateChangeRq = z.infer<typeof sValidateChangeRq>;
-export type ValidateChangeRs = z.infer<typeof sValidateChangeRs>;
-export type ChangeIssue = z.infer<typeof sChangeIssue>;
-export type ApplyChange = z.infer<typeof sApplyChange>;
-export type ApplyChangeComplete = z.infer<typeof sApplyChangeComplete>;
-export type ApplyChangeProgress = z.infer<typeof sApplyChangeProgress>;
-export type AbortChange = z.infer<typeof abortChange>;
-export type CapabilityReport = z.infer<typeof sCapabilityReport>;
-export type TokenSpecs = z.infer<typeof sTokenSpecs>;
+export type AccessValidateChangeRq = z.infer<typeof sValidateChangeRq>;
+export type AccessValidateChangeRs = z.infer<typeof sValidateChangeRs>;
+export type AccessChangeIssue = z.infer<typeof sChangeIssue>;
+export type AccessApplyChange = z.infer<typeof sApplyChange>;
+export type AccessApplyChangeComplete = z.infer<typeof sApplyChangeComplete>;
+export type AccessApplyChangeProgress = z.infer<typeof sApplyChangeProgress>;
+export type AccessAbortChange = z.infer<typeof abortChange>;
+export type AccessControlCapabilityReport = z.infer<
+  typeof sAccessControlCapabilityReport
+>;
+export type AccessTokenSpecs = z.infer<typeof sTokenSpecs>;
 export type AccessObjectKind = z.infer<typeof sAccessObjectKind>;
 export type UiHint = z.infer<typeof sUiHint>;
 export type UiOrderHint = z.infer<typeof sUiOrderHint>;
@@ -477,14 +468,14 @@ export type PayloadByKind = {
   'event-rs': PushEventRs;
   'get-available-devices': GetAvailableDevicesRq;
   'get-available-devices-rs': GetAvailableDevicesRs;
-  'register-access-control-agent': RegisterAccessControlAgentRq;
-  'register-access-control-agent-rs': RegisterAccessControlAgentRs;
-  'validate-change': ValidateChangeRq;
-  'validate-change-rs': ValidateChangeRs;
-  'apply-change': ApplyChange;
-  'apply-change-complete': ApplyChangeComplete;
-  'apply-change-progress': ApplyChangeProgress;
-  'abort-change': AbortChange;
+  //'register-access-control-agent': RegisterAccessControlAgentRq;
+  //'register-access-control-agent-rs': RegisterAccessControlAgentRs;
+  'validate-change': AccessValidateChangeRq;
+  'validate-change-rs': AccessValidateChangeRs;
+  'apply-change': AccessApplyChange;
+  'apply-change-complete': AccessApplyChangeComplete;
+  'apply-change-progress': AccessApplyChangeProgress;
+  'abort-change': AccessAbortChange;
   'error-rs': ErrorPayload;
 };
 
@@ -499,10 +490,10 @@ export type FromAgent =
   | PushStateUpdateRq
   | PushEventRq
   | GetAvailableDevicesRs
-  | RegisterAccessControlAgentRq
-  | ValidateChangeRs
-  | ApplyChangeComplete
-  | ApplyChangeProgress;
+  //| RegisterAccessControlAgentRq
+  | AccessValidateChangeRs
+  | AccessApplyChangeComplete
+  | AccessApplyChangeProgress;
 
 export type FromServer =
   | ErrorPayload
@@ -514,10 +505,10 @@ export type FromServer =
   | PushStateUpdateRs
   | PushEventRs
   | GetAvailableDevicesRq
-  | RegisterAccessControlAgentRs
-  | ValidateChangeRq
-  | ApplyChange
-  | AbortChange;
+  //| RegisterAccessControlAgentRs
+  | AccessValidateChangeRq
+  | AccessApplyChange
+  | AccessAbortChange;
 
 export type AnyPayload = FromAgent | FromServer;
 
@@ -531,7 +522,7 @@ const fromAgentSchemaByKind = {
   state: sPushStateUpdateRq,
   event: sPushEventRq,
   'get-available-devices-rs': sGetAvailableDevicesRs,
-  'register-access-control-agent': sRegisterAccessControlAgentRq,
+  //'register-access-control-agent': sRegisterAccessControlAgentRq,
   'validate-change-rs': sValidateChangeRs,
   'apply-change-complete': sApplyChangeComplete,
   'apply-change-progress': sApplyChangeProgress,
