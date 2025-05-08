@@ -5,6 +5,7 @@ import {
   AccessValidateChangeRq,
   AccessChangeIssue,
   AccessApplyChange,
+  AccessRefMap,
 } from '@awarevue/api-types';
 import { Observable } from 'rxjs';
 import { DeviceActivity } from './agent-app';
@@ -33,5 +34,5 @@ export interface Agent {
   applyAccessChange$?: (
     context: Context,
     change: AccessApplyChange,
-  ) => Observable<number | Record<string, Record<string, string>>>;
+  ) => Observable<AccessRefMap>;
 }

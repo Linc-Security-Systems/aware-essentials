@@ -260,11 +260,6 @@ export const sObjectMerge = z
       .describe(
         'Object ID as in backend. Can be undefined if object is new to backend and agent is trying to create it',
       ),
-    objectForeignRefs: z
-      .array(z.string())
-      .describe(
-        "Object foreign references as in target provider's repos. Can be undefined if object is new to agent and backend is trying to create it. It can be an array in case one access rule maps to many foreign refs",
-      ),
     objectKind: sAccessObjectKind,
     props: z.record(z.unknown()),
   })
@@ -278,11 +273,6 @@ export const sObjectDelete = z
       .optional()
       .describe(
         'Object ID as in backend. Can be undefined if object is new to backend and agent is trying to create it',
-      ),
-    objectForeignRefs: z
-      .array(z.string())
-      .describe(
-        "Object foreign reference as in target provider's repos. Can be undefined if object is new to agent and backend is trying to create it",
       ),
     objectKind: sAccessObjectKind,
   })
@@ -298,11 +288,6 @@ export const sRelationMerge = z.object({
       .describe(
         'Object ID as in backend. Can be undefined if object is new to backend and agent is trying to create it',
       ),
-    objectForeignRefs: z
-      .array(z.string())
-      .describe(
-        "Object foreign reference as in target provider's repos. Can be undefined if object is new to agent and backend is trying to create it",
-      ),
   }),
   right: z.object({
     kind: sAccessObjectKind,
@@ -311,11 +296,6 @@ export const sRelationMerge = z.object({
       .optional()
       .describe(
         'Object ID as in backend. Can be undefined if object is new to backend and agent is trying to create it',
-      ),
-    objectForeignRefs: z
-      .array(z.string())
-      .describe(
-        "Object foreign reference as in target provider's repos. Can be undefined if object is new to agent and backend is trying to create it",
       ),
   }),
   linkExists: z.boolean(),
@@ -329,6 +309,10 @@ export const sDeviceMap = z
   .record(z.record(z.unknown()))
   .describe('Map of devices (readers) and their stashed provider metadata');
 
+export const sRefMap = z
+  .record(z.record(z.array(z.string().nonempty())))
+  .describe('Map of foreign references to object IDs');
+
 // A. VALIDATE ACCESS CHANGES
 
 export const sValidateChangeRq = z
@@ -336,6 +320,7 @@ export const sValidateChangeRq = z
     kind: z.literal('validate-change'),
     provider: z.string().nonempty(),
     devices: sDeviceMap,
+    refMap: sRefMap,
     mutations: z.array(sAccessMutation),
   })
   .describe('Request to validate access changes');
@@ -343,7 +328,6 @@ export const sValidateChangeRq = z
 export const sChangeIssue = z
   .object({
     objectId: z.string().optional(),
-    objectForeignRef: z.string().optional(),
     issue: z.string().nonempty(),
   })
   .describe('Access change issue description');
@@ -362,6 +346,7 @@ export const sApplyChange = z
     kind: z.literal('apply-change'),
     provider: z.string().nonempty(),
     devices: sDeviceMap,
+    refMap: sRefMap,
     mutations: z.array(sAccessMutation),
   })
   .describe('Request to apply access changes');
@@ -371,9 +356,7 @@ export const sApplyChangeComplete = sResponsePayload(
   z.object({
     requestId: z.string().nonempty(),
     //error: z.string().optional().describe('Error message if request failed'),
-    refs: z
-      .record(z.record(z.string().nonempty()))
-      .describe('Map of foreign references to object IDs'),
+    refs: sRefMap,
   }),
 ).describe('Response for applying access changes');
 
@@ -391,7 +374,7 @@ export const sApplyChangeProgress = z
 
 // C. ABORT CHANGES
 
-export const abortChange = z
+export const sAbortChange = z
   .object({
     kind: z.literal('abort-change'),
     provider: z.string().nonempty(),
@@ -438,7 +421,7 @@ export type AccessChangeIssue = z.infer<typeof sChangeIssue>;
 export type AccessApplyChange = z.infer<typeof sApplyChange>;
 export type AccessApplyChangeComplete = z.infer<typeof sApplyChangeComplete>;
 export type AccessApplyChangeProgress = z.infer<typeof sApplyChangeProgress>;
-export type AccessAbortChange = z.infer<typeof abortChange>;
+export type AccessAbortChange = z.infer<typeof sAbortChange>;
 export type AccessControlCapabilityReport = z.infer<
   typeof sAccessControlCapabilityReport
 >;
@@ -449,6 +432,8 @@ export type UiOrderHint = z.infer<typeof sUiOrderHint>;
 export type UiWidgetHint = z.infer<typeof sUiWidgetHint>;
 export type ProviderSpecs = z.infer<typeof sProviderSpecs>;
 export type ConfigurationIssue = z.infer<typeof sConfigurationIssue>;
+
+export type AccessRefMap = z.infer<typeof sRefMap>;
 
 export type PayloadByKind = {
   register: RegisterRq;

@@ -186,19 +186,11 @@ export class AgentApp {
                   )
                 : this.agent.applyAccessChange$(context, message);
               return applyOb$.pipe(
-                map((result) =>
-                  typeof result === 'number'
-                    ? {
-                        kind: 'apply-change-progress' as const,
-                        requestId: message.id,
-                        mutationIndex: result,
-                      }
-                    : {
-                        kind: 'apply-change-complete' as const,
-                        requestId: message.id,
-                        refs: result,
-                      },
-                ),
+                map((result) => ({
+                  kind: 'apply-change-complete' as const,
+                  requestId: message.id,
+                  refs: result,
+                })),
                 catchError((error: Error) =>
                   of({
                     kind: 'error-rs' as const,
