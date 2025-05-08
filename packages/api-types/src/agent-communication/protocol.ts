@@ -254,12 +254,7 @@ export const sGetAvailableDevicesRs = sResponsePayload(
 export const sObjectMerge = z
   .object({
     kind: z.literal('merge'),
-    objectId: z
-      .string()
-      .optional()
-      .describe(
-        'Object ID as in backend. Can be undefined if object is new to backend and agent is trying to create it',
-      ),
+    objectId: z.string().nonempty().describe('Object ID as in backend'),
     objectKind: sAccessObjectKind,
     props: z.record(z.unknown()),
   })
@@ -268,12 +263,7 @@ export const sObjectMerge = z
 export const sObjectDelete = z
   .object({
     kind: z.literal('delete'),
-    objectId: z
-      .string()
-      .optional()
-      .describe(
-        'Object ID as in backend. Can be undefined if object is new to backend and agent is trying to create it',
-      ),
+    objectId: z.string().nonempty().describe('Object ID as in backend'),
     objectKind: sAccessObjectKind,
   })
   .describe('Object delete request');
