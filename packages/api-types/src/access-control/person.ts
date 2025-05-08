@@ -22,7 +22,7 @@ export const sPersonDto = z.object({
   credentials: z.array(sAssignedCredential),
   accessRules: z.array(sPersonAccessRule),
   customFields: z.record(z.string()).nullable(),
-  refs: z.record(z.string()),
+  refs: z.record(z.union([z.string(), z.array(z.string())])),
   version: z.number(),
 });
 

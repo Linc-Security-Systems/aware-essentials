@@ -46,7 +46,7 @@ export const sScheduleDto = z.object({
   deletable: z.boolean(),
   createdOn: z.string(),
   lastModifiedOn: z.string(),
-  refs: z.record(z.string()),
+  refs: z.record(z.union([z.string(), z.array(z.string())])),
   version: z.number(),
   flag: sFlagType.nullable(),
 });

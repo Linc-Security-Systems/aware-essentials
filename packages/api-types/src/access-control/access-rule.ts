@@ -35,7 +35,7 @@ export const sAccessRuleDto = z.object({
     .describe('Group permissions'),
   createdOn: z.string().describe('Created on'),
   lastModifiedOn: z.string().describe('Last modified on'),
-  refs: z.record(z.string()).describe('References'),
+  refs: z.record(z.union([z.string(), z.array(z.string())])),
   version: z.number().describe('Version'),
 });
 
