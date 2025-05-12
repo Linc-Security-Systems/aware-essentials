@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const sMacroItemDto = z.object({
-  id: z.string().uuid().nullable(),
+  id: z.string().nullable(),
   stepId: z.string().nonempty(),
   deviceId: z.string().uuid().nonempty(),
   command: z.string().nonempty(),
@@ -9,7 +9,7 @@ export const sMacroItemDto = z.object({
 });
 
 export const sMacroDto = z.object({
-  id: z.string().uuid(),
+  id: z.string().nonempty(),
   displayName: z.string().nonempty(),
   createdOn: z.string(),
   lastModifiedOn: z.string(),
