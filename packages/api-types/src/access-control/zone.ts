@@ -33,8 +33,6 @@ export const sAddZoneDeviceRequest = z.object({
   deviceId: z.string().nonempty(),
 });
 
-export type AddZoneDeviceRequest = { zoneId: string } & z.infer<
-  typeof sAddZoneDeviceRequest
->;
+export type AddZoneDeviceRequest = z.infer<typeof sAddZoneDeviceRequest>;
 
 export type RemoveZoneDeviceRequest = AddZoneDeviceRequest;
