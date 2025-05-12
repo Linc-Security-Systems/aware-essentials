@@ -86,7 +86,8 @@ export const sTokenSpecs = z.object({
 
 export const sAccessControlCapabilityReport = z.object({
   tokens: z.array(sTokenSpecs),
-  accessbjects: z.array(sAccessObjectKind),
+  accessObjects: z.array(sAccessObjectKind),
+  oneSchedulePerDoor: z.boolean(),
 });
 
 export const sRegisterRq = z.object({
