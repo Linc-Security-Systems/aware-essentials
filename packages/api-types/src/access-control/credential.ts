@@ -1,6 +1,6 @@
 import z from 'zod';
 
-export const sCredentialType = z.enum(['card', 'pin']);
+export const sCredentialType = z.enum(['card', 'pin', 'fingerprint']);
 
 export const sAssignedCredential = z.object({
   type: sCredentialType,

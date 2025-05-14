@@ -187,7 +187,7 @@ export class AgentApp {
                 : this.agent.applyAccessChange$(context, message);
               return applyOb$.pipe(
                 map((result) => ({
-                  kind: 'apply-change-complete' as const,
+                  kind: 'apply-change-rs' as const,
                   requestId: message.id,
                   refs: result,
                 })),
