@@ -344,7 +344,7 @@ export const sApplyChange = z
   .describe('Request to apply access changes');
 
 export const sApplyChangeRs = sResponsePayload(
-  z.literal('apply-change-complete'),
+  z.literal('apply-change-rs'),
   z.object({
     requestId: z.string().nonempty(),
     //error: z.string().optional().describe('Error message if request failed'),
