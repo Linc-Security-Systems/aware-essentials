@@ -317,10 +317,36 @@ export const sValidateChangeRq = z
   })
   .describe('Request to validate access changes');
 
+export const sChangeIssueCode = z.enum([
+  'BAD_REFERENCE',
+  'NOT_FOUND',
+  'NOT_UNIQUE',
+  'INVALID',
+  'NOT_SUPPORTED',
+]);
+
 export const sChangeIssue = z
   .object({
-    objectId: z.string().optional(),
-    issue: z.string().nonempty(),
+    objectId: z.string().optional().describe('Object ID as in backend'),
+    code: sChangeIssueCode
+      .optional()
+      .describe('Issue code that describes the issue to UI agent(s) or bots'),
+    path: z
+      .string()
+      .optional()
+      .describe(
+        'Path - inside object referenced by ObjectID, points to a field or a related object',
+      ),
+    index: z
+      .number()
+      .optional()
+      .describe('Index ofa value in field pointed at by path'),
+    message: z
+      .string()
+      .optional()
+      .describe(
+        'Message that describes the issue to user or the details of what went wrong',
+      ),
   })
   .describe('Access change issue description');
 
