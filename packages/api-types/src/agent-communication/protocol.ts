@@ -328,6 +328,7 @@ export const sChangeIssueCode = z.enum([
 export const sChangeIssue = z
   .object({
     objectId: z.string().optional().describe('Object ID as in backend'),
+    objectKind: sAccessObjectKind.optional(),
     code: sChangeIssueCode
       .optional()
       .describe('Issue code that describes the issue to UI agent(s) or bots'),
