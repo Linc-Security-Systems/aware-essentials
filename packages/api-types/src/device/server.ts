@@ -37,7 +37,7 @@ export type ServerState = {
   configMetadata: ModuleConfigMetadata;
   config: ModuleConfig;
   runnableProviders: string[];
-  caps: Record<string, AccessControlCapabilityReport>;
+  accessControlCaps: Record<string, AccessControlCapabilityReport>;
 };
 
 // EVENTS
