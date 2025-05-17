@@ -1,6 +1,6 @@
 {
   "name": "@awarevue/agent-sdk",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "SDK for building Agent implementations that speak the Aware protocol.",
   "author": "Yaser Awajan",
   "license": "MIT",

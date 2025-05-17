@@ -13,6 +13,7 @@ import { LayoutDto } from '../layout';
 import { ViewDto } from '../view';
 import { RoleDto } from '../user';
 import { ModuleConfig, ModuleConfigMetadata } from '../module-config';
+import { AccessControlCapabilityReport } from 'src/agent-communication';
 
 export const SERVER = 'server';
 
@@ -36,6 +37,7 @@ export type ServerState = {
   configMetadata: ModuleConfigMetadata;
   config: ModuleConfig;
   runnableProviders: string[];
+  caps: Record<string, AccessControlCapabilityReport>;
 };
 
 // EVENTS
