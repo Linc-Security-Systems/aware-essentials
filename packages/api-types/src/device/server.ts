@@ -35,6 +35,7 @@ export type ServerState = {
   runningAgents: Record<string, string[]>;
   configMetadata: ModuleConfigMetadata;
   config: ModuleConfig;
+  runnableProviders: string[];
 };
 
 // EVENTS
