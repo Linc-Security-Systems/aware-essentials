@@ -242,7 +242,16 @@ export class AgentApp {
                 ),
               ),
             )
-          : EMPTY,
+          : of(message).pipe(
+              tap(() =>
+                this.options.transport.send(
+                  this.addEnvelope({
+                    kind: 'stop-rs' as const,
+                    requestId: message.id,
+                  }),
+                ),
+              ),
+            ),
       ),
     );
 

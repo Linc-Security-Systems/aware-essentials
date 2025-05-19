@@ -5,6 +5,7 @@ import {
   ScheduleDto,
   ZoneDto,
 } from '../access-control';
+import { z } from 'zod';
 import { DeviceDto } from './any-device';
 import { AutomationRuleDto } from '../automation';
 import { DeviceGroupDto } from '../device-group';
@@ -42,6 +43,23 @@ export type ServerState = {
 
 // EVENTS
 
+export const sObjectKind = z.enum([
+  'accessRule',
+  'schedule',
+  'person',
+  'device',
+  'zone',
+  'personPresence',
+  'deviceGroup',
+  'view',
+  'layout',
+  'automationRule',
+  'macro',
+  'role',
+]);
+
+export type ObjectKind = z.infer<typeof sObjectKind>;
+
 export type ObjectKinds = {
   layout: LayoutDto;
   view: ViewDto;
@@ -57,20 +75,7 @@ export type ObjectKinds = {
   role: RoleDto;
 };
 
-export const objectKinds: readonly (keyof ObjectKinds)[] = [
-  'accessRule',
-  'schedule',
-  'person',
-  'device',
-  'zone',
-  'personPresence',
-  'deviceGroup',
-  'view',
-  'layout',
-  'automationRule',
-  'macro',
-  'role',
-] as const;
+export const objectKinds: readonly ObjectKind[] = sObjectKind.options;
 
 export type ObjectCreated = {
   [K in keyof ObjectKinds]: {

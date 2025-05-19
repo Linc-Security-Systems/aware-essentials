@@ -71,11 +71,11 @@ export const sProviderSpecs = z.object({
 });
 
 export const sAccessObjectKind = z.enum([
-  'access-rule',
+  'accessRule',
   'schedule',
-  'zone',
   'person',
-  'reader',
+  'device',
+  'zone',
 ]);
 
 export const sTokenSpecs = z.object({
