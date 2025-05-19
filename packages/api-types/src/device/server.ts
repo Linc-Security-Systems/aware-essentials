@@ -12,7 +12,7 @@ import { DeviceGroupDto } from '../device-group';
 import { MacroDto } from '../macros';
 import { LayoutDto } from '../layout';
 import { ViewDto } from '../view';
-import { RoleDto } from '../user';
+import { RoleDto, UserDto } from '../user';
 import { ModuleConfig, ModuleConfigMetadata } from '../module-config';
 import { AccessControlCapabilityReport } from 'src/agent-communication';
 
@@ -56,6 +56,7 @@ export const sObjectKind = z.enum([
   'automationRule',
   'macro',
   'role',
+  'user',
 ]);
 
 export type ObjectKind = z.infer<typeof sObjectKind>;
@@ -73,6 +74,7 @@ export type ObjectKinds = {
   deviceGroup: DeviceGroupDto;
   macro: MacroDto;
   role: RoleDto;
+  user: UserDto;
 };
 
 export const objectKinds: readonly ObjectKind[] = sObjectKind.options;
