@@ -41,11 +41,15 @@ export enum AppErrorCode {
   // generic
   RESOURCE_ALREADY_EXISTS = 'RESOURCE_ALREADY_EXISTS',
   RESOURCE_NOT_FOUND = 'RESOURCE_NOT_FOUND',
+  RESOURCE_FORBIDDEN = 'RESOURCE_FORBIDDEN',
   RESOURCE_INVALID = 'RESOURCE_INVALID',
   RESOURCE_IN_USE = 'RESOURCE_IN_USE',
   RESOURCE_NOT_SUPPORTED = 'RESOURCE_NOT_SUPPORTED',
   BAD_REFERENCE = 'BAD_REFERENCE',
   UNKNOWN = 'UNKNOWN',
+  SERVER_INTERNAL_ERROR = 'SERVER_INTERNAL_ERROR',
+  UNAUTHORIZED = 'UNAUTHORIZED',
+  BAD_REQUEST = 'BAD_REQUEST',
 
   // access
   ACCESS_RULE_NOT_FOUND = 'ACCESS_RULE_NOT_FOUND',
@@ -115,6 +119,7 @@ export const errorMetadataSchemas = {
   [AppErrorCode.RESOURCE_INVALID]: sInvalidMeta,
   [AppErrorCode.RESOURCE_IN_USE]: sConflictMeta,
   [AppErrorCode.RESOURCE_NOT_SUPPORTED]: sVoidMeta,
+  [AppErrorCode.RESOURCE_FORBIDDEN]: sVoidMeta,
   [AppErrorCode.BAD_REFERENCE]: sVoidMeta,
   // access
   [AppErrorCode.ACCESS_RULE_NOT_FOUND]: sNotFoundMeta,
@@ -168,6 +173,9 @@ export const errorMetadataSchemas = {
   // config
   [AppErrorCode.CONFIG_INVALID]: sInvalidMeta,
   [AppErrorCode.UNKNOWN]: sVoidMeta,
+  [AppErrorCode.SERVER_INTERNAL_ERROR]: sVoidMeta,
+  [AppErrorCode.UNAUTHORIZED]: sVoidMeta,
+  [AppErrorCode.BAD_REQUEST]: sVoidMeta,
 } as const satisfies Record<AppErrorCode, z.ZodTypeAny>;
 
 type AppErrorMetadataSchemaMap = typeof errorMetadataSchemas;
