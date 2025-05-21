@@ -24,6 +24,7 @@ export const sConflictMeta = z.object({
   subject: z.string(),
   blockingSubject: z.string().optional(),
   blockingId: z.string().optional(),
+  value: z.string().optional(),
 });
 
 export const sVoidMeta = z.object({}).strict();
@@ -66,6 +67,7 @@ export enum AppErrorCode {
   TOKEN_NOT_SUPPORTED = 'TOKEN_NOT_SUPPORTED',
   TOKEN_INVALID_FORMAT = 'TOKEN_INVALID_FORMAT',
   TOKEN_LIMIT_EXCEEDED = 'TOKEN_LIMIT_EXCEEDED',
+  TOKEN_IN_USE = 'TOKEN_IN_USE',
 
   // device
   DEVICE_NOT_FOUND = 'DEVICE_NOT_FOUND',
@@ -131,6 +133,7 @@ export const errorMetadataSchemas = {
   [AppErrorCode.TOKEN_NOT_SUPPORTED]: sVoidMeta,
   [AppErrorCode.TOKEN_INVALID_FORMAT]: sInvalidMeta,
   [AppErrorCode.TOKEN_LIMIT_EXCEEDED]: sVoidMeta,
+  [AppErrorCode.TOKEN_IN_USE]: sConflictMeta,
   // device
   [AppErrorCode.DEVICE_NOT_FOUND]: sNotFoundMeta,
   [AppErrorCode.DEVICE_ALREADY_EXISTS]: sDuplicateMeta,
