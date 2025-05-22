@@ -184,17 +184,15 @@ export type AppErrorMetadataMap = {
   [K in keyof AppErrorMetadataSchemaMap]: z.infer<AppErrorMetadataSchemaMap[K]>;
 };
 
-export type ErrorResponse<C extends AppErrorCode = AppErrorCode> = {
-  code: C;
-  message: string; // UI-friendly text
-  metadata: AppErrorMetadataMap[C]; // strongly typed
-};
-
-export type AnyErrorResponse = {
-  [K in AppErrorCode]: ErrorResponse<K>;
+export type ErrorResponse = {
+  [K in AppErrorCode]: {
+    code: K;
+    message: string; // UI-friendly text
+    metadata: AppErrorMetadataMap[K]; // strongly typed
+  };
 }[AppErrorCode];
 
-export function isErrorResponse(err: unknown): err is AnyErrorResponse {
+export function isErrorResponse(err: unknown): err is ErrorResponse {
   return (
     !!err &&
     typeof err === 'object' &&
