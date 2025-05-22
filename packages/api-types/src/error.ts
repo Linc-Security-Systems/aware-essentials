@@ -29,11 +29,17 @@ export const sConflictMeta = z.object({
 
 export const sVoidMeta = z.object({}).strict();
 
+export const sAccessRuleConflictMeta = z.object({
+  deviceSchedules: z.record(z.string(), z.array(z.string())),
+});
+
 export type VoidMeta = z.infer<typeof sVoidMeta>;
 export type DuplicateMeta = z.infer<typeof sDuplicateMeta>;
 export type NotFoundMeta = z.infer<typeof sNotFoundMeta>;
 export type InvalidMeta = z.infer<typeof sInvalidMeta>;
 export type ConflictMeta = z.infer<typeof sConflictMeta>;
+
+export type AccessRuleConflictMeta = z.infer<typeof sAccessRuleConflictMeta>;
 
 // ERROR CODES
 
@@ -123,7 +129,7 @@ export const errorMetadataSchemas = {
   [AppErrorCode.BAD_REFERENCE]: sVoidMeta,
   // access
   [AppErrorCode.ACCESS_RULE_NOT_FOUND]: sNotFoundMeta,
-  [AppErrorCode.ACCESS_RULE_PERMISSION_CONFLICT]: sVoidMeta,
+  [AppErrorCode.ACCESS_RULE_PERMISSION_CONFLICT]: sAccessRuleConflictMeta,
   // alarm
   [AppErrorCode.ALARM_NOT_FOUND]: sNotFoundMeta,
   // auth / user
