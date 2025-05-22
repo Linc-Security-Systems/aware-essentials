@@ -33,6 +33,11 @@ export const sAccessRuleConflictMeta = z.object({
   deviceSchedules: z.record(z.string(), z.array(z.string())),
 });
 
+export const sZoneAccessRuleConflictMeta = z.object({
+  zoneId: z.string(),
+  accessRuleIds: z.array(z.string()),
+});
+
 export type VoidMeta = z.infer<typeof sVoidMeta>;
 export type DuplicateMeta = z.infer<typeof sDuplicateMeta>;
 export type NotFoundMeta = z.infer<typeof sNotFoundMeta>;
@@ -96,6 +101,7 @@ export enum AppErrorCode {
   ZONE_NOT_FOUND = 'ZONE_NOT_FOUND',
   ZONE_ALREADY_EXISTS = 'ZONE_ALREADY_EXISTS',
   ZONE_IN_USE = 'ZONE_IN_USE',
+  ZONE_ACCESS_RULE_CONFLICT = 'ZONE_ACCESS_RULE_CONFLICT',
   SCHEDULE_NOT_FOUND = 'SCHEDULE_NOT_FOUND',
   SCHEDULE_ALREADY_EXISTS = 'SCHEDULE_ALREADY_EXISTS',
   SCHEDULE_IN_USE = 'SCHEDULE_IN_USE',
@@ -161,6 +167,7 @@ export const errorMetadataSchemas = {
   [AppErrorCode.ZONE_NOT_FOUND]: sNotFoundMeta,
   [AppErrorCode.ZONE_ALREADY_EXISTS]: sDuplicateMeta,
   [AppErrorCode.ZONE_IN_USE]: sConflictMeta,
+  [AppErrorCode.ZONE_ACCESS_RULE_CONFLICT]: sZoneAccessRuleConflictMeta,
   [AppErrorCode.SCHEDULE_NOT_FOUND]: sNotFoundMeta,
   [AppErrorCode.SCHEDULE_ALREADY_EXISTS]: sDuplicateMeta,
   [AppErrorCode.SCHEDULE_IN_USE]: sConflictMeta,
