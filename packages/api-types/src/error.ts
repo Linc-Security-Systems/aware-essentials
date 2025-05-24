@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { sCredentialType } from './access-control';
 
 // METADATA
 
@@ -36,6 +37,15 @@ export const sAccessRuleConflictMeta = z.object({
 export const sZoneAccessRuleConflictMeta = z.object({
   zoneId: z.string(),
   accessRuleIds: z.array(z.string()),
+});
+export const sTokenInvalidFormatMeta = z.object({
+  token: z.string(),
+  expectedFormat: z.string(),
+});
+
+export const sTokenLimitExceededMeta = z.object({
+  limit: z.number(),
+  type: sCredentialType,
 });
 
 export type VoidMeta = z.infer<typeof sVoidMeta>;
@@ -148,8 +158,8 @@ export const errorMetadataSchemas = {
   [AppErrorCode.PERSON_NOT_FOUND]: sNotFoundMeta,
   [AppErrorCode.PERSON_INVALID_ID]: sInvalidMeta,
   [AppErrorCode.TOKEN_NOT_SUPPORTED]: sVoidMeta,
-  [AppErrorCode.TOKEN_INVALID_FORMAT]: sInvalidMeta,
-  [AppErrorCode.TOKEN_LIMIT_EXCEEDED]: sVoidMeta,
+  [AppErrorCode.TOKEN_INVALID_FORMAT]: sTokenInvalidFormatMeta,
+  [AppErrorCode.TOKEN_LIMIT_EXCEEDED]: sTokenLimitExceededMeta,
   [AppErrorCode.TOKEN_IN_USE]: sConflictMeta,
   // device
   [AppErrorCode.DEVICE_NOT_FOUND]: sNotFoundMeta,
