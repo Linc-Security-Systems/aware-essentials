@@ -33,12 +33,17 @@ export type ServerCommand = RunMacro;
 
 // STATE
 
+export type AccessControlProviderState = AccessControlCapabilityReport & {
+  running: boolean;
+  lastObjectTimestamp: number;
+};
+
 export type ServerState = {
   runningAgents: Record<string, string[]>;
   configMetadata: ModuleConfigMetadata;
   config: ModuleConfig;
   runnableProviders: string[];
-  accessControlCaps: Record<string, AccessControlCapabilityReport>;
+  accessControlProviders: Record<string, AccessControlProviderState>;
 };
 
 // EVENTS
