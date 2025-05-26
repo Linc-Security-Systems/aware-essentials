@@ -16,8 +16,17 @@ export type Context = {
 };
 
 export type RunContext = Context & {
+  deviceCatalog: DeviceDiscoveryDto;
   lastEventForeignRef: string | null;
   lastEventTimestamp: number | null;
+};
+
+export type RunCommandContext = Context & {
+  deviceCatalog: DeviceDiscoveryDto;
+};
+
+export type AccessChangeContext = Context & {
+  deviceCatalog: DeviceDiscoveryDto;
 };
 
 export interface Agent {
@@ -26,13 +35,16 @@ export interface Agent {
   ) => Observable<ValidateProviderConfigRs['issues']>;
   getDevicesAndRelations$: (context: Context) => Observable<DeviceDiscoveryDto>;
   run$: (context: RunContext) => Observable<DeviceActivity>;
-  runCommand$: (context: Context, command: RunCommandRq) => Observable<unknown>;
+  runCommand$: (
+    context: RunCommandContext,
+    command: RunCommandRq,
+  ) => Observable<unknown>;
   validateAccessChange$?: (
-    context: Context,
+    context: AccessChangeContext,
     change: AccessValidateChangeRq,
   ) => Observable<AccessChangeIssue[]>;
   applyAccessChange$?: (
-    context: Context,
+    context: AccessChangeContext,
     change: AccessApplyChange,
   ) => Observable<AccessRefMap>;
 }

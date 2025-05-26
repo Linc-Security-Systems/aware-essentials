@@ -227,12 +227,21 @@ export class AgentApp {
       switchMap((message) =>
         message.kind === 'start'
           ? merge(
-              of({
-                provider: message.provider,
-                config: message.config,
-                lastEventForeignRef: message.lastEventForeignRef,
-                lastEventTimestamp: message.lastEventTimestamp,
-              }).pipe(mergeMap((context) => this.runProvider$(context))),
+              this.agent
+                .getDevicesAndRelations$({
+                  provider: message.provider,
+                  config: message.config,
+                })
+                .pipe(
+                  map((deviceCatalog) => ({
+                    provider: message.provider,
+                    config: message.config,
+                    lastEventForeignRef: message.lastEventForeignRef,
+                    lastEventTimestamp: message.lastEventTimestamp,
+                    deviceCatalog,
+                  })),
+                  mergeMap((context) => this.runProvider$(context)),
+                ),
               of({
                 kind: 'start-rs' as const,
                 requestId: message.id,
