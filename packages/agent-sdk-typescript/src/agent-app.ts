@@ -233,6 +233,7 @@ export class AgentApp {
                   config: message.config,
                 })
                 .pipe(
+                  retry({ delay: 3000 }),
                   map((deviceCatalog) => ({
                     provider: message.provider,
                     config: message.config,
