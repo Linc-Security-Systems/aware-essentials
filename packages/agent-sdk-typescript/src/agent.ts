@@ -60,5 +60,5 @@ export interface Agent {
     context: Context,
     objectKind: AccessObjectKind,
     objectIds: string[],
-  ) => Observable<Record<string, Record<string, unknown>[]>>;
+  ) => Observable<Record<string, Record<string, unknown>>>;
 }
