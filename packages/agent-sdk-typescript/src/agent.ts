@@ -6,6 +6,7 @@ import {
   AccessChangeIssue,
   AccessApplyChange,
   AccessRefMap,
+  AccessObjectKind,
 } from '@awarevue/api-types';
 import { Observable } from 'rxjs';
 import { DeviceActivity } from './agent-app';
@@ -27,6 +28,14 @@ export type RunCommandContext = Context & {
 
 export type AccessChangeContext = Context & {
   deviceCatalog: DeviceDiscoveryDto;
+  objectsById: <T extends Record<string, unknown>>(
+    objectKind: AccessObjectKind,
+    objectId: string,
+  ) => T[];
+  objectByForeignRef: <T extends Record<string, unknown>>(
+    objectKind: AccessObjectKind,
+    foreignRef: string,
+  ) => T | null;
 };
 
 export interface Agent {
@@ -47,4 +56,9 @@ export interface Agent {
     context: AccessChangeContext,
     change: AccessApplyChange,
   ) => Observable<AccessRefMap>;
+  find$?: (
+    context: Context,
+    objectKind: AccessObjectKind,
+    objectIds: string[],
+  ) => Observable<Record<string, Record<string, unknown>[]>>;
 }

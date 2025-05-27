@@ -2,6 +2,12 @@ import { sForeignDeviceInfo } from '../device';
 import { sDeviceDiscoveryDto } from '../device-import';
 import { sCredentialType } from '../access-control/credential';
 import { z } from 'zod';
+import {
+  sCreateAccessRuleRequest,
+  sCreatePersonRequest,
+  sCreateScheduleRequest,
+  sCreateZoneRequest,
+} from 'src/access-control';
 
 // PROTOCOL ENVELOPE
 
@@ -257,9 +263,27 @@ export const sObjectMerge = z
   .object({
     kind: z.literal('merge'),
     objectId: z.string().nonempty().describe('Object ID as in backend'),
-    objectKind: sAccessObjectKind,
-    props: z.record(z.unknown()),
   })
+  .and(
+    z.discriminatedUnion('objectKind', [
+      z.object({
+        objectKind: z.literal('accessRule'),
+        props: sCreateAccessRuleRequest.partial(),
+      }),
+      z.object({
+        objectKind: z.literal('schedule'),
+        props: sCreateScheduleRequest.partial(),
+      }),
+      z.object({
+        objectKind: z.literal('person'),
+        props: sCreatePersonRequest.partial(),
+      }),
+      z.object({
+        objectKind: z.literal('zone'),
+        props: sCreateZoneRequest.partial(),
+      }),
+    ]),
+  )
   .describe('Object merge request');
 
 export const sObjectDelete = z
@@ -270,31 +294,31 @@ export const sObjectDelete = z
   })
   .describe('Object delete request');
 
-export const sRelationMerge = z.object({
-  kind: z.literal('relation-merge'),
-  left: z.object({
-    kind: sAccessObjectKind,
-    objectId: z
-      .string()
-      .optional()
-      .describe(
-        'Object ID as in backend. Can be undefined if object is new to backend and agent is trying to create it',
-      ),
-  }),
-  right: z.object({
-    kind: sAccessObjectKind,
-    objectId: z
-      .string()
-      .optional()
-      .describe(
-        'Object ID as in backend. Can be undefined if object is new to backend and agent is trying to create it',
-      ),
-  }),
-  linkExists: z.boolean(),
-});
+// export const sRelationMerge = z.object({
+//   kind: z.literal('relation-merge'),
+//   left: z.object({
+//     kind: sAccessObjectKind,
+//     objectId: z
+//       .string()
+//       .optional()
+//       .describe(
+//         'Object ID as in backend. Can be undefined if object is new to backend and agent is trying to create it',
+//       ),
+//   }),
+//   right: z.object({
+//     kind: sAccessObjectKind,
+//     objectId: z
+//       .string()
+//       .optional()
+//       .describe(
+//         'Object ID as in backend. Can be undefined if object is new to backend and agent is trying to create it',
+//       ),
+//   }),
+//   linkExists: z.boolean(),
+// });
 
 export const sAccessMutation = z
-  .union([sObjectMerge, sObjectDelete, sRelationMerge])
+  .union([sObjectMerge, sObjectDelete])
   .describe('Access object change description');
 
 export const sDeviceMap = z

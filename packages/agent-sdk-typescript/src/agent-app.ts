@@ -18,6 +18,8 @@ import {
 import { Transport } from './transport';
 import {
   AccessControlCapabilityReport,
+  AccessObjectKind,
+  AccessRefMap,
   FromAgent,
   Message,
   PayloadByKind,
@@ -25,7 +27,13 @@ import {
   PushEventRq,
   PushStateUpdateRq,
 } from '@awarevue/api-types';
-import { Agent, RunContext } from './agent';
+import { AccessChangeContext, Agent, RunContext } from './agent';
+import { createValidator } from './default-validator';
+
+type ObjectCache = Record<
+  AccessObjectKind,
+  Record<string, Record<string, unknown>>
+>;
 
 export type DeviceActivity =
   | Omit<PushStateUpdateRq, 'provider'>
@@ -92,7 +100,41 @@ export class AgentApp {
     on: Date.now(),
   });
 
+  private createAccessChangeContext = (
+    context: RunContext,
+    refMap: AccessRefMap,
+    objectCache: ObjectCache,
+  ): AccessChangeContext => {
+    return {
+      ...context,
+      objectsById: <T>(objectKind: AccessObjectKind, objectId: string) => {
+        const objectKindRefs = refMap[objectKind] || {};
+        const refs = objectKindRefs[objectId] || [];
+        return refs.flatMap((foreignRef) => {
+          const value = objectCache[objectKind][foreignRef];
+          return value ? [value as T] : ([] as T[]);
+        });
+      },
+      objectByForeignRef: <T>(
+        objectKind: AccessObjectKind,
+        foreignRef: string,
+      ) => {
+        return (objectCache[objectKind][foreignRef] as T) || null;
+      },
+    };
+  };
+
   private runProvider$ = (context: RunContext) => {
+    const changeValidator$ = createValidator(this.agent);
+    // we assume that there will be only one validate-apply cycle per agent at the same time
+    let objectCache: ObjectCache = {
+      person: {},
+      accessRule: {},
+      schedule: {},
+      device: {},
+      zone: {},
+    };
+
     return merge(
       // run the agent monitor
       this.agent
@@ -157,7 +199,23 @@ export class AgentApp {
                         `Agent ${context.provider} does not support access change validation`,
                       ),
                   )
-                : this.agent.validateAccessChange$(context, message);
+                : changeValidator$(context, message).pipe(
+                    mergeMap(([issues, cache]) => {
+                      objectCache = cache;
+                      const validationContext = this.createAccessChangeContext(
+                        context,
+                        message.refMap,
+                        objectCache,
+                      );
+                      return issues.length > 0
+                        ? of(issues)
+                        : this.agent.validateAccessChange$(
+                            validationContext,
+                            message,
+                          );
+                      return of(issues);
+                    }),
+                  );
 
               return validateOb$.pipe(
                 map((issues) => ({
@@ -177,6 +235,11 @@ export class AgentApp {
 
             case 'apply-change':
               // apply access change
+              const applyContext = this.createAccessChangeContext(
+                context,
+                message.refMap,
+                objectCache,
+              );
               const applyOb$ = !this.agent.applyAccessChange$
                 ? throwError(
                     () =>
@@ -184,7 +247,7 @@ export class AgentApp {
                         `Agent ${context.provider} does not support access change application`,
                       ),
                   )
-                : this.agent.applyAccessChange$(context, message);
+                : this.agent.applyAccessChange$(applyContext, message);
               return applyOb$.pipe(
                 map((result) => ({
                   kind: 'apply-change-rs' as const,
