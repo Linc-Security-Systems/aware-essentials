@@ -259,39 +259,111 @@ export const sGetAvailableDevicesRs = sResponsePayload(
 
 // ACCESS SYNC SECTION
 
+// ————————————————————————————————————————————————————
+// Merge (insert vs update) variants, all listed explicitly
+// ————————————————————————————————————————————————————
 export const sObjectMerge = z
-  .object({
-    kind: z.literal('merge'),
-    objectId: z.string().nonempty().describe('Object ID as in backend'),
-  })
-  .and(
-    z.discriminatedUnion('objectKind', [
-      z.object({
-        objectKind: z.literal('accessRule'),
-        props: sCreateAccessRuleRequest.partial(),
-      }),
-      z.object({
-        objectKind: z.literal('schedule'),
-        props: sCreateScheduleRequest.partial(),
-      }),
-      z.object({
-        objectKind: z.literal('person'),
-        props: sCreatePersonRequest.partial(),
-      }),
-      z.object({
-        objectKind: z.literal('zone'),
-        props: sCreateZoneRequest.partial(),
-      }),
-    ]),
-  )
+  .union([
+    // accessRule insert
+    z.object({
+      kind: z.literal('merge'),
+      objectId: z.string().nonempty().describe('Object ID as in backend'),
+      objectKind: z.literal('accessRule'),
+      original: z.null(),
+      props: sCreateAccessRuleRequest,
+    }),
+    // accessRule update
+    z.object({
+      kind: z.literal('merge'),
+      objectId: z.string().nonempty().describe('Object ID as in backend'),
+      objectKind: z.literal('accessRule'),
+      original: sCreateAccessRuleRequest,
+      props: sCreateAccessRuleRequest.partial(),
+    }),
+
+    // schedule insert
+    z.object({
+      kind: z.literal('merge'),
+      objectId: z.string().nonempty().describe('Object ID as in backend'),
+      objectKind: z.literal('schedule'),
+      original: z.null(),
+      props: sCreateScheduleRequest,
+    }),
+    // schedule update
+    z.object({
+      kind: z.literal('merge'),
+      objectId: z.string().nonempty().describe('Object ID as in backend'),
+      objectKind: z.literal('schedule'),
+      original: sCreateScheduleRequest,
+      props: sCreateScheduleRequest.partial(),
+    }),
+
+    // person insert
+    z.object({
+      kind: z.literal('merge'),
+      objectId: z.string().nonempty().describe('Object ID as in backend'),
+      objectKind: z.literal('person'),
+      original: z.null(),
+      props: sCreatePersonRequest,
+    }),
+    // person update
+    z.object({
+      kind: z.literal('merge'),
+      objectId: z.string().nonempty().describe('Object ID as in backend'),
+      objectKind: z.literal('person'),
+      original: sCreatePersonRequest,
+      props: sCreatePersonRequest.partial(),
+    }),
+
+    // zone insert
+    z.object({
+      kind: z.literal('merge'),
+      objectId: z.string().nonempty().describe('Object ID as in backend'),
+      objectKind: z.literal('zone'),
+      original: z.null(),
+      props: sCreateZoneRequest,
+    }),
+    // zone update
+    z.object({
+      kind: z.literal('merge'),
+      objectId: z.string().nonempty().describe('Object ID as in backend'),
+      objectKind: z.literal('zone'),
+      original: sCreateZoneRequest,
+      props: sCreateZoneRequest.partial(),
+    }),
+  ])
   .describe('Object merge request');
 
+// ————————————————————————————————————————————————————
+// Delete variants, also fully expanded
+// ————————————————————————————————————————————————————
 export const sObjectDelete = z
-  .object({
-    kind: z.literal('delete'),
-    objectId: z.string().nonempty().describe('Object ID as in backend'),
-    objectKind: sAccessObjectKind,
-  })
+  .union([
+    z.object({
+      kind: z.literal('delete'),
+      objectId: z.string().nonempty().describe('Object ID as in backend'),
+      objectKind: z.literal('accessRule'),
+      original: sCreateAccessRuleRequest,
+    }),
+    z.object({
+      kind: z.literal('delete'),
+      objectId: z.string().nonempty().describe('Object ID as in backend'),
+      objectKind: z.literal('schedule'),
+      original: sCreateScheduleRequest,
+    }),
+    z.object({
+      kind: z.literal('delete'),
+      objectId: z.string().nonempty().describe('Object ID as in backend'),
+      objectKind: z.literal('person'),
+      original: sCreatePersonRequest,
+    }),
+    z.object({
+      kind: z.literal('delete'),
+      objectId: z.string().nonempty().describe('Object ID as in backend'),
+      objectKind: z.literal('zone'),
+      original: sCreateZoneRequest,
+    }),
+  ])
   .describe('Object delete request');
 
 // export const sRelationMerge = z.object({
