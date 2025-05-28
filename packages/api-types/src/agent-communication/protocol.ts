@@ -7,7 +7,7 @@ import {
   sCreatePersonRequest,
   sCreateScheduleRequest,
   sCreateZoneRequest,
-} from 'src/access-control';
+} from '../access-control';
 
 // PROTOCOL ENVELOPE
 
