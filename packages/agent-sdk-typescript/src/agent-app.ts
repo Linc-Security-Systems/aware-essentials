@@ -213,7 +213,6 @@ export class AgentApp {
                             validationContext,
                             message,
                           );
-                      return of(issues);
                     }),
                   );
 

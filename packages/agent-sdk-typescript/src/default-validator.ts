@@ -38,9 +38,11 @@ export const createValidator = <T extends Agent>(agent: T) => {
         ),
       ),
     ];
-    const notFoundPersonIds = personIds.filter((p) => !req.refMap['person'][p]);
+    const notFoundPersonIds = personIds.filter(
+      (p) => !req.refMap['person'][p] || !req.refMap['person'][p].length,
+    );
     const notFoundScheduleIds = scheduleIds.filter(
-      (s) => !req.refMap['schedule'][s],
+      (s) => !req.refMap['schedule'][s] || !req.refMap['schedule'][s].length,
     );
     return [
       ...notFoundPersonIds.map(
@@ -66,7 +68,16 @@ export const createValidator = <T extends Agent>(agent: T) => {
     context: Context,
     req: AccessValidateChangeRq,
   ) => {
-    if (!agent.find$) return [];
+    if (!agent.find$)
+      return of([
+        [],
+        {
+          person: emptyMap,
+          schedule: emptyMap,
+          accessRule: emptyMap,
+          zone: emptyMap,
+        },
+      ] as const);
     const personIds = Object.entries(req.refMap['person'] || {}).flatMap(
       ([objectId, refs]) => refs.map((ref) => ({ objectId, ref })),
     );
