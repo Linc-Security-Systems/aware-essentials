@@ -15,7 +15,7 @@ export const createValidator = <T extends Agent>(agent: T) => {
       ...new Set(
         req.mutations.flatMap((m) =>
           m.kind === 'merge' && m.objectKind === 'accessRule'
-            ? ((m.props.appliedTo ?? []) as string[])
+            ? [...(m.props.appliedTo ?? []), ...(m.original?.appliedTo ?? [])]
             : [],
         ),
       ),
@@ -25,6 +25,12 @@ export const createValidator = <T extends Agent>(agent: T) => {
         req.mutations.flatMap((m) =>
           m.kind === 'merge' && m.objectKind === 'accessRule'
             ? [
+                ...(m.original === null
+                  ? []
+                  : m.original.permissions.map((p) => p.scheduleId)),
+                ...(m.original === null
+                  ? []
+                  : m.original.groupPermissions.map((p) => p.scheduleId)),
                 ...(m.props.permissions || []).map((p) => p.scheduleId),
                 ...(m.props.groupPermissions || []).map((p) => p.scheduleId),
               ]
