@@ -149,7 +149,7 @@ export const createValidator = <T extends Agent>(agent: T) => {
         }
         // check rules
         for (const ruleId of ruleIds) {
-          if (!rules['accessRule']?.[ruleId.ref]) {
+          if (!rules[ruleId.ref]) {
             issues.push({
               code: 'BAD_REFERENCE',
               objectId: ruleId.ref,
@@ -159,7 +159,7 @@ export const createValidator = <T extends Agent>(agent: T) => {
         }
         // check zones
         for (const zoneId of zoneIds) {
-          if (!zones['zone']?.[zoneId.ref]) {
+          if (!zones[zoneId.ref]) {
             issues.push({
               code: 'BAD_REFERENCE',
               objectId: zoneId.objectId,
