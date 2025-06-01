@@ -34,8 +34,11 @@ export type ServerCommand = RunMacro;
 // STATE
 
 export type AccessControlProviderState = AccessControlCapabilityReport & {
+  syncInProgress: boolean;
+  lastSyncError: string | null;
+  syncTotal: number;
+  syncComplete: number;
   running: boolean;
-  lastObjectTimestamp: number;
 };
 
 export type ServerState = {
