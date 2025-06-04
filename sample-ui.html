@@ -1,0 +1,2088 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aware Server API Examples</title>
+    <!-- <link rel="stylesheet" href="display.css"> -->
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        background-color: #f4f4f9;
+      }
+
+      .toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        font-size: 1em;
+        position: relative;
+      }
+
+      .toolbar button {
+        padding: 5px 10px;
+        background-color: #0056b3;
+        border: none;
+        color: white;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      .toolbar button:hover {
+        background-color: #003f8a;
+      }
+
+      .pane {
+        margin: 20px;
+        background: #fff;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .pane h1 {
+        cursor: pointer;
+        margin: 0;
+        font-size: 1.2em;
+      }
+
+      .pane h1 .caret {
+        font-size: 0.8em;
+        margin-left: 10px;
+        float: right;
+      }
+
+      .pane-content {
+        margin-top: 10px;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+      }
+
+      input {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+
+      input[type="checkbox"] {
+        width: auto;
+        margin-right: 5px;
+      }
+
+      button {
+        padding: 10px;
+        background-color: #007bff;
+        border: none;
+        color: #fff;
+        font-size: 1em;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      .mt {
+        margin-top: 10px;
+      }
+
+      .pane span {
+        font-size: 0.9em;
+        margin-bottom: 10px;
+        padding: 5px 0px;
+        display: inline-block;
+        word-break: break-word;
+      }
+
+      .get {
+        color: green;
+      }
+
+      .post {
+        color: rgba(214, 157, 0, 0.856);
+      }
+
+      .put {
+        color: rgb(15, 67, 211);
+      }
+
+      .delete {
+        color: rgb(173, 3, 3);
+      }
+
+      button.get {
+        background-color: green;
+        color: #fff;
+      }
+
+      button.post {
+        background-color: rgba(214, 157, 0, 0.856);
+        color: #fff;
+      }
+
+      button.put {
+        background-color: rgb(15, 67, 211);
+        color: #fff;
+      }
+
+      button.delete {
+        background-color: rgb(173, 3, 3);
+        color: #fff;
+      }
+
+      .json {
+        padding: 10px;
+        background: #f9f9f9;
+        border: 1px solid #ccc;
+        word-wrap: break-word;
+        white-space: pre-wrap;
+        border-radius: 4px;
+        max-height: 200px;
+        overflow: auto;
+      }
+
+      .table-container {
+        max-width: 100%;
+        overflow-x: auto;
+      }
+
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 20px 0;
+        border-radius: 4px;
+        table-layout: auto;
+        max-width: auto;
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+        word-wrap: break-word;
+      }
+      th {
+        background-color: #f4f4f4;
+      }
+
+      .twin-pane {
+        display: flex;
+        justify-content: space-evenly;
+      }
+
+      .twin-pane .pane {
+        flex-grow: 1;
+        width: 50%;
+      }
+
+      .pane button {
+        margin-right: 10px;
+        margin-bottom: 10px;
+      }
+
+      #layoutWrapper {
+        position: relative;
+        display: flex;
+        height: 300px;
+        width: 100%;
+        overflow: hidden;
+      }
+
+      #layoutContainer {
+        position: absolute;
+        min-width: 100%;
+        min-height: 100%;
+        top: 0px;
+        left: 0px;
+        display: flex;
+        -webkit-box-pack: center;
+        justify-content: center;
+        -webkit-box-align: center;
+        align-items: center;
+        transform-origin: center center;
+        transform: scale(1);
+      }
+
+      #layoutImage {
+        position: absolute;
+        width: 600px;
+        height: auto;
+        max-width: none;
+        min-width: 0px;
+        min-height: 0px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      .device {
+        position: absolute;
+        height: 50px;
+        width: 50px;
+        transform: translate(-50%, -50%) scale(1);
+        border-radius: 50%;
+        background-color: #007bff;
+      }
+
+      #deviceWrapper {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        overflow: visible;
+        width: 0;
+        height: 0;
+      }
+
+      #videoPlayer {
+        width: 600px;
+        height: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="toolbar">
+      <span>Aware Server API Examples</span>
+      <span>
+        <label
+          for="hostInput"
+          style="
+            color: white;
+            font-weight: normal;
+            margin-right: 8px;
+            display: inline-block;
+            margin-bottom: 0;
+          "
+          >Host:</label
+        >
+        <input
+          type="text"
+          id="hostInput"
+          value="local.awarevue.io"
+          style="
+            width: 180px;
+            padding: 4px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            margin-right: 10px;
+            margin-bottom: 0;
+          "
+        />
+        <button id="requestButton">Toggle Request</button>
+        <button id="responseButton">Toggle Response</button>
+      </span>
+    </div>
+    <div class="twin-pane">
+      <div id="requestArea" class="pane">
+        <h1>Request</h1>
+        <div class="pane-content">
+          <div>
+            <span id="requestEndpoint">Endpoint</span>
+          </div>
+          <div>
+            <span id="requestHeaders">Headers</span>
+          </div>
+          <div id="requestBody" class="json"></div>
+        </div>
+      </div>
+      <div id="responseArea" class="pane">
+        <h1>Response</h1>
+        <div class="pane-content">
+          <div><span id="responseCode">Code</span></div>
+          <div id="responseBody" class="json"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Auth -->
+    <div class="pane">
+      <h1 onclick="togglePane(this)">Auth<span class="caret">▲</span></h1>
+      <div class="pane-content hidden">
+        <span>Parameters:</span>
+
+        <div>
+          <label for="username">username</label>
+          <input type="text" id="username" name="username" value="root" />
+
+          <label for="password">password</label>
+          <input type="password" id="password" name="password" value="admin" />
+        </div>
+
+        <span>Endpoints:</span>
+
+        <div>
+          <button id="loginButton" class="post">POST /auth/login</button
+          ><button id="refreshButton" class="post">POST /auth/refresh</button>
+        </div>
+
+        <span>Outcomes:</span>
+
+        <div id="loginMessage" class="mt"></div>
+        <div id="tokensContainer"></div>
+      </div>
+    </div>
+
+    <!-- Users -->
+    <div class="pane">
+      <h1 onclick="togglePane(this)">Users<span class="caret">▲</span></h1>
+      <div class="pane-content hidden">
+        <span>Parameters:</span>
+
+        <div>
+          <label for="userId">id</label>
+          <input type="text" id="userId" name="userId" />
+          <label for="userUsername">username</label>
+          <input type="text" id="userUsername" name="userUsername" />
+          <label for="userPassword">password</label>
+          <input type="password" id="userPassword" name="userPassword" />
+          <label for="firstName">firstName</label>
+          <input type="text" id="firstName" name="firstName" />
+          <label for="lastName">lastName</label>
+          <input type="text" id="lastName" name="lastName" />
+          <label for="email">email</label>
+          <input type="email" id="email" name="email" />
+          <label for="roles">roles</label>
+          ><span>Comma separated list of role names</span>
+          <input type="text" id="roles" name="roles" />
+          <label for="active">active</label>
+          <input type="checkbox" id="active" name="active" />
+        </div>
+
+        <span>Endpoints:</span>
+
+        <div>
+          <button id="getUsers" class="get">GET /users/{id}</button>
+          <button id="postUser" class="post">POST /users</button>
+        </div>
+
+        <span>Outcomes:</span>
+
+        <div id="userContainer"></div>
+      </div>
+    </div>
+
+    <!-- Roles -->
+    <div class="pane">
+      <h1 onclick="togglePane(this)">Roles<span class="caret">▲</span></h1>
+      <div class="pane-content hidden">
+        <span>Parameters:</span>
+
+        <div></div>
+
+        <span>Endpoints:</span>
+
+        <div>
+          <button id="getRoles" class="get">GET /roles</button>
+        </div>
+
+        <span>Outcomes:</span>
+
+        <div id="roleContainer"></div>
+      </div>
+    </div>
+
+    <!-- Layouts -->
+    <div class="pane">
+      <h1 onclick="togglePane(this)">Layouts<span class="caret">▲</span></h1>
+      <div class="pane-content hidden">
+        <span>Parameters:</span>
+
+        <div>
+          <label for="layoutId">id</label>
+          <input type="text" id="layoutId" name="layoutId" />
+        </div>
+
+        <span>Endpoints:</span>
+
+        <div>
+          <button id="getLayouts" class="get">GET /layouts/{id}</button>
+        </div>
+
+        <span>Outcomes:</span>
+        <p>The returned data is stored in an array called layouts.</p>
+        <div id="layoutDataContainer"></div>
+
+        <hr />
+
+        <label for="imageUrl">imageUrl</label>
+        <input type="text" id="imageUrl" name="imageUrl" />
+        <button id="displayLayout">GET /{imageUrl}</button>
+        <button id="plotDevices">Plot Devices</button>
+        <p>The fetched image is added to the layout area.</p>
+        <p>
+          Plot Devices uses the stored layout array, selects the first item and
+          adds the devices to the layout area.
+        </p>
+        <p>
+          The image is added at a fixed size and then the parent container is
+          scaled. Devices are added relative to the image original size,
+          position is transfomed according to scale but size is kept constant.
+          Use SVG for layout images.
+        </p>
+        <label for="scaleInput">Image Scale: </label>
+        <input
+          type="number"
+          id="scaleInput"
+          value="1"
+          step="0.1"
+          min="0.1"
+          max="5"
+          style="width: 80px"
+        />
+        <div id="layoutWrapper">
+          <div id="layoutContainer">
+            <img
+              id="layoutImage"
+              alt="Fetched Image"
+              style="margin-top: 20px; max-width: 100%; height: auto"
+            />
+            <div id="deviceWrapper"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Devices -->
+    <div class="pane">
+      <h1 onclick="togglePane(this)">Devices<span class="caret">▲</span></h1>
+      <div class="pane-content hidden">
+        <span>Parameters:</span>
+
+        <div>
+          <label for="deviceId">id</label>
+          <input type="text" id="deviceId" name="deviceId" />
+        </div>
+
+        <span>Endpoints:</span>
+
+        <div>
+          <button id="getDevices" class="get">GET /devices/{id}</button>
+        </div>
+
+        <span>Outcomes:</span>
+
+        <div id="deviceContainer"></div>
+      </div>
+    </div>
+
+    <!-- WebSocket -->
+    <div class="pane">
+      <h1 onclick="togglePane(this)">
+        WebSocket (Live Video)<span class="caret">▲</span>
+      </h1>
+      <div class="pane-content hidden">
+        <span>Parameters:</span>
+
+        <div>
+          <label for="webrtcDeviceId">deviceId</label>
+          <input type="text" id="webrtcDeviceId" name="webrtcDeviceId" />
+        </div>
+        <div>
+          <label for="webrtcStreamId">streamId</label>
+          <input type="text" id="webrtcStreamId" name="webrtcStreamId" />
+        </div>
+
+        <span>Endpoints:</span>
+        <p>
+          Click 'WebSocket Connect' to open the webscocket communication to the
+          aware server. This is used to setup streams, recieve real-time data
+          and send commands. Use Chrome Dev Tools to view the Websocket
+          Connection and messages.
+        </p>
+        <p>
+          With a deviceId & streamId of a camera click Connect Stream and the
+          WebRTC negotiation will begin.
+        </p>
+        <p>
+          Click Close Stream to end the stream and close the WebRTC connection.
+        </p>
+
+        <div>
+          <button id="wsConnect" class="get">WebSocket Connect</button>
+          <button id="wsClose" class="delete">WebSocket Close</button>
+          <button id="connectStream" class="get">Connect Stream</button>
+          <button id="closeStream" class="delete">Close Stream</button>
+        </div>
+
+        <span>Outcomes:</span>
+
+        <div id="">
+          <video id="videoPlayer" autoplay muted playsinline></video>
+          <div>
+            <button
+              id="pan-inc"
+              onmousedown="ptzStart(event)"
+              onmouseup="ptzStop(event)"
+            >
+              Pan +
+            </button>
+            <button
+              id="pan-dec"
+              onmousedown="ptzStart(event)"
+              onmouseup="ptzStop(event)"
+            >
+              Pan -
+            </button>
+            <button
+              id="tilt-inc"
+              onmousedown="ptzStart(event)"
+              onmouseup="ptzStop(event)"
+            >
+              Tilt +
+            </button>
+            <button
+              id="tilt-dec"
+              onmousedown="ptzStart(event)"
+              onmouseup="ptzStop(event)"
+            >
+              Tilt -
+            </button>
+            <button
+              id="zoom-inc"
+              onmousedown="ptzStart(event)"
+              onmouseup="ptzStop(event)"
+            >
+              Zoom +
+            </button>
+            <button
+              id="zoom-dec"
+              onmousedown="ptzStart(event)"
+              onmouseup="ptzStop(event)"
+            >
+              Zoom -
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Video Playback -->
+    <div class="pane">
+      <h1 onclick="togglePane(this)">Video Playback<span class="caret">▲</span></h1>
+      <div class="pane-content hidden">
+        <span>Parameters:</span>
+
+        <div>
+          <label for="playbackSources">Video Sources (comma-separated camera IDs)</label>
+          <input type="text" id="playbackSources" name="playbackSources" placeholder="camera1,camera2" value="camera1,camera2" />
+          
+          <label for="playbackStartTime">Start Time</label>
+          <input type="datetime-local" id="playbackStartTime" name="playbackStartTime" />
+          
+          <label for="playbackSpeed">Playback Speed</label>
+          <select id="playbackSpeed" name="playbackSpeed">
+            <option value="0.25">0.25x</option>
+            <option value="0.5">0.5x</option>
+            <option value="1" selected>1x</option>
+            <option value="2">2x</option>
+            <option value="4">4x</option>
+            <option value="8">8x</option>
+          </select>
+        </div>
+
+        <span>API Operations:</span>
+        
+        <div>
+          <button id="createController" class="post">Create Controller</button>
+          <button id="connectWebRTC" class="get">Connect WebRTC</button>
+          <button id="disconnectWebRTC" class="delete">Disconnect WebRTC</button>
+          <button id="deleteController" class="delete">Delete Controller</button>
+        </div>
+
+        <span>Video Grid (1x2):</span>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr; gap: 10px; height: 300px; margin: 20px 0; border: 2px solid #ddd; border-radius: 8px; padding: 10px; background-color: #f9f9f9;">
+          <div style="position: relative; background-color: #000; border-radius: 4px; overflow: hidden;">
+            <video id="playbackVideo1" style="width: 100%; height: 100%; object-fit: cover;" autoplay muted></video>
+            <div style="position: absolute; top: 5px; left: 5px; background: rgba(0,0,0,0.7); color: white; padding: 2px 6px; border-radius: 3px; font-size: 12px;">
+              Camera 1 - <span id="camera1Time">00:00:00</span>
+            </div>
+          </div>
+          <div style="position: relative; background-color: #000; border-radius: 4px; overflow: hidden;">
+            <video id="playbackVideo2" style="width: 100%; height: 100%; object-fit: cover;" autoplay muted></video>
+            <div style="position: absolute; top: 5px; left: 5px; background: rgba(0,0,0,0.7); color: white; padding: 2px 6px; border-radius: 3px; font-size: 12px;">
+              Camera 2 - <span id="camera2Time">00:00:00</span>
+            </div>
+          </div>
+        </div>
+
+        <span>Playback Controls:</span>
+        
+        <div style="display: flex; align-items: center; gap: 10px; margin: 15px 0; padding: 15px; background-color: #f5f5f5; border-radius: 8px;">
+          <button id="playButton" style="padding: 8px 16px;">▶ Play</button>
+          <button id="pauseButton" style="padding: 8px 16px;">⏸ Pause</button>
+          <button id="prevFrameButton" style="padding: 8px 12px;">⏮ Frame</button>
+          <button id="nextFrameButton" style="padding: 8px 12px;">Frame ⏭</button>
+          <button id="exportClipButton" class="post" style="padding: 8px 16px;">Export Clip</button>
+          
+          <div style="margin-left: 20px;">
+            <label for="seekTime" style="margin-right: 8px; font-size: 14px;">Seek to:</label>
+            <input type="time" id="seekTime" style="width: 120px; padding: 4px;" step="1" />
+            <button id="seekButton" style="padding: 4px 12px; margin-left: 5px;">Go</button>
+          </div>
+        </div>
+
+        
+        <span>Connection Status:</span>
+        
+        <div id="playbackStatus" style="margin: 15px 0; padding: 15px; background-color: #f9f9f9; border-radius: 8px; border: 1px solid #ddd;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div>
+              <div style="margin-bottom: 8px;">
+                <strong>Controller Status:</strong> 
+                <span id="controllerStatus" style="color: #666;">Not Created</span>
+              </div>
+              <div style="margin-bottom: 8px;">
+                <strong>WebRTC Status:</strong> 
+                <span id="webrtcStatus" style="color: #666;">Disconnected</span>
+              </div>
+              <div>
+                <strong>Active Streams:</strong> 
+                <span id="activeStreams">0/2</span>
+              </div>
+            </div>
+            <div>
+              <div style="margin-bottom: 8px;">
+                <strong>Controller ID:</strong> 
+                <span id="controllerIdDisplay" style="font-family: monospace; font-size: 12px;">-</span>
+              </div>
+              <div style="margin-bottom: 8px;">
+                <strong>Session ID:</strong> 
+                <span id="sessionIdDisplay" style="font-family: monospace; font-size: 12px;">-</span>
+              </div>
+              <div>
+                <strong>Buffer Status:</strong> 
+                <span id="bufferStatus">Ready</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <span>Usage Instructions:</span>
+        
+        <div style="margin: 15px 0; padding: 15px; background-color: #e8f4f8; border-radius: 8px; border-left: 4px solid #007bff;">
+          <h4 style="margin-top: 0; color: #007bff;">How to use Video Playback:</h4>
+          <ol style="margin: 10px 0; padding-left: 20px; line-height: 1.6;">
+            <li>Set your camera sources (comma-separated IDs) and time range</li>
+            <li>Click <strong>"Create Controller"</strong> to initialize the playback system</li>
+            <li>Click <strong>"Connect WebRTC"</strong> to establish video streaming</li>
+            <li>Use the playback controls to play, pause, or step through frames</li>
+            <li>Navigate using the timeline slider or seek to specific times</li>
+            <li>Configure export settings and use <strong>"Export Clip"</strong> to save video segments</li>
+            <li>Monitor connection status and active streams in the status panel</li>
+          </ol>
+          <p style="margin: 10px 0; font-style: italic; color: #555;">
+            Note: This interface connects to the Aware Play microservice for advanced video playback capabilities including multi-camera synchronization and frame-accurate navigation.
+          </p>
+        </div>
+
+        <span>Outcomes:</span>
+
+        <div id="playbackContainer"></div>
+      </div>
+    </div>
+
+    <div class="pane">
+      <h1 onclick="togglePane(this)">Title<span class="caret">▲</span></h1>
+      <div class="pane-content hidden">
+        <span>Parameters:</span>
+
+        <div></div>
+
+        <span>Endpoints:</span>
+
+        <div></div>
+
+        <span>Outcomes:</span>
+
+        <div id=""></div>
+      </div>
+    </div>
+
+    <script>
+      // Use the host input value for all requests
+      function getHost() {
+        return (
+          document.getElementById("hostInput").value.trim() ||
+          "local.awarevue.io"
+        );
+      }
+      function getBaseUrl() {
+        return `https://${getHost()}/api`;
+      }
+      function getWebSocketUrl() {
+        return `wss://${getHost()}/api/ws`;
+      }
+
+      let tokens = {
+        accessToken: "",
+        refreshToken: "",
+      };
+      let layouts = [];
+      let scale = 1;
+
+      // Create a custom EventTarget for handling emitted events
+      const websocketEventTarget = new EventTarget();
+
+      let socket;
+      let keepAliveInterval;
+      let serverReady = false;
+      let clientId; //Websocket Client Id
+      let sessionId; //WebRTC Session ID
+      let pc; //Peer Connection
+      let trickleIce = false;
+      let seq = 0;
+      let webrtcInterval;
+
+      // Playback variables
+      let playbackControllerId;
+      let playbackSessionId;
+      let playbackPc; // Playback Peer Connection
+      let playbackDataChannel; // Playback data channel for commands
+
+      //Displays and formats the request
+      const displayRequest = (endpoint, method, headers, body) => {
+        document.getElementById("requestHeaders").textContent = JSON.stringify(
+          headers,
+          null,
+          4,
+        );
+        document
+          .getElementById("requestEndpoint")
+          .classList.remove("get", "post", "put", "delete");
+        document
+          .getElementById("requestEndpoint")
+          .classList.add(method.toLowerCase());
+        document.getElementById(
+          "requestEndpoint",
+        ).textContent = `${method.toUpperCase()} ${getBaseUrl()}${endpoint}`;
+        document.getElementById("requestBody").textContent = body
+          ? JSON.stringify(body, null, 4)
+          : "";
+      };
+
+      //Displays and formats the response
+      const displayResponse = (status, statusText, data) => {
+        if (status >= 200 && status < 300) {
+          document.getElementById("responseCode").style.color = "green";
+        } else {
+          document.getElementById("responseCode").style.color = "red";
+        }
+        document.getElementById(
+          "responseCode",
+        ).textContent = `${status} ${statusText}`;
+        document.getElementById("responseBody").textContent = JSON.stringify(
+          data,
+          null,
+          4,
+        );
+      };
+
+      //Processes a JSON request,
+      //Adds access token and displays in the request area
+      //Gets the response and returns the JSON object if successful or an error JSON object if not
+      const jsonRequest = async (endpoint, method, body) => {
+        let headers = {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${tokens.accessToken}`,
+        };
+
+        displayRequest(endpoint, method, headers, body);
+
+        try {
+          const response = await fetch(`${getBaseUrl()}${endpoint}`, {
+            method,
+            headers,
+            body: body ? JSON.stringify(body) : undefined,
+          });
+
+          const responseData = await response.json();
+          displayResponse(response.status, response.statusText, responseData);
+
+          if (response.ok) {
+            return responseData;
+          } else {
+            return { error: responseData.message || "Request failed" };
+          }
+        } catch (error) {
+          displayResponse(666, "Processing Error", { error: error.message });
+          return { error: error.message };
+        }
+      };
+
+      //Generate a table dynamically and insert into a container
+      const generateTable = (data, excludeKeys) => {
+        if (!data.items) {
+          data = { items: [data] };
+        }
+
+        // Get all unique keys from objects
+        let keys = Array.from(
+          new Set(data.items.flatMap((item) => Object.keys(item))),
+        );
+
+        // Exclude specified keys if provided
+        if (excludeKeys) {
+          keys = keys.filter((key) => !excludeKeys.includes(key));
+        }
+
+        const container = document.createElement("div");
+        container.classList = "table-container";
+
+        // Create table
+        const table = document.createElement("table");
+
+        // Create table header
+        const thead = document.createElement("thead");
+        const headerRow = document.createElement("tr");
+        keys.forEach((key) => {
+          const th = document.createElement("th");
+          th.textContent = key;
+          headerRow.appendChild(th);
+        });
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+
+        // Create table body
+        const tbody = document.createElement("tbody");
+        data.items.forEach((item) => {
+          const row = document.createElement("tr");
+          keys.forEach((key) => {
+            const cell = document.createElement("td");
+            const value = item[key];
+            // Stringify non-primitive values
+            cell.textContent =
+              typeof value === "object" && value !== null
+                ? JSON.stringify(value)
+                : value;
+            row.appendChild(cell);
+          });
+          tbody.appendChild(row);
+        });
+        table.appendChild(tbody);
+
+        container.appendChild(table);
+
+        return container;
+      };
+
+      //Update a container with an element and color
+      const updateContainer = (containerId, element, color = "") => {
+        const container = document.getElementById(containerId);
+
+        // Clear the container
+        while (container.firstChild) {
+          container.removeChild(container.firstChild);
+        }
+
+        container.classList = color;
+        container.appendChild(element);
+
+        //container.textContent = JSON.stringify(data, null, 4);
+      };
+
+      //**** API Requests ****//
+
+      //Login
+      document
+        .getElementById("loginButton")
+        .addEventListener("click", async (event) => {
+          const username = document.getElementById("username").value;
+          const password = document.getElementById("password").value;
+
+          try {
+            const responseData = await jsonRequest("/auth/login", "POST", {
+              username,
+              password,
+            });
+
+            if (responseData.error) {
+              document.getElementById("loginMessage").style.color = "red";
+              document.getElementById("loginMessage").textContent =
+                "Login failed: " + responseData.error;
+            } else {
+              tokens.accessToken = responseData.accessToken;
+              tokens.refreshToken = responseData.refreshToken;
+              const table = generateTable(responseData);
+              updateContainer("tokensContainer", table);
+              document.getElementById("loginMessage").style.color = "green";
+              document.getElementById("loginMessage").textContent =
+                "Login successful!";
+            }
+          } catch (error) {
+            console.error("Error:", error);
+          }
+        });
+
+      //Refresh Tokens
+      document
+        .getElementById("refreshButton")
+        .addEventListener("click", async () => {
+          if (!tokens.refreshToken) {
+            document.getElementById("loginMessage").style.color = "red";
+            document.getElementById("loginMessage").textContent =
+              "No refresh token available. Please log in first.";
+            return;
+          }
+
+          try {
+            const responseData = await jsonRequest("/auth/refresh", "POST", {
+              refreshToken: tokens.refreshToken,
+            });
+
+            if (responseData.error) {
+              document.getElementById("loginMessage").style.color = "red";
+              document.getElementById("loginMessage").textContent =
+                "Login failed: " + responseData.error;
+            } else {
+              const table = generateTable(responseData);
+              updateContainer("tokensContainer", table);
+              tokens.accessToken = responseData.accessToken;
+              tokens.refreshToken = responseData.refreshToken;
+            }
+          } catch (error) {
+            console.error("Error:", error);
+          }
+        });
+
+      //Get Users
+      document
+        .getElementById("getUsers")
+        .addEventListener("click", async () => {
+          try {
+            const userId = document.getElementById("userId").value || "";
+            const responseData = await jsonRequest(`/users/${userId}`, "GET");
+
+            if (responseData.error) {
+              updateContainer(
+                "userContainer",
+                document.createTextNode(responseData.error),
+                "delete",
+              );
+            } else {
+              const table = generateTable(responseData);
+              updateContainer("userContainer", table);
+            }
+          } catch (error) {
+            console.error("Error:", error);
+          }
+        });
+
+      //Post User
+      document
+        .getElementById("postUser")
+        .addEventListener("click", async () => {
+          try {
+            const username = document.getElementById("userUsername").value;
+            const password = document.getElementById("userPassword").value;
+            const firstName = document.getElementById("firstName").value;
+            const lastName = document.getElementById("lastName").value;
+            const email = document.getElementById("email").value;
+            const roles = document.getElementById("roles").value.split(",");
+
+            const responseData = await jsonRequest("/users", "POST", {
+              username,
+              password,
+              firstName,
+              lastName,
+              email,
+              roles,
+            });
+
+            if (responseData.error) {
+              updateContainer(
+                "userContainer",
+                document.createTextNode(responseData.error),
+                "delete",
+              );
+            } else {
+              generateTable("userContainer", responseData);
+            }
+          } catch (error) {
+            console.error("Error:", error);
+          }
+        });
+
+      //Get Roles
+      document
+        .getElementById("getRoles")
+        .addEventListener("click", async () => {
+          try {
+            const responseData = await jsonRequest("/roles", "GET");
+
+            if (responseData.error) {
+              updateContainer(
+                "roleContainer",
+                document.createTextNode(responseData.error),
+                "delete",
+              );
+            } else {
+              const table = generateTable(responseData);
+              updateContainer("roleContainer", table);
+            }
+          } catch (error) {
+            console.error("Error:", error);
+          }
+        });
+
+      //Get Layouts
+      document
+        .getElementById("getLayouts")
+        .addEventListener("click", async () => {
+          try {
+            const layoutId = document.getElementById("layoutId").value || "";
+            const responseData = await jsonRequest(
+              `/layouts/${layoutId}`,
+              "GET",
+            );
+
+            if (responseData.error) {
+              updateContainer(
+                "layoutDataContainer",
+                document.createTextNode(responseData.error),
+                "delete",
+              );
+            } else {
+              const table = generateTable(responseData);
+              layouts = responseData.items
+                ? responseData.items
+                : [responseData];
+              updateContainer("layoutDataContainer", table);
+            }
+          } catch (error) {
+            console.error("Error:", error);
+          }
+        });
+
+      //Display Layouts
+      document
+        .getElementById("displayLayout")
+        .addEventListener("click", async () => {
+          try {
+            const endpoint = document.getElementById("imageUrl").value || "";
+            const method = "GET";
+            const headers = {
+              Authorization: `Bearer ${tokens.accessToken}`,
+            };
+
+            displayRequest(endpoint, method, headers, null);
+
+            // Send the request
+            const response = await fetch(`${getBaseUrl()}${endpoint}`, {
+              method,
+              headers,
+            });
+
+            displayResponse(response.status, response.statusText, {});
+
+            // Check if the response is successful
+            if (!response.ok) {
+              response.statusText;
+            }
+
+            displayResponse(response.status, response.statusText, {
+              "Content-Type": response.headers.get("Content-Type"),
+            });
+
+            // Convert the response to a Blob
+            const blob = await response.blob();
+
+            // Create a URL for the Blob
+            const imageUrl = URL.createObjectURL(blob);
+
+            // Set the image source
+            const imageElement = document.getElementById("layoutImage");
+            imageElement.src = imageUrl;
+          } catch (error) {
+            console.error("Error:", error);
+          }
+        });
+
+      // Scale Layout
+      document.getElementById("scaleInput").addEventListener("input", () => {
+        // Get the scale value from the input field
+        const scaleValue = parseFloat(
+          document.getElementById("scaleInput").value,
+        );
+
+        // Apply the scale transform to the box
+        if (!isNaN(scaleValue)) {
+          scale = scaleValue;
+
+          document.getElementById(
+            "layoutContainer",
+          ).style.transform = `scale(${scale})`;
+
+          const inverseScale = 1 / scale;
+
+          document.querySelectorAll(".device").forEach((device) => {
+            device.style.transform = `translate(-50%, -50%) scale(${inverseScale})`;
+          });
+        }
+      });
+
+      // Plot Devices
+      document.getElementById("plotDevices").addEventListener("click", () => {
+        if (layouts.length === 0) {
+          alert("No layouts available. Please fetch layouts first.");
+          return;
+        }
+
+        const layout = layouts[0];
+        const devices = layout.devices;
+
+        const deviceWrapper = document.getElementById("deviceWrapper");
+        deviceWrapper.innerHTML = "";
+
+        const inverseScale = 1 / scale;
+
+        devices.forEach((device) => {
+          const deviceElement = document.createElement("div");
+          deviceElement.classList.add("device");
+          deviceElement.style.top = `${device.y}px`;
+          deviceElement.style.left = `${device.x}px`;
+          deviceElement.style.transform = `translate(-50%, -50%) scale(${inverseScale})`;
+          deviceWrapper.appendChild(deviceElement);
+        });
+      });
+
+      //Get Devices
+      document
+        .getElementById("getDevices")
+        .addEventListener("click", async () => {
+          try {
+            const deviceId = document.getElementById("deviceId").value || "";
+            const responseData = await jsonRequest(
+              `/devices/${deviceId}`,
+              "GET",
+            );
+
+            if (responseData.error) {
+              updateContainer(
+                "deviceContainer",
+                document.createTextNode(responseData.error),
+                "delete",
+              );
+            } else {
+              const table = generateTable(responseData, [
+                "provider",
+                "providerMetadata",
+                "createdOn",
+                "lastModifiedOn",
+                "tags",
+                "groups",
+                "relations",
+                "externalPlayerUrl",
+                "webrtcPlaybackSource",
+              ]);
+              updateContainer("deviceContainer", table);
+            }
+          } catch (error) {
+            console.error("Error:", error);
+          }
+        });
+
+      //**** WebSockets ****//
+
+      //Connect to WebSocket
+      document.getElementById("wsConnect").addEventListener("click", () => {
+        socket = new WebSocket(
+          `${getWebSocketUrl()}?token=${tokens.accessToken}`,
+        );
+
+        // Open the WebSocket connection
+        socket.addEventListener("open", () => {
+          console.log("WebSocket connection opened");
+          startKeepAlive();
+        });
+
+        // Handle messages received from the server
+        socket.addEventListener("message", (event) => {
+          try {
+            // Parse the incoming message as JSON
+            const message = JSON.parse(event.data);
+
+            if (message.event) {
+              // Create and dispatch a custom event with the name matching `message.event`
+              const customEvent = new CustomEvent(message.event);
+              // Add data property to mimic WebSocket event structure
+              customEvent.data = message.data;
+              websocketEventTarget.dispatchEvent(customEvent);
+              console.log(message.event);
+            } else {
+              console.warn("Message without event type received:", message);
+            }
+          } catch (error) {
+            console.error("Error parsing WebSocket message:", error);
+          }
+        });
+
+        // Handle errors
+        socket.addEventListener("error", (error) => {
+          console.error("WebSocket error:", error);
+          serverReady = false;
+          stopKeepAlive();
+        });
+
+        // Handle the close event
+        socket.addEventListener("close", () => {
+          console.log("WebSocket connection closed");
+          serverReady = false;
+          stopKeepAlive();
+        });
+      });
+
+      //Close the WebSocket connection
+      document.getElementById("wsClose").addEventListener("click", () => {
+        if (socket && socket.readyState === WebSocket.OPEN) {
+          socket.close();
+        }
+      });
+
+      //Close websocket connection when the window is closed
+      window.addEventListener("beforeunload", () => {
+        if (socket && socket.readyState === WebSocket.OPEN) {
+          socket.close();
+        }
+      });
+
+      // Function to send a "keep-alive" message every 10 seconds
+      function startKeepAlive() {
+        // Clear any existing webrtcInterval to avoid duplicates
+        stopKeepAlive();
+        const keepAliveMessage = { event: "keep-alive", data: {} };
+        socket.send(JSON.stringify(keepAliveMessage));
+        // Start sending the keep-alive message
+        keepAliveInterval = setInterval(() => {
+          if (socket && socket.readyState === WebSocket.OPEN) {
+            socket.send(JSON.stringify(keepAliveMessage));
+            //console.log("Sent keep-alive message:", keepAliveMessage);
+          }
+        }, 10000); // 10 seconds
+      }
+
+      // Function to stop sending keep-alive messages
+      function stopKeepAlive() {
+        if (keepAliveInterval) {
+          clearInterval(keepAliveInterval);
+          keepAliveInterval = null;
+        }
+      }
+
+      // Connect to a stream
+      document.getElementById("connectStream").addEventListener("click", () => {
+        if (serverReady) {
+          if (socket && socket.readyState === WebSocket.OPEN) {
+            cleanUpWebRtc();
+            expectingLiveSession = true; // Set expectation flag for live streaming
+            const deviceId =
+              document.getElementById("webrtcDeviceId").value || "";
+            const streamId =
+              document.getElementById("webrtcStreamId").value || "";
+
+            const message = {
+              event: "web-rtc:new-session",
+              data: {
+                requestId: `${++seq}`,
+                service: "live",
+                serviceParams: {
+                  deviceId: deviceId,
+                  streamId: streamId,
+                },
+              },
+            };
+            socket.send(JSON.stringify(message));
+          }
+        } else {
+          alert("WebSocket Server not ready");
+        }
+      });
+
+      // Listen for the "server-ready" event
+      websocketEventTarget.addEventListener("server-ready", (event) => {
+        serverReady = true;
+        clientId = event.data.clientId;
+      });
+
+      // Global flags to track what type of session we're expecting
+      let expectingLiveSession = false;
+      let expectingPlaybackSession = false;
+
+      // Listen for the "web-rtc:session-created" event (Unified for Live and Playback)
+      websocketEventTarget.addEventListener(
+        "web-rtc:session-created",
+        (event) => {
+          console.log("=== WEB-RTC SESSION CREATED EVENT ===");
+          console.log("Event data:", event.data);
+          console.log("Expecting live session:", expectingLiveSession);
+          console.log("Expecting playback session:", expectingPlaybackSession);
+          
+          if (expectingLiveSession && !sessionId) {
+            console.log("=== CREATING LIVE STREAMING PEER CONNECTION ===");
+            expectingLiveSession = false; // Clear the flag
+            
+            pc = new RTCPeerConnection({
+              sdpSemantics: "unified-plan",
+              bundlePolicy: "max-bundle",
+              iceServers: event.data.stunServer
+                ? [{ urls: [event.data.stunServer] }]
+                : [],
+            });
+            trickleIce = event.data.trickleIce;
+
+            //Add handlers
+            pc.addEventListener("connectionstatechange", handleStateChange);
+            pc.addEventListener("signalingstatechange", handleStateChange);
+            pc.addEventListener("icegatheringstatechange", handleStateChange);
+            pc.addEventListener("negotiationneeded", handleNegotiationNeeded);
+            pc.addEventListener("track", handleTrack);
+            pc.addEventListener("icecandidate", handleIceCandidate);
+
+            sessionId = event.data.sessionId;
+            console.log("Live session ID:", sessionId);
+
+            pc.addTransceiver("video", { direction: "recvonly" });
+            return;
+          }
+          
+          if (expectingPlaybackSession && !playbackSessionId) {
+            console.log("=== CREATING PLAYBACK PEER CONNECTION ===");
+            expectingPlaybackSession = false; // Clear the flag
+            
+            playbackPc = new RTCPeerConnection({
+              sdpSemantics: "unified-plan",
+              bundlePolicy: "max-bundle",
+              iceServers: event.data.stunServer
+                ? [{ urls: [event.data.stunServer] }]
+                : [],
+            });
+
+            console.log("Playback peer connection created:", playbackPc);
+
+            // Add handlers for playback
+            playbackPc.addEventListener("connectionstatechange", handlePlaybackStateChange);
+            playbackPc.addEventListener("signalingstatechange", handlePlaybackStateChange);
+            playbackPc.addEventListener("icegatheringstatechange", handlePlaybackStateChange);
+            playbackPc.addEventListener("negotiationneeded", handlePlaybackNegotiationNeeded);
+            playbackPc.addEventListener("track", handlePlaybackTrack);
+            playbackPc.addEventListener("icecandidate", handlePlaybackIceCandidate);
+
+            playbackSessionId = event.data.sessionId;
+            console.log("Playback session ID:", playbackSessionId);
+            document.getElementById("sessionIdDisplay").textContent = playbackSessionId;
+
+            // Add 2 video transceivers for multiple camera feeds
+            console.log("=== CREATING PLAYBACK TRANSCEIVERS ===");
+            for (let i = 0; i < 2; i++) {
+              const transceiver = playbackPc.addTransceiver("video", { direction: "recvonly" });
+              console.log(`Created transceiver ${i + 1}:`, transceiver);
+            }
+            console.log("All transceivers:", playbackPc.getTransceivers());
+
+            const playbackSendChannel = playbackPc.createDataChannel("playback-control");
+            playbackDataChannel = playbackSendChannel; // Store reference for sending commands
+            
+            playbackSendChannel.onopen = () => {
+              console.log("Playback data channel opened");
+            };
+            
+            // Listen for seek time updates and other reports from the server
+            const textDecoder = new TextDecoder("utf-8");
+            playbackSendChannel.onmessage = (event) => {
+              try {
+                const view = new Uint8Array(event.data);
+                const jsonString = textDecoder.decode(view);
+                const data = JSON.parse(jsonString);
+                console.log("Received playback report:", data);
+                
+                // Handle seek time updates
+                if (data.kind === "seek-time-update") {
+                  updateTimelineDisplay(data.seekTime);
+                } else if (data.kind === "frame-out") {
+                  // Update individual camera times
+                  const videoId = data.trackId === "camera1" ? "camera1Time" : "camera2Time";
+                  const timeElement = document.getElementById(videoId);
+                  if (timeElement) {
+                    timeElement.textContent = new Date(data.time).toISOString().substr(11, 12);
+                  }
+                }
+              } catch (error) {
+                console.error("Error parsing playback data channel message:", error);
+              }
+            };
+
+            document.getElementById("webrtcStatus").textContent = "Connected";
+            document.getElementById("webrtcStatus").style.color = "green";
+            return;
+          }
+
+          console.log("=== SESSION CREATED BUT NO EXPECTATIONS SET ===");
+          console.log("This session will be ignored - no handler is expecting it");
+        }
+      );
+
+      // Listen for the web-rtc:answer event
+      websocketEventTarget.addEventListener("web-rtc:answer", async (event) => {
+        // Route to correct peer connection based on sessionId
+        if (event.data.sessionId === sessionId && pc) {
+          await pc.setRemoteDescription(event.data.description);
+        } else if (event.data.sessionId === playbackSessionId && playbackPc) {
+          await playbackPc.setRemoteDescription(event.data.description);
+        }
+      });
+
+      // Listen for the web-rtc:ice-candidate event
+      websocketEventTarget.addEventListener(
+        "web-rtc:ice-candidate",
+        async (event) => {
+          // Route to correct peer connection based on sessionId
+          if (event.data.sessionId === sessionId && pc) {
+            await pc.addIceCandidate({
+              candidate: event.data.candidate,
+              sdpMid: "0",
+            });
+          } else if (event.data.sessionId === playbackSessionId && playbackPc) {
+            await playbackPc.addIceCandidate({
+              candidate: event.data.candidate,
+              sdpMid: event.data.sdpMid || "0",
+            });
+          }
+        },
+      );
+
+      const handleNegotiationNeeded = async () => {
+        // create offer
+        if (!pc || pc.localDescription !== null) {
+          return;
+        }
+        try {
+          const descriptionWithoutIce = await pc.createOffer();
+          await pc.setLocalDescription(descriptionWithoutIce);
+          // gather ICE candidates and stitch them to the offer
+          const sdpWithIce = await new Promise((resolve) => {
+            let sdp = descriptionWithoutIce.sdp + "";
+            if (pc === null || trickleIce) {
+              resolve(sdp);
+              return;
+            }
+            const append = (e) => {
+              if (!pc) return;
+              if (e.candidate === null) {
+                resolve(sdp);
+                pc.removeEventListener("icecandidate", append);
+                return;
+              }
+              sdp += `a=${e.candidate.candidate}\n`;
+            };
+            pc.addEventListener("icecandidate", append);
+          });
+          // send offer
+          if (sessionId === null || pc.localDescription === null) return;
+
+          if (socket && socket.readyState === WebSocket.OPEN) {
+            const message = {
+              event: "web-rtc:offer",
+              data: {
+                sessionId,
+                description: {
+                  type: "offer",
+                  sdp: sdpWithIce,
+                },
+              },
+            };
+            socket.send(JSON.stringify(message));
+          }
+        } catch (e) {
+          console.log(e);
+        }
+      };
+
+      const handleStateChange = () => {
+        if (!pc) return;
+
+        console.log("State change:", pc.connectionState);
+
+        if (pc.connectionState === "failed") {
+          console.log("Connection failed");
+        }
+      };
+
+      const handleIceCandidate = ({ candidate }) => {
+        if (sessionId === null) return;
+        if (socket && socket.readyState === WebSocket.OPEN) {
+          const message = {
+            event: "web-rtc:ice-candidate",
+            data: {
+              sessionId,
+              candidate: candidate?.candidate || "",
+            },
+          };
+          socket.send(JSON.stringify(message));
+        }
+      };
+
+      const handleTrack = (e) => {
+        if (!pc) return;
+        const video = document.getElementById("videoPlayer");
+        if (e.streams && e.streams[0]) {
+          video.srcObject = e.streams[0];
+        } else {
+          if (!video.srcObject) {
+            video.srcObject = new MediaStream();
+          }
+          video.srcObject.addTrack(e.track);
+        }
+        video.muted = true;
+        video.play().catch(() => {});
+        console.log("Track added:", e.track);
+      };
+
+      const cleanUpWebRtc = () => {
+        // Reset expectation flags
+        expectingLiveSession = false;
+        
+        if (pc) {
+          pc.removeEventListener("connectionstatechange", handleStateChange);
+          pc.removeEventListener("signalingstatechange", handleStateChange);
+          pc.removeEventListener("icegatheringstatechange", handleStateChange);
+          pc.removeEventListener("negotiationneeded", handleNegotiationNeeded);
+          pc.removeEventListener("track", handleTrack);
+          pc.removeEventListener("icecandidate", handleIceCandidate);
+          pc.ontrack = null;
+          pc.onicecandidate = null;
+          pc.onconnectionstatechange = null;
+          pc.onsignalingstatechange = null;
+          pc.onicegatheringstatechange = null;
+          pc.onnegotiationneeded = null;
+          pc.close();
+          pc = null;
+        }
+
+        const video = document.getElementById("videoPlayer");
+        if (video.srcObject) {
+          video.srcObject.getTracks().forEach((track) => track.stop());
+          video.srcObject = null;
+        }
+
+        if (webrtcInterval) {
+          clearInterval(webrtcInterval);
+          webrtcInterval = null;
+        }
+
+        sessionId = null;
+      };
+
+      //Disconnect the stream
+      document.getElementById("closeStream").addEventListener("click", () => {
+        cleanUpWebRtc();
+      });
+
+      //Start moving the camera
+      const ptzStart = (event) => {
+        // Get the id of the button
+        const buttonId = event.target.id;
+        const deviceId = document.getElementById("webrtcDeviceId").value || "";
+
+        // Split the id into its parts
+        const [action, direction] = buttonId.split("-");
+
+        // Set initial pan, tilt, and zoom values
+        let pan = 0,
+          tilt = 0,
+          zoom = 0;
+
+        // Adjust values based on action and direction
+        const increment = 0.5; // Example increment value
+        if (action === "pan") {
+          pan = direction === "inc" ? increment : -increment;
+        } else if (action === "tilt") {
+          tilt = direction === "inc" ? increment : -increment;
+        } else if (action === "zoom") {
+          zoom = direction === "inc" ? increment : -increment;
+        }
+
+        // Create the object
+        const command = {
+          command: "camera.ptz-begin-move",
+          deviceId,
+          params: {
+            pan,
+            tilt,
+            zoom,
+          },
+          requestId: `${Date.now()}-${++seq}`,
+          timestamp: Date.now(),
+        };
+
+        // Output the command object to console
+        console.log(command);
+
+        if (serverReady) {
+          if (socket && socket.readyState === WebSocket.OPEN) {
+            const message = {
+              event: "device:command-run",
+              data: {
+                ...command,
+              },
+            };
+            socket.send(JSON.stringify(message));
+          }
+        } else {
+          alert("WebSocket Server not ready");
+        }
+      };
+
+      //Stop moving the camera
+      const ptzStop = (event) => {
+        // Get the id of the button
+        const buttonId = event.target.id;
+        const deviceId = document.getElementById("webrtcDeviceId").value || "";
+
+        // Split the id into its parts
+        const [action, direction] = buttonId.split("-");
+
+        // Create the object
+        const command = {
+          command: "camera.ptz-end-move",
+          deviceId,
+          params: {},
+          requestId: `${Date.now()}-${++seq}`,
+          timestamp: Date.now(),
+        };
+
+        // Output the command object to console
+        console.log(command);
+
+        if (serverReady) {
+          if (socket && socket.readyState === WebSocket.OPEN) {
+            const message = {
+              event: "device:command-run",
+              data: {
+                ...command,
+              },
+            };
+            socket.send(JSON.stringify(message));
+          }
+        } else {
+          alert("WebSocket Server not ready");
+        }
+      };
+
+      //**** UI Elements ****//
+
+      //Show the request area
+      document.getElementById("requestButton").addEventListener("click", () => {
+        const requestArea = document.getElementById("requestArea");
+        if (requestArea.classList.contains("hidden")) {
+          requestArea.classList.remove("hidden");
+        } else {
+          requestArea.classList.add("hidden");
+        }
+      });
+
+      //Show the response area
+      document
+        .getElementById("responseButton")
+        .addEventListener("click", () => {
+          const responseArea = document.getElementById("responseArea");
+          if (responseArea.classList.contains("hidden")) {
+            responseArea.classList.remove("hidden");
+          } else {
+            responseArea.classList.add("hidden");
+          }
+        });
+
+      //Toggle a pane
+      function togglePane(header) {
+        const content = header.nextElementSibling;
+        const caret = header.querySelector(".caret");
+        if (content.classList.contains("hidden")) {
+          content.classList.remove("hidden");
+          caret.textContent = "▼";
+        } else {
+          content.classList.add("hidden");
+          caret.textContent = "▲";
+        }
+      }
+
+      //**** Playback Functions ****//
+
+      // Create playback controller
+      document.getElementById("createController").addEventListener("click", async () => {
+        try {
+          const sources = document.getElementById("playbackSources").value.split(",").map(s => s.trim()).filter(s => s);
+          const startTime = document.getElementById("playbackStartTime").value;
+          
+          if (!sources.length) {
+            alert("Please enter at least one video source");
+            return;
+          }
+          
+          if (!startTime) {
+            alert("Please select a start time");
+            return;
+          }
+
+          // Convert datetime-local to timestamp
+          const initTime = new Date(startTime).getTime();
+
+          const responseData = await jsonRequest("/playback/controllers", "POST", {
+            initTime: initTime,
+            sources: sources
+          });
+
+          if (responseData.error) {
+            document.getElementById("controllerStatus").textContent = "Error";
+            document.getElementById("controllerStatus").style.color = "red";
+            updateContainer("playbackContainer", document.createTextNode(responseData.error), "delete");
+          } else {
+            playbackControllerId = responseData.id;
+            document.getElementById("controllerStatus").textContent = "Created";
+            document.getElementById("controllerStatus").style.color = "green";
+            document.getElementById("controllerIdDisplay").textContent = playbackControllerId;
+            const table = generateTable(responseData);
+            updateContainer("playbackContainer", table);
+          }
+        } catch (error) {
+          console.error("Error creating controller:", error);
+          document.getElementById("controllerStatus").textContent = "Error";
+          document.getElementById("controllerStatus").style.color = "red";
+        }
+      });
+
+      // Connect WebRTC for playback
+      document.getElementById("connectWebRTC").addEventListener("click", () => {
+        if (!playbackControllerId) {
+          alert("Please create a controller first");
+          return;
+        }
+
+        if (serverReady) {
+          if (socket && socket.readyState === WebSocket.OPEN) {
+            cleanUpPlaybackWebRtc();
+            expectingPlaybackSession = true; // Set expectation flag for playback
+            
+            const message = {
+              event: "web-rtc:new-session",
+              data: {
+                requestId: `${++seq}`,
+                service: "playback",
+                serviceParams: {
+                  controllerId: playbackControllerId,
+                },
+              },
+            };
+            socket.send(JSON.stringify(message));
+            
+            document.getElementById("webrtcStatus").textContent = "Connecting...";
+            document.getElementById("webrtcStatus").style.color = "orange";
+          }
+        } else {
+          alert("WebSocket Server not ready");
+        }
+      });
+
+      // Disconnect WebRTC for playback
+      document.getElementById("disconnectWebRTC").addEventListener("click", () => {
+        cleanUpPlaybackWebRtc();
+        document.getElementById("webrtcStatus").textContent = "Disconnected";
+        document.getElementById("webrtcStatus").style.color = "red";
+        document.getElementById("activeStreams").textContent = "0/2";
+      });
+
+      // Delete playback controller
+      document.getElementById("deleteController").addEventListener("click", async () => {
+        if (!playbackControllerId) {
+          alert("No controller to delete");
+          return;
+        }
+
+        try {
+          cleanUpPlaybackWebRtc();
+          
+          const responseData = await jsonRequest(`/playback/controllers/${playbackControllerId}`, "DELETE");
+
+          if (responseData.error) {
+            updateContainer("playbackContainer", document.createTextNode(responseData.error), "delete");
+          } else {
+            playbackControllerId = null;
+            document.getElementById("controllerStatus").textContent = "Deleted";
+            document.getElementById("controllerStatus").style.color = "gray";
+            document.getElementById("controllerIdDisplay").textContent = "-";
+            document.getElementById("sessionIdDisplay").textContent = "-";
+            const table = generateTable(responseData);
+            updateContainer("playbackContainer", table);
+          }
+        } catch (error) {
+          console.error("Error deleting controller:", error);
+        }
+      });
+
+      const handlePlaybackNegotiationNeeded = async () => {
+        if (!playbackPc || playbackPc.localDescription !== null) {
+          return;
+        }
+        try {
+          const descriptionWithoutIce = await playbackPc.createOffer();
+          await playbackPc.setLocalDescription(descriptionWithoutIce);
+          
+          const sdpWithIce = await new Promise((resolve) => {
+            let sdp = descriptionWithoutIce.sdp + "";
+             
+              resolve(sdp);
+              
+          });
+
+          if (playbackSessionId === null || playbackPc.localDescription === null) return;
+
+          if (socket && socket.readyState === WebSocket.OPEN) {
+            const message = {
+              event: "web-rtc:offer",
+              data: {
+                sessionId: playbackSessionId,
+                description: {
+                  type: "offer",
+                  sdp: sdpWithIce,
+                },
+              },
+            };
+            socket.send(JSON.stringify(message));
+          }
+        } catch (e) {
+          console.log(e);
+        }
+      };
+
+      const handlePlaybackStateChange = () => {
+        if (!playbackPc) return;
+        console.log("=== PLAYBACK STATE CHANGE ===");
+        console.log("Connection state:", playbackPc.connectionState);
+        console.log("Signaling state:", playbackPc.signalingState);
+        console.log("ICE gathering state:", playbackPc.iceGatheringState);
+        console.log("ICE connection state:", playbackPc.iceConnectionState);
+        
+        if (playbackPc.connectionState === "connected") {
+          console.log("Playback WebRTC connection established!");
+          document.getElementById("webrtcStatus").textContent = "Connected";
+          document.getElementById("webrtcStatus").style.color = "green";
+        } else if (playbackPc.connectionState === "failed") {
+          console.log("Playback connection failed");
+          document.getElementById("webrtcStatus").textContent = "Failed";
+          document.getElementById("webrtcStatus").style.color = "red";
+        }
+      };
+
+      const handlePlaybackIceCandidate = ({ candidate }) => {
+        if (playbackSessionId === null) return;
+        if (socket && socket.readyState === WebSocket.OPEN) {
+          const message = {
+            event: "web-rtc:ice-candidate",
+            data: {
+              sessionId: playbackSessionId,
+              candidate: candidate?.candidate || "",
+            },
+          };
+          socket.send(JSON.stringify(message));
+        }
+      };
+
+      const handlePlaybackTrack = (e) => {
+        if (!playbackPc) return;
+        
+        console.log("=== PLAYBACK TRACK RECEIVED ===");
+        console.log("Track details:", e.track);
+        console.log("Track kind:", e.track.kind);
+        console.log("Track id:", e.track.id);
+        console.log("Transceiver:", e.transceiver);
+        console.log("Streams:", e.streams);
+        
+        // Get the track index to assign to correct video element
+        const transceivers = playbackPc.getTransceivers();
+        const trackIndex = e.transceiver ? transceivers.indexOf(e.transceiver) : 0;
+        const videoId = `playbackVideo${trackIndex + 1}`;
+        const video = document.getElementById(videoId);
+        
+        console.log("All transceivers:", transceivers);
+        console.log("Track index:", trackIndex);
+        console.log("Target video ID:", videoId);
+        console.log("Video element found:", !!video);
+        
+        if (video) {
+          if (e.streams && e.streams[0]) {
+            console.log("Assigning stream to video element");
+            video.srcObject = e.streams[0];
+          } else {
+            console.log("Creating new MediaStream and adding track");
+            if (!video.srcObject) {
+              video.srcObject = new MediaStream();
+            }
+            video.srcObject.addTrack(e.track);
+          }
+          video.muted = true;
+          
+          // Try to play and log any errors
+          video.play().then(() => {
+            console.log(`Video ${videoId} started playing successfully`);
+          }).catch((error) => {
+            console.error(`Error playing video ${videoId}:`, error);
+          });
+          
+          console.log(`Playback track added to ${videoId}:`, e.track);
+          console.log("Video srcObject:", video.srcObject);
+          console.log("Video tracks:", video.srcObject ? video.srcObject.getTracks() : "none");
+          
+          // Update active streams count
+          updateActiveStreamsCount();
+        } else {
+          console.error(`Video element ${videoId} not found!`);
+        }
+      };
+
+      const updateActiveStreamsCount = () => {
+        const videos = ['playbackVideo1', 'playbackVideo2'];
+        let activeCount = 0;
+        videos.forEach(videoId => {
+          const video = document.getElementById(videoId);
+          if (video && video.srcObject && video.srcObject.getTracks().length > 0) {
+            activeCount++;
+          }
+        });
+        document.getElementById("activeStreams").textContent = `${activeCount}/2`;
+      };
+
+      const cleanUpPlaybackWebRtc = () => {
+        // Reset expectation flags
+        expectingPlaybackSession = false;
+        
+        if (playbackPc) {
+          playbackPc.removeEventListener("connectionstatechange", handlePlaybackStateChange);
+          playbackPc.removeEventListener("signalingstatechange", handlePlaybackStateChange);
+          playbackPc.removeEventListener("icegatheringstatechange", handlePlaybackStateChange);
+          playbackPc.removeEventListener("negotiationneeded", handlePlaybackNegotiationNeeded);
+          playbackPc.removeEventListener("track", handlePlaybackTrack);
+          playbackPc.removeEventListener("icecandidate", handlePlaybackIceCandidate);
+          playbackPc.close();
+          playbackPc = null;
+        }
+
+        // Clean up all playback video elements
+        ['playbackVideo1', 'playbackVideo2'].forEach(videoId => {
+          const video = document.getElementById(videoId);
+          if (video && video.srcObject) {
+            video.srcObject.getTracks().forEach((track) => track.stop());
+            video.srcObject = null;
+          }
+        });
+
+        playbackDataChannel = null;
+        playbackSessionId = null;
+        document.getElementById("sessionIdDisplay").textContent = "-";
+        updateActiveStreamsCount();
+      };
+
+      // Helper function to send playback commands via data channel
+      const sendPlaybackCommand = (command) => {
+        if (playbackDataChannel && playbackDataChannel.readyState === "open") {
+          playbackDataChannel.send(JSON.stringify(command));
+          console.log("Sent playback command:", command);
+        } else {
+          console.warn("Playback data channel not ready");
+        }
+      };
+
+      // Helper function to update timeline display from seek time updates
+      const updateTimelineDisplay = (timestamp) => {
+        // Convert timestamp to time format and update UI
+        const time = new Date(timestamp);
+        const timeString = time.toISOString().substr(11, 12); // HH:MM:SS.SSS format
+        
+        // Update camera time displays
+        document.getElementById("camera1Time").textContent = timeString;
+        document.getElementById("camera2Time").textContent = timeString;
+        
+        // Update timeline slider if we have duration info
+        // This would need to be calculated based on start/end times
+      };
+
+      // Playback control functions (now with actual implementation)
+      document.getElementById("playButton").addEventListener("click", () => {
+        sendPlaybackCommand({
+          kind: "play",
+          sequenceId: ++seq,
+          speed: 1.0
+        });
+      });
+
+      document.getElementById("pauseButton").addEventListener("click", () => {
+        sendPlaybackCommand({
+          kind: "pause",
+          sequenceId: ++seq
+        });
+      });
+
+      document.getElementById("prevFrameButton").addEventListener("click", () => {
+        sendPlaybackCommand({
+          kind: "prev_frame",
+          sequenceId: ++seq
+        });
+      });
+
+      document.getElementById("nextFrameButton").addEventListener("click", () => {
+        sendPlaybackCommand({
+          kind: "next_frame",
+          sequenceId: ++seq
+        });
+      });
+
+      document.getElementById("exportClipButton").addEventListener("click", () => {
+        const startTime = document.getElementById("exportStartTime").value;
+        const endTime = document.getElementById("exportEndTime").value;
+        const format = document.getElementById("exportFormat").value;
+        const quality = document.getElementById("exportQuality").value;
+        
+        if (!startTime || !endTime) {
+          alert("Please specify both start and end times for export");
+          return;
+        }
+        
+        sendPlaybackCommand({
+          kind: "export",
+          sequenceId: ++seq,
+          startTime: startTime,
+          endTime: endTime,
+          format: format,
+          quality: quality
+        });
+      });
+
+      document.getElementById("seekButton").addEventListener("click", () => {
+        const seekTime = document.getElementById("seekTime").value;
+        if (!seekTime) {
+          alert("Please enter a time to seek to");
+          return;
+        }
+        
+        // Convert time input to timestamp
+        const today = new Date().toISOString().split('T')[0];
+        const seekTimestamp = new Date(`${today}T${seekTime}`).getTime();
+        
+        sendPlaybackCommand({
+          kind: "seek",
+          sequenceId: ++seq,
+          timestamp: seekTimestamp
+        });
+      });
+    </script>
+  </body>
+</html>
