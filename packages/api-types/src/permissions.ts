@@ -29,6 +29,7 @@ const deviceTypePermissions: Omit<
   'intercom-terminal': z
     .literal('device:intercom-terminal')
     .describe('View intercom terminals'),
+  display: z.literal('device:display').describe('View displays'),
 };
 
 const sDeviceTypePermissions = Object.values(deviceTypePermissions);
@@ -164,7 +165,8 @@ export const sPermissionId = z.union([
   z.literal('about:read').describe('View about data'),
   //Intercom
   z.literal('intercom:read').describe('View intercom data'), //No UI effect yet
-  //Devices
+  //Display
+  z.literal('display:read').describe('Cast to displays'), //No UI effect yet
   ...sDeviceTypePermissions, //No UI effects yet
 ]);
 
@@ -195,7 +197,8 @@ export type PermissionArea =
   | 'media'
   | 'about'
   | 'intercom'
-  | 'device';
+  | 'device'
+  | 'display';
 
 const permissionsToRecord = (
   permissions: typeof sPermissionId,
