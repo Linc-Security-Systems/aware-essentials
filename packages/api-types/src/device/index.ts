@@ -13,3 +13,4 @@ export * from './server';
 export * from './alarm';
 export * from './device-gateway';
 export * from './presence-tracker';
+export * from './display';
