@@ -31,7 +31,7 @@ export type DisplayCommand = DisplaySetViewCommand;
 // STATE
 
 export interface DisplayStateDto {
-  online: Record<string, boolean>;
+  connected: Record<string, boolean>;
 }
 
 // EVENTS
