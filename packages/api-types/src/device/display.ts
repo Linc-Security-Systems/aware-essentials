@@ -10,24 +10,25 @@ export type DisplaySpecs = z.infer<typeof sDisplaySpecs>;
 
 // COMMANDS
 
+export type DisplayTileItem =
+  | {
+      type: 'camera';
+      username: string;
+      password: string;
+      streams: {
+        resolution: string | null;
+        rtspUrl: string;
+      }[];
+    }
+  | {
+      type: 'empty';
+    };
+
 export interface DisplaySetViewCommand {
   command: 'display.set-view';
   params: {
     tile: {
-      item: (
-        | {
-            type: 'camera';
-            username: string;
-            password: string;
-            streams: {
-              resolution: string | null;
-              rtspUrl: string;
-            };
-          }
-        | {
-            type: 'empty';
-          }
-      )[];
+      item: DisplayTileItem[];
     }[];
   };
 }
