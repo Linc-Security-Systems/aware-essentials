@@ -2,6 +2,7 @@ import { AlarmCommand } from './device/alarm';
 import { CameraCommand } from './device/camera';
 import { CameraLiftCommand } from './device/camera-lift';
 import { DeviceGatewayCommand } from './device/device-gateway';
+import { DisplayCommand } from './device/display';
 import { DoorCommand } from './device/door';
 import { IntercomTerminalCommand } from './device/intercom-terminal';
 import { IoBoardCommand } from './device/io-board';
@@ -22,7 +23,8 @@ export type AnyDeviceCommand =
   | AlarmCommand
   | IntercomTerminalCommand
   | PbxCommand
-  | PresenceTrackerCommand;
+  | PresenceTrackerCommand
+  | DisplayCommand;
 
 export type CommandRun<TCommand extends AnyDeviceCommand = AnyDeviceCommand> = {
   timestamp: number;
@@ -140,4 +142,8 @@ export const commandDescriptions: Record<
     permission: 'presence:update',
   },
   'server.run-macro': { description: 'Run Macro', permission: 'macro:run' },
+  'display.set-view': {
+    description: 'Display Set View',
+    permission: 'display:read',
+  },
 };

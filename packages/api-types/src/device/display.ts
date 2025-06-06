@@ -14,14 +14,20 @@ export interface DisplaySetViewCommand {
   command: 'display.set-view';
   params: {
     tile: {
-      cameras: {
-        username: string;
-        password: string;
-        streams: {
-          resolution: string | null;
-          rtspUrl: string;
-        }[];
-      }[];
+      item: (
+        | {
+            type: 'camera';
+            username: string;
+            password: string;
+            streams: {
+              resolution: string | null;
+              rtspUrl: string;
+            };
+          }
+        | {
+            type: 'empty';
+          }
+      )[];
     }[];
   };
 }
