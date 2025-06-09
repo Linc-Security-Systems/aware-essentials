@@ -13,6 +13,7 @@ export type DisplaySpecs = z.infer<typeof sDisplaySpecs>;
 export type DisplayTileItem =
   | {
       type: 'camera';
+      name: string;
       username: string;
       password: string;
       streams: {
@@ -27,8 +28,9 @@ export type DisplayTileItem =
 export interface DisplaySetViewCommand {
   command: 'display.set-view';
   params: {
-    tile: {
-      item: DisplayTileItem[];
+    displayId: string;
+    tiles: {
+      items: DisplayTileItem[];
     }[];
   };
 }
