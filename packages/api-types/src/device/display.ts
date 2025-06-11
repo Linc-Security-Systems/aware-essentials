@@ -28,7 +28,6 @@ export type DisplayTileItem =
 export interface DisplaySetViewCommand {
   command: 'display.set-view';
   params: {
-    displayId: string;
     tiles: {
       items: DisplayTileItem[];
     }[];
