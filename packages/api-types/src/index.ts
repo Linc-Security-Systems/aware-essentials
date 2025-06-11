@@ -26,3 +26,4 @@ export * from './template';
 export * from './webrtc-playback';
 export * from './custom-field';
 export * from './agent-communication';
+export * from './cast';
