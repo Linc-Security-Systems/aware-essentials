@@ -15,6 +15,7 @@ import { ViewDto } from '../view';
 import { RoleDto, UserDto } from '../user';
 import { ModuleConfig, ModuleConfigMetadata } from '../module-config';
 import { AccessControlCapabilityReport } from 'src/agent-communication';
+import { SecurityLevelDto } from 'src/security-level';
 
 export const SERVER = 'server';
 
@@ -65,6 +66,7 @@ export const sObjectKind = z.enum([
   'macro',
   'role',
   'user',
+  'securityLevel',
 ]);
 
 export type ObjectKind = z.infer<typeof sObjectKind>;
@@ -83,6 +85,7 @@ export type ObjectKinds = {
   macro: MacroDto;
   role: RoleDto;
   user: UserDto;
+  securityLevel: SecurityLevelDto;
 };
 
 export const objectKinds: readonly ObjectKind[] = sObjectKind.options;
@@ -140,4 +143,5 @@ export const objectLabels: Record<string, string> = {
   personPresence: 'Person Presence',
   automationRule: 'Automation Rule',
   macro: 'Macro',
+  securityLevel: 'Security Level',
 };

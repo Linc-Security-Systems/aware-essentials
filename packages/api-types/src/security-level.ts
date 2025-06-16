@@ -9,16 +9,9 @@ export const sSecurityLevelDto = z.object({
 
 export const sAddSecurityLevelRequest = sSecurityLevelDto.omit({ id: true });
 export const sUpdateSecurityLevelRequest = sAddSecurityLevelRequest.partial();
-export const sSetActiveSecurityLevelRequest = z.object({
-  id: z.number(),
-  active: z.boolean(),
-});
 
 export type SecurityLevelDto = z.infer<typeof sSecurityLevelDto>;
 export type AddSecurityLevelRequest = z.infer<typeof sAddSecurityLevelRequest>;
 export type UpdateSecurityLevelRequest = z.infer<
   typeof sUpdateSecurityLevelRequest
->;
-export type SetActiveSecurityLevelRequest = z.infer<
-  typeof sSetActiveSecurityLevelRequest
 >;
