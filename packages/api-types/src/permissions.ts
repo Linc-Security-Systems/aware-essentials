@@ -168,6 +168,11 @@ export const sPermissionId = z.union([
   //Display
   z.literal('display:read').describe('Cast to displays'), //No UI effect yet
   ...sDeviceTypePermissions, //No UI effects yet
+  //Security Level
+  z.literal('security-level:read').describe('View security levels'),
+  z.literal('security-level:update').describe('Update security levels'),
+  z.literal('security-level:delete').describe('Delete security level'),
+  z.literal('security-level:create').describe('Create security level'),
 ]);
 
 export type PermissionArea =
@@ -198,7 +203,8 @@ export type PermissionArea =
   | 'about'
   | 'intercom'
   | 'device'
-  | 'display';
+  | 'display'
+  | 'security-level';
 
 const permissionsToRecord = (
   permissions: typeof sPermissionId,
