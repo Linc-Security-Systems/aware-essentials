@@ -1,10 +1,12 @@
 import { z } from 'zod';
 
 export const sSecurityLevelDto = z.object({
-  id: z.number(),
+  id: z.string().uuid(),
+  order: z.number().int().min(0),
   name: z.string().max(64),
   active: z.boolean(),
   color: z.string().length(6),
+  checkFrequency: z.number().int().min(0).max(10),
 });
 
 export const sAddSecurityLevelRequest = sSecurityLevelDto.omit({ id: true });
