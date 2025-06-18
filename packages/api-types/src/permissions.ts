@@ -166,7 +166,7 @@ export const sPermissionId = z.union([
   //Intercom
   z.literal('intercom:read').describe('View intercom data'), //No UI effect yet
   //Display
-  z.literal('display:read').describe('Cast to displays'), //No UI effect yet
+  z.literal('display:read').describe('Cast to displays'),
   ...sDeviceTypePermissions, //No UI effects yet
   //Security Level
   z.literal('security-level:read').describe('View security levels'),

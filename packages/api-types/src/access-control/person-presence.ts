@@ -39,6 +39,7 @@ export const sPersonPresenceActionDto = z.object({
   timestamp: z.number(),
   checkInOrOut: z.boolean(),
   isLeave: z.boolean(),
+  checkCompleted: z.boolean(),
 });
 
 export type PersonPresenceActionDto = z.infer<typeof sPersonPresenceActionDto>;
@@ -67,12 +68,14 @@ export const sPersonTogglePresence = z.union([
 export const sPersonCheckIn = z.object({
   personId: z.string(),
   zoneId: z.string(),
+  checkCompleted: z.boolean().optional(),
 });
 
 export const sPersonCheckOut = z.object({
   personId: z.string(),
   zoneId: z.string(),
   leave: z.boolean().nullable(),
+  checkCompleted: z.boolean().optional(),
 });
 
 export type PresenceToggleRequest = z.infer<typeof sPersonTogglePresence>;

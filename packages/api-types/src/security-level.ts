@@ -7,9 +7,12 @@ export const sSecurityLevelDto = z.object({
   active: z.boolean(),
   color: z.string().length(6),
   checkFrequency: z.number().int().min(0).max(10),
+  checkOnExit: z.boolean(),
 });
 
-export const sAddSecurityLevelRequest = sSecurityLevelDto.omit({ id: true });
+export const sAddSecurityLevelRequest = sSecurityLevelDto.omit({
+  id: true,
+});
 export const sUpdateSecurityLevelRequest = sAddSecurityLevelRequest.partial();
 
 export type SecurityLevelDto = z.infer<typeof sSecurityLevelDto>;
