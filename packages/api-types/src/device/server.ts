@@ -48,6 +48,7 @@ export type ServerState = {
   config: ModuleConfig;
   runnableProviders: string[];
   accessControlProviders: Record<string, AccessControlProviderState>;
+  citadelModeActivatedOn: number | null;
 };
 
 // EVENTS

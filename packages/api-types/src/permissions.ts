@@ -173,6 +173,8 @@ export const sPermissionId = z.union([
   z.literal('security-level:update').describe('Update security levels'),
   z.literal('security-level:delete').describe('Delete security level'),
   z.literal('security-level:create').describe('Create security level'),
+  // citadel mode
+  z.literal('citadel-mode:toggle').describe('Enter / exit citadel mode'),
 ]);
 
 export type PermissionArea =
@@ -204,7 +206,8 @@ export type PermissionArea =
   | 'intercom'
   | 'device'
   | 'display'
-  | 'security-level';
+  | 'security-level'
+  | 'citadel-mode';
 
 const permissionsToRecord = (
   permissions: typeof sPermissionId,
