@@ -81,6 +81,7 @@ export enum AppErrorCode {
 
   // auth / user
   AUTH_INVALID_CREDENTIALS = 'AUTH_INVALID_CREDENTIALS',
+  AUTH_CITADEL_MODE_ENABLED = 'AUTH_CITADEL_MODE_ENABLED',
   USER_NOT_FOUND = 'USER_NOT_FOUND',
   USERNAME_ALREADY_EXISTS = 'USERNAME_ALREADY_EXISTS',
   EMAIL_ALREADY_EXISTS = 'EMAIL_ALREADY_EXISTS',
@@ -150,6 +151,7 @@ export const errorMetadataSchemas = {
   [AppErrorCode.ALARM_NOT_FOUND]: sNotFoundMeta,
   // auth / user
   [AppErrorCode.AUTH_INVALID_CREDENTIALS]: sVoidMeta,
+  [AppErrorCode.AUTH_CITADEL_MODE_ENABLED]: sVoidMeta,
   [AppErrorCode.USER_NOT_FOUND]: sNotFoundMeta,
   [AppErrorCode.USERNAME_ALREADY_EXISTS]: sDuplicateMeta,
   [AppErrorCode.EMAIL_ALREADY_EXISTS]: sDuplicateMeta,
