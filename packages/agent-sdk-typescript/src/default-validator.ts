@@ -152,7 +152,7 @@ export const createValidator = <T extends Agent>(agent: T) => {
           if (!rules[ruleId.ref]) {
             issues.push({
               code: 'BAD_REFERENCE',
-              objectId: ruleId.ref,
+              objectId: ruleId.objectId,
               objectKind: 'accessRule',
             });
           }
