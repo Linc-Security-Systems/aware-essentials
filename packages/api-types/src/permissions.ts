@@ -175,6 +175,11 @@ export const sPermissionId = z.union([
   z.literal('security-level:create').describe('Create security level'),
   // citadel mode
   z.literal('citadel-mode:toggle').describe('Enter / exit citadel mode'),
+  //Token Conversion
+  z.literal('token-conversion:read').describe('View token conversion data'),
+  z.literal('token-conversion:update').describe('Update token conversion data'),
+  z.literal('token-conversion:delete').describe('Delete token conversion'),
+  z.literal('token-conversion:create').describe('Create token conversion'),
 ]);
 
 export type PermissionArea =
@@ -207,7 +212,8 @@ export type PermissionArea =
   | 'device'
   | 'display'
   | 'security-level'
-  | 'citadel-mode';
+  | 'citadel-mode'
+  | 'token-conversion';
 
 const permissionsToRecord = (
   permissions: typeof sPermissionId,
