@@ -12,19 +12,52 @@ export const sIceCandidate = z.string().nonempty();
 
 export type IceCandidate = z.infer<typeof sIceCandidate>;
 
+export const sWebRtcLiveServiceParams = z.object({
+  deviceId: z.string().nonempty(),
+  streamId: z.string().nonempty(),
+});
+
+export type WebRtcLiveServiceParams = z.infer<typeof sWebRtcLiveServiceParams>;
+
+export const sWebRtcPlaybackParams = z.object({
+  controllerId: z.string().nonempty(),
+});
+
+export type WebRtcPlaybackParams = z.infer<typeof sWebRtcPlaybackParams>;
+
+export const sWebRtcPlaybackTrackParams = z.object({
+  controllerId: z.string().nonempty(),
+  trackId: z.string().nonempty(),
+});
+
+export type WebRtcPlaybackTrackParams = z.infer<
+  typeof sWebRtcPlaybackTrackParams
+>;
+
+export const sWebRtcPlaybackControllerParams = z.object({
+  controllerId: z.string().nonempty(),
+});
+
+export type WebRtcPlaybackControllerParams = z.infer<
+  typeof sWebRtcPlaybackControllerParams
+>;
+
 export const sWebRtcServiceDescription = z.union([
   z.object({
     service: z.literal('live'),
-    serviceParams: z.object({
-      deviceId: z.string().nonempty(),
-      streamId: z.string().nonempty(),
-    }),
+    serviceParams: sWebRtcLiveServiceParams,
   }),
   z.object({
     service: z.literal('playback'),
-    serviceParams: z.object({
-      controllerId: z.string().nonempty(),
-    }),
+    serviceParams: sWebRtcPlaybackParams,
+  }),
+  z.object({
+    service: z.literal('playback-track'),
+    serviceParams: sWebRtcPlaybackTrackParams,
+  }),
+  z.object({
+    service: z.literal('playback-controller'),
+    serviceParams: sWebRtcPlaybackControllerParams,
   }),
 ]);
 
