@@ -8,6 +8,12 @@ export interface ModuleConfig {
   [moduleName: string]: Record<string, unknown>;
 }
 
+export interface SaveProviderConfigRq {
+  provider: string;
+  enabled: boolean;
+  config: Record<string, unknown>;
+}
+
 export interface ModuleConfigMetadata {
   allModules: string[];
   moduleTitles: Record<string, string>;
