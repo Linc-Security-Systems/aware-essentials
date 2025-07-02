@@ -47,6 +47,16 @@ export const sUpdateAutomationRule = sAutomationRuleProps.partial().merge(
 export const sAutomationRuleDto = sAutomationRuleProps.merge(
   z.object({
     id: z.string().describe('The ID of the automation rule'),
+    exclusivityGroup: z
+      .string()
+      .nullable()
+      .describe(
+        'The exclusivity group of the automation rule. Only one matching rule at max will run within one group based on the highest score',
+      ),
+    module: z
+      .string()
+      .nullable()
+      .describe('The module the automation rule belongs to'),
     code: z.string().nullable().describe('The code of the automation rule'),
     createdOn: z.string().describe('The date the automation rule was created'),
     lastModifiedOn: z
