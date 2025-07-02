@@ -53,6 +53,7 @@ export const sAutomationRuleDto = sAutomationRuleProps.merge(
       .describe(
         'The exclusivity group of the automation rule. Only one matching rule at max will run within one group based on the highest score',
       ),
+    score: z.number().int().min(0).nullable(),
     module: z
       .string()
       .nullable()
