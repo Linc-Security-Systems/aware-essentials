@@ -1,4 +1,4 @@
-import { sSortOptions } from 'src/api';
+import { sSortOptions } from '../api';
 import { z } from 'zod';
 
 // Query constants
