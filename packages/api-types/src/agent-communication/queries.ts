@@ -61,7 +61,18 @@ export const sObjectThumbnailArgs = z.object({
 // Zod schemas for responses
 export const sRecordingsResponse = z.array(z.any()); // RecordingSequence[] - using z.any() as RecordingSequence might be complex
 
-export const sMediaSearchResponse = z.array(z.any()); // MediaSearchMatchDto[] - using z.any() as MediaSearchMatchDto might be complex
+export const sMediaSearchMatch = z.object({
+  relevance: z.number(),
+  providerAssignedRef: z.string(),
+  foreignRef: z.string(),
+  provider: z.string(),
+  probability: z.number(),
+  objectKind: z.string(),
+  startTime: z.number(),
+  endTime: z.number().nullable(),
+});
+
+export const sMediaSearchResponse = z.array(sMediaSearchMatch); // MediaSearchMatchDto[] - using z.any() as MediaSearchMatchDto might be complex
 
 export const sRtspDataResponse = z.object({
   cameraName: z.string(),
@@ -95,6 +106,7 @@ export type ObjectSnapshotArgs = z.infer<typeof sObjectSnapshotArgs>;
 export type ObjectThumbnailArgs = z.infer<typeof sObjectThumbnailArgs>;
 
 export type RecordingsResponse = z.infer<typeof sRecordingsResponse>;
+export type MediaSearchMatch = z.infer<typeof sMediaSearchMatch>;
 export type MediaSearchResponse = z.infer<typeof sMediaSearchResponse>;
 export type RtspDataResponse = z.infer<typeof sRtspDataResponse>;
 export type PreviewImageResponse = z.infer<typeof sPreviewImageResponse>;
