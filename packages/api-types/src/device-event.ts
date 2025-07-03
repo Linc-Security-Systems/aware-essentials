@@ -18,6 +18,7 @@ import {
 } from './device/presence-tracker';
 import { ReaderEvent, readerEventSchemaByKind } from './device/reader/index';
 import { ServerEvent } from './device/server';
+import { DeviceType } from './device/any-device';
 
 export interface DeviceCommandTriggered {
   kind: 'device-command';
@@ -123,6 +124,25 @@ export const eventSchemaByKind = {
   ...panicButtonEventSchemaByKind,
   ...presenceTrackerEventSchemaByKind,
   ...readerEventSchemaByKind,
+};
+
+export const eventsByDeviceType: Partial<
+  Record<DeviceType, DeviceEvent['kind'][]>
+> = {
+  camera: [
+    ...(Object.keys(cameraEventSchemasByKind) as DeviceEvent['kind'][]),
+    'motion-detected' as const,
+  ],
+  door: Object.keys(doorEventSchemaByKind) as DeviceEvent['kind'][],
+  'io-board': Object.keys(ioBoardEventSchemaByKind) as DeviceEvent['kind'][],
+  'panic-button': Object.keys(
+    panicButtonEventSchemaByKind,
+  ) as DeviceEvent['kind'][],
+  'presence-tracker': Object.keys(
+    presenceTrackerEventSchemaByKind,
+  ) as DeviceEvent['kind'][],
+  reader: Object.keys(readerEventSchemaByKind) as DeviceEvent['kind'][],
+  'motion-sensor': ['motion-detected' as const],
 };
 
 export const isDeviceEvent = (event: unknown): event is AnyDeviceEvent => {
