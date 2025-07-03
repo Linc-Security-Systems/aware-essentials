@@ -46,7 +46,10 @@ export const sGetExportLinkResponse = z.object({
   relativeUrl: z.string().nonempty(),
 });
 
-const sSortOptions = z.union([z.literal('time_asc'), z.literal('time_desc')]);
+export const sSortOptions = z.union([
+  z.literal('time_asc'),
+  z.literal('time_desc'),
+]);
 
 export const sMediaSearchQueryDto = z
   .object({
