@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { DeviceEvent } from './device-event';
-import { DeviceType } from './device';
+import { DeviceDto, DeviceType } from './device';
 import { AutomationRuleBody } from './automation';
 
 export const sAlarmBehavior = z.enum([
@@ -158,3 +158,6 @@ export const createAlarmRuleBody = (
           ],
   };
 };
+
+export const resolveAlarmExclusivityGroup = (deviceType: DeviceType) =>
+  `alarm-${deviceType}`;
