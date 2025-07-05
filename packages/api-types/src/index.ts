@@ -21,6 +21,7 @@ export * from './module-config';
 export * from './device-group';
 export * from './app';
 export * from './automation';
+export * from './alarm-automation';
 export * from './macros';
 export * from './template';
 export * from './webrtc-playback';
