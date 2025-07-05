@@ -42,14 +42,18 @@ export const isAlarmAutomationMetadata = (
 // Alarm assigns automation rules with code that is either:
 // [by-event]:[event-kind]
 // [by-device]:[device-id]
-export const formatByDeviceAutomationCode = (deviceId: string): string => {
-  return `by-device:${deviceId}`;
+export const formatByDeviceAutomationCode = (
+  eventKind: DeviceEvent['kind'],
+  deviceId: string,
+): string => {
+  return `by-device:${deviceId}:${eventKind}`;
 };
 
 export const formatByTypeAutomationCode = (
   eventKind: DeviceEvent['kind'],
+  deviceType: DeviceType,
 ): string => {
-  return `by-Type:${eventKind}`;
+  return `by-type:${deviceType}:${eventKind}`;
 };
 
 export const isByDeviceAutomationCode = (code: string): boolean => {
@@ -63,11 +67,13 @@ export const isByTypeAutomationCode = (code: string): boolean => {
 export type ParsedByDeviceAutomationCode = {
   type: 'by-device';
   value: string;
+  eventKind: DeviceEvent['kind'];
 };
 
 export type ParsedByTypeAutomationCode = {
   type: 'by-type';
-  value: DeviceEvent['kind'];
+  value: DeviceType;
+  eventKind: DeviceEvent['kind'];
 };
 
 export type ParsedAlarmAutomationCode =
@@ -78,15 +84,25 @@ export const parseAlarmAutomationCode = (
   code: string,
 ): ParsedAlarmAutomationCode | null => {
   if (isByDeviceAutomationCode(code)) {
+    const parts = code.replace('by-device:', '').split(':');
+    if (parts.length !== 2) {
+      return null; // Invalid format
+    }
     return {
       type: 'by-device',
-      value: code.replace('by-device:', ''),
+      value: parts[0], // deviceId
+      eventKind: parts[1] as DeviceEvent['kind'], // eventKind
     };
   }
   if (isByTypeAutomationCode(code)) {
+    const parts = code.replace('by-type:', '').split(':');
+    if (parts.length !== 2) {
+      return null; // Invalid format
+    }
     return {
       type: 'by-type',
-      value: code.replace('by-type:', '') as DeviceEvent['kind'],
+      value: parts[0] as DeviceType, // deviceType
+      eventKind: parts[1] as DeviceEvent['kind'], // eventKind
     };
   }
   return null;
