@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { DeviceEvent } from './device-event';
-import { DeviceDto, DeviceType } from './device';
+import { DeviceType } from './device';
 import { AutomationRuleBody } from './automation';
 
 export const sAlarmBehavior = z.enum([
