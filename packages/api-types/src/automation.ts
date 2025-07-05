@@ -45,6 +45,7 @@ export const sAutomationRuleProps = z.object({
     .string()
     .nullable()
     .describe('The module the automation rule belongs to'),
+  metadata: z.record(z.unknown()),
 });
 
 export const sAddAutomationRuleRequest = sAutomationRuleProps;
