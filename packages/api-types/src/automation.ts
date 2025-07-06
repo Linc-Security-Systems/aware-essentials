@@ -66,6 +66,15 @@ export const sAutomationRuleDto = sAutomationRuleProps.merge(
   }),
 );
 
+export const sAutomationBulkMergeRequest = z.object({
+  merge: z
+    .array(sAutomationRuleProps)
+    .describe('The automation rules to merge by code'),
+  removeCodes: z
+    .array(z.string())
+    .describe('The IDs of the automation rules to delete by code'),
+});
+
 export type AutomationRuleBody = z.infer<typeof sAutomationRuleBody>;
 
 export type AutomationRuleProps = z.infer<typeof sAutomationRuleProps>;
@@ -77,3 +86,7 @@ export type AddAutomationRuleRequest = z.infer<
 >;
 
 export type UpdateAutomationRuleRequest = z.infer<typeof sUpdateAutomationRule>;
+
+export type AutomationBulkMergeRequest = z.infer<
+  typeof sAutomationBulkMergeRequest
+>;
