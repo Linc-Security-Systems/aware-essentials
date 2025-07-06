@@ -14,8 +14,8 @@ import { LayoutDto } from '../layout';
 import { ViewDto } from '../view';
 import { RoleDto, UserDto } from '../user';
 import { ModuleConfig, ModuleConfigMetadata } from '../module-config';
-import { AccessControlCapabilityReport } from 'src/agent-communication';
-import { SecurityLevelDto } from 'src/security-level';
+import { AccessControlCapabilityReport } from '../agent-communication';
+import { SecurityLevelDto } from '../security-level';
 
 export const SERVER = 'server';
 
