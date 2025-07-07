@@ -151,10 +151,10 @@ export const createAlarmRuleBody = (
 ): AutomationRuleBody => {
   let runIf = 'source.type == "' + deviceType + '"';
   if (deviceId) {
-    runIf += ` && source.id == "${deviceId}"`;
+    runIf += ` and source.id == "${deviceId}"`;
   }
   for (const criterion of eventCriteria) {
-    runIf += ` && event.${criterion.field} ${encodeComparison(criterion.value)}`;
+    runIf += ` and event.${criterion.field} ${encodeComparison(criterion.value)}`;
   }
   return {
     onEvent: eventKind,
