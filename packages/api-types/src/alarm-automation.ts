@@ -126,20 +126,27 @@ export const parseAlarmAutomationCode = (
 //     }
 // }
 
-const encodeComparison = (value: unknown): string => {
+const encodeValue = (value: unknown): string => {
   if (typeof value === 'string') {
-    return `== ${JSON.stringify(value)}`;
+    return `${JSON.stringify(value)}`;
   }
   if (typeof value === 'number' || typeof value === 'boolean') {
-    return `== ${String(value)}`;
+    return `${String(value)}`;
   }
   if (Array.isArray(value)) {
-    return `in (${value.map(encodeComparison).join(', ')})`;
+    return `(${value.map(encodeValue).join(', ')})`;
   }
   if (value === null) {
-    return '== null';
+    return 'null';
   }
-  throw new Error(`Unsupported value type for comparison: ${typeof value}`);
+  throw new Error(`Unsupported value type for: ${typeof value}`);
+};
+
+const encodeComparison = (value: unknown): string => {
+  if (Array.isArray(value)) {
+    return `in ${encodeValue(value)}`;
+  }
+  return `== ${encodeValue(value)}`;
 };
 
 export const createAlarmRuleBody = (
