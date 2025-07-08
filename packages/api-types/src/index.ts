@@ -30,3 +30,4 @@ export * from './agent-communication';
 export * from './cast';
 export * from './security-level';
 export * from './token-conversion';
+export * from './world-objects';

@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { DeviceEvent } from './device-event';
 import { DeviceType } from './device';
 import { AutomationRuleBody } from './automation';
+import { worldObjects } from './world-objects';
 
 export const sAlarmBehavior = z.enum([
   'ignore',
@@ -202,9 +203,14 @@ export const alarmEventVariants = {
       criteria: [{ field: 'allowed', value: false }],
     },
   ]),
-  'object-detection-started': [
+  'object-detection-started': sorted([
     // TODO - add criteria for object detection started
-  ],
+    ...worldObjects.map((object) => ({
+      name: object.id,
+      label: `${object.label} Detected`,
+      criteria: [{ field: 'objectKind', value: object.id }],
+    })),
+  ]),
   'object-detection-ended': [],
   'object-detection-updated': [],
   'scene-updated': [],
