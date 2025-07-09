@@ -213,6 +213,8 @@ export const alarmEventVariants = {
   ]),
   'object-detection-ended': [],
   'object-detection-updated': [],
+  'scene-created': [],
   'scene-updated': [],
   'scene-ended': [],
+  'ptz-preset-saved': [],
 } satisfies Partial<Record<DeviceEvent['kind'], DeviceEventVariant[]>>;
