@@ -29,8 +29,8 @@ export const sBookmarkDto = sBookmarkProps.and(
 );
 
 export const sBookmarkSearchCriteria = z.object({
-  deviceId: z.string(),
-  createdBy: z.string(),
+  deviceId: z.array(z.string()),
+  createdBy: z.array(z.string()),
   timeFrom: z.number().min(0),
   timeTo: z.number().min(0),
 });

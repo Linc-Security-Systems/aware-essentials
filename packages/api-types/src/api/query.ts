@@ -26,7 +26,7 @@ export const sPaginatedQueryRequestOf = <T extends z.AnyZodObject>(
         .optional()
         .describe('Maximum number of items to return'),
     })
-    .merge(criteriaSchema);
+    .merge(criteriaSchema.partial());
 
 export const sPaginatedQueryResponseOf = <T extends ZodTypeAny>(
   itemSchema: T,
