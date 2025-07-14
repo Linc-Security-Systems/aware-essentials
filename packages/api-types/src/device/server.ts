@@ -16,6 +16,7 @@ import { RoleDto, UserDto } from '../user';
 import { ModuleConfig, ModuleConfigMetadata } from '../module-config';
 import { AccessControlCapabilityReport } from '../agent-communication';
 import { SecurityLevelDto } from '../security-level';
+import { BookmarkDto } from '../bookmarks';
 
 export const SERVER = 'server';
 
@@ -68,6 +69,7 @@ export const sObjectKind = z.enum([
   'role',
   'user',
   'securityLevel',
+  'bookmark',
 ]);
 
 export type ObjectKind = z.infer<typeof sObjectKind>;
@@ -87,6 +89,7 @@ export type ObjectKinds = {
   role: RoleDto;
   user: UserDto;
   securityLevel: SecurityLevelDto;
+  bookmark: BookmarkDto;
 };
 
 export const objectKinds: readonly ObjectKind[] = sObjectKind.options;
@@ -145,4 +148,5 @@ export const objectLabels: Record<string, string> = {
   automationRule: 'Automation Rule',
   macro: 'Macro',
   securityLevel: 'Security Level',
+  bookmark: 'Bookmark',
 };
