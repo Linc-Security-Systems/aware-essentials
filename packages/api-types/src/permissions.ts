@@ -180,6 +180,11 @@ export const sPermissionId = z.union([
   z.literal('token-conversion:update').describe('Update token conversion data'),
   z.literal('token-conversion:delete').describe('Delete token conversion'),
   z.literal('token-conversion:create').describe('Create token conversion'),
+  // bookmarks
+  z.literal('bookmark:read').describe('View bookmarks'),
+  z.literal('bookmark:create').describe('Create bookmark'),
+  z.literal('bookmark:update').describe('Update bookmark'),
+  z.literal('bookmark:delete').describe('Delete bookmark'),
 ]);
 
 export type PermissionArea =
@@ -213,7 +218,8 @@ export type PermissionArea =
   | 'display'
   | 'security-level'
   | 'citadel-mode'
-  | 'token-conversion';
+  | 'token-conversion'
+  | 'bookmark';
 
 const permissionsToRecord = (
   permissions: typeof sPermissionId,
