@@ -9,11 +9,13 @@ export const sBookmarkProps = z.object({
 
 export const sCreateBookmarkRq = sBookmarkProps;
 
+export const sUpdateBookmarkBody = sBookmarkProps.partial();
+
 export const sUpdateBookmarkRq = z
   .object({
     id: z.string().nonempty(),
   })
-  .and(sBookmarkProps.partial());
+  .and(sUpdateBookmarkBody);
 
 export const sDeleteBookmarkRq = z.object({
   id: z.string().nonempty(),
@@ -38,6 +40,7 @@ export const sBookmarkSearchCriteria = z.object({
 export type BookmarkProps = z.infer<typeof sBookmarkProps>;
 export type CreateBookmarkRq = z.infer<typeof sCreateBookmarkRq>;
 export type UpdateBookmarkRq = z.infer<typeof sUpdateBookmarkRq>;
+export type UpdateBookmarkBody = z.infer<typeof sUpdateBookmarkBody>;
 export type DeleteBookmarkRq = z.infer<typeof sDeleteBookmarkRq>;
 export type BookmarkDto = z.infer<typeof sBookmarkDto>;
 export type BookmarkSearchCriteria = z.infer<typeof sBookmarkSearchCriteria>;
