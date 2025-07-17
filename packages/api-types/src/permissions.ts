@@ -173,18 +173,23 @@ export const sPermissionId = z.union([
   z.literal('security-level:update').describe('Update security levels'),
   z.literal('security-level:delete').describe('Delete security level'),
   z.literal('security-level:create').describe('Create security level'),
-  // citadel mode
+  //Citadel mode
   z.literal('citadel-mode:toggle').describe('Enter / exit citadel mode'),
   //Token Conversion
   z.literal('token-conversion:read').describe('View token conversion data'),
   z.literal('token-conversion:update').describe('Update token conversion data'),
   z.literal('token-conversion:delete').describe('Delete token conversion'),
   z.literal('token-conversion:create').describe('Create token conversion'),
-  // bookmarks
+  //Bookmarks
   z.literal('bookmark:read').describe('View bookmarks'),
   z.literal('bookmark:create').describe('Create bookmark'),
   z.literal('bookmark:update').describe('Update bookmark'),
   z.literal('bookmark:delete').describe('Delete bookmark'),
+  //Access Paths
+  z.literal('access-path:read').describe('View access paths'),
+  z.literal('access-path:create').describe('Create access path'),
+  z.literal('access-path:update').describe('Update access path'),
+  z.literal('access-path:delete').describe('Delete access path'),
 ]);
 
 export type PermissionArea =
@@ -219,7 +224,8 @@ export type PermissionArea =
   | 'security-level'
   | 'citadel-mode'
   | 'token-conversion'
-  | 'bookmark';
+  | 'bookmark'
+  | 'access-path';
 
 const permissionsToRecord = (
   permissions: typeof sPermissionId,
