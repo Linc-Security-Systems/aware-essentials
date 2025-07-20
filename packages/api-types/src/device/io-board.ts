@@ -26,6 +26,7 @@ export type IoBoardCommand = IoBoardSetOutputCommand;
 // STATE
 
 export interface IoBoardStateDto {
+  connected: boolean;
   inputValues: Record<string, boolean>;
   outputValues: Record<string, boolean>;
 }
