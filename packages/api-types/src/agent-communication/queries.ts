@@ -80,6 +80,8 @@ export const sRtspDataResponse = z.object({
   password: z.string(),
   streams: z.array(
     z.object({
+      streamId: z.string(),
+      displayName: z.string(),
       resolution: z.string().nullable(),
       rtspUrl: z.string(),
     }),

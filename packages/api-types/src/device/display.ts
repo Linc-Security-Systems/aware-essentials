@@ -17,6 +17,8 @@ export type DisplayTileItem =
       username: string;
       password: string;
       streams: {
+        streamId: string;
+        displayName: string;
         resolution: string | null;
         rtspUrl: string;
       }[];
