@@ -288,32 +288,31 @@ export class AgentApp {
       filter((message) => message.kind === 'start' || message.kind === 'stop'),
       switchMap((message) =>
         message.kind === 'start'
-          ? merge(
-              this.agent
-                .getDevicesAndRelations$({
+          ? this.agent
+              .getDevicesAndRelations$({
+                provider: message.provider,
+                config: message.config,
+              })
+              .pipe(
+                retry({ delay: 3000 }),
+                tap(() => {
+                  // reply to server that we are starting
+                  this.options.transport.send(
+                    this.addEnvelope({
+                      kind: 'start-rs' as const,
+                      requestId: message.id,
+                    }),
+                  );
+                }),
+                map((deviceCatalog) => ({
                   provider: message.provider,
                   config: message.config,
-                })
-                .pipe(
-                  retry({ delay: 3000 }),
-                  map((deviceCatalog) => ({
-                    provider: message.provider,
-                    config: message.config,
-                    lastEventForeignRef: message.lastEventForeignRef,
-                    lastEventTimestamp: message.lastEventTimestamp,
-                    deviceCatalog,
-                  })),
-                  mergeMap((context) => this.runProvider$(context)),
-                ),
-              of({
-                kind: 'start-rs' as const,
-                requestId: message.id,
-              }).pipe(
-                tap((reply) =>
-                  this.options.transport.send(this.addEnvelope(reply)),
-                ),
-              ),
-            )
+                  lastEventForeignRef: message.lastEventForeignRef,
+                  lastEventTimestamp: message.lastEventTimestamp,
+                  deviceCatalog,
+                })),
+                mergeMap((context) => this.runProvider$(context)),
+              )
           : of(message).pipe(
               tap(() =>
                 this.options.transport.send(
