@@ -54,6 +54,21 @@ export type ServerState = {
 
 // EVENTS
 
+export const sAgentStarted = z.object({
+  kind: z.literal('agent-started'),
+  agent: z.string(),
+  providers: z.array(z.string()),
+});
+
+export const sAgentStopped = z.object({
+  kind: z.literal('agent-stopped'),
+  agent: z.string(),
+  providers: z.array(z.string()),
+});
+
+export type AgentStarted = z.infer<typeof sAgentStarted>;
+export type AgentStopped = z.infer<typeof sAgentStopped>;
+
 export const sObjectKind = z.enum([
   'accessRule',
   'schedule',
@@ -131,7 +146,12 @@ export type ObjectDeleted = {
   };
 }[keyof ObjectKinds];
 
-export type ServerEvent = ObjectCreated | ObjectUpdated | ObjectDeleted;
+export type ServerEvent =
+  | ObjectCreated
+  | ObjectUpdated
+  | ObjectDeleted
+  | AgentStarted
+  | AgentStopped;
 
 export const objectLabels: Record<string, string> = {
   accessRule: 'Access Rule',
