@@ -4,6 +4,7 @@ import { DeviceType } from './device/any-device';
 export const sIoSlot = z.object({
   deviceId: z.string().nonempty(),
   slot: z.string().nonempty(),
+  inverted: z.boolean().optional(),
 });
 
 export type IoSlot = z.infer<typeof sIoSlot>;
