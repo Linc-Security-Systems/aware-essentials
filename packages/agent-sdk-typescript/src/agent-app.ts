@@ -21,6 +21,7 @@ import {
   AccessObjectKind,
   AccessRefMap,
   FromAgent,
+  FromServer,
   Message,
   PayloadByKind,
   ProviderSpecs,
@@ -45,7 +46,7 @@ export type AgentOptions = {
   accessControlProviders?: Record<string, AccessControlCapabilityReport>;
   agentId: string;
   replyTimeout?: number;
-  transport: Transport;
+  transport: Transport<Message<FromServer>, Message<FromAgent>>;
 };
 
 export class AgentApp {
