@@ -48,7 +48,7 @@ export type HttpTunnelMessage = RequestMessage | ResponseMessage;
 export function isRequestMessage(
   msg: HttpTunnelMessage,
 ): msg is RequestMessage {
-  return 'method' in msg && 'path' in msg;
+  return 'path' in msg && !('status' in msg);
 }
 
 export function isResponseMessage(

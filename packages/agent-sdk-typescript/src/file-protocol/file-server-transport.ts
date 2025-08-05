@@ -12,13 +12,13 @@ import { RequestMessage, ResponseMessage, HttpTunnelMessage } from './types';
 import { serialize, deserialize } from './serializer';
 
 export class FileServerTransport
-  implements Transport<ResponseMessage, RequestMessage>
+  implements Transport<RequestMessage, ResponseMessage>
 {
   //----------------------------------------
   //  Public reactive API
   //----------------------------------------
   readonly connected$: Observable<boolean>;
-  readonly messages$: Observable<ResponseMessage>;
+  readonly messages$: Observable<RequestMessage>;
   readonly errors$: Observable<Error>;
 
   //----------------------------------------
@@ -44,7 +44,7 @@ export class FileServerTransport
     this.messages$ = rawTransport.messages$.pipe(
       takeUntil(this.destroy$),
       map((data) => this.parseMessage(data)),
-      filter((msg): msg is ResponseMessage => msg !== null),
+      filter((msg): msg is RequestMessage => msg !== null),
     );
 
     // Forward our protocol errors to the combined error stream
@@ -56,7 +56,7 @@ export class FileServerTransport
   //----------------------------------------
   //  Public API
   //----------------------------------------
-  send(request: RequestMessage): void {
+  send(request: ResponseMessage): void {
     if (this.destroyed) {
       this._errors$.next(new Error('Cannot send on destroyed transport'));
       return;
@@ -90,7 +90,7 @@ export class FileServerTransport
   //----------------------------------------
   //  Private helpers
   //----------------------------------------
-  private parseMessage(data: string | Buffer): ResponseMessage | null {
+  private parseMessage(data: string | Buffer): RequestMessage | null {
     try {
       // Only handle binary data for HTTP tunnel protocol
       if (typeof data === 'string') {
@@ -100,12 +100,12 @@ export class FileServerTransport
       // Deserialize binary data
       const message = deserialize(data) as HttpTunnelMessage;
 
-      // Only return ResponseMessage types
-      if ('status' in message && 'contentType' in message) {
-        return message as ResponseMessage;
+      // Only return RequestMessage types
+      if ('path' in message && !('status' in message)) {
+        return message as RequestMessage;
       }
 
-      return null; // Ignore RequestMessage types
+      return null; // Ignore ResponseMessage types
     } catch (err) {
       this._errors$.next(
         new Error(
