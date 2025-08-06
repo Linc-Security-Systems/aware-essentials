@@ -1,7 +1,7 @@
 // file-server-transport.ts
 //--------------------------------------------------------------
 // HTTP tunnel protocol transport for file server communication
-// • Implements Transport<ResponseMessage, RequestMessage>
+// • Implements Transport<RequestMessage, ResponseMessage>
 // • Handles serialization/deserialization of HTTP tunnel messages
 // • Wraps raw transport for binary protocol communication
 //--------------------------------------------------------------
