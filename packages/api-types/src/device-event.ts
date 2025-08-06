@@ -115,6 +115,8 @@ export const eventKindLabels: Record<DeviceEvent['kind'], string> = {
   'io-board-input-changed': 'IO Board Input Changed',
   'agent-started': 'Agent Started',
   'agent-stopped': 'Agent Stopped',
+  'door-opened': 'Door Opened',
+  'door-closed': 'Door Closed',
 };
 
 export const eventSchemaByKind = {
