@@ -11,6 +11,12 @@ export const sMacroItemDto = z.object({
 export const sMacroDto = z.object({
   id: z.string().nonempty(),
   displayName: z.string().nonempty(),
+  code: z.string().nullable().describe('The code of the macro rule'),
+  module: z
+    .string()
+    .nullable()
+    .describe('The module the macro rule belongs to'),
+  metadata: z.record(z.unknown()),
   createdOn: z.string(),
   lastModifiedOn: z.string(),
   createdBy: z.string().nullable(),
