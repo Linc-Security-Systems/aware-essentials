@@ -123,6 +123,16 @@ export interface CameraDisableCommand {
   params: object;
 }
 
+export interface CameraEnableDetectionCommand {
+  command: 'camera.enable-detection';
+  params: object;
+}
+
+export interface CameraDisableDetectionCommand {
+  command: 'camera.disable-detection';
+  params: object;
+}
+
 export type CameraCommand =
   | CameraPtzSetCommand
   | CameraPtzMoveCommand
@@ -132,7 +142,9 @@ export type CameraCommand =
   | CameraPresetActivateCommand
   | CameraPresetDeleteCommand
   | CameraPtzBeginMoveCommand
-  | CameraPtzEndMoveCommand;
+  | CameraPtzEndMoveCommand
+  | CameraEnableDetectionCommand
+  | CameraDisableDetectionCommand;
 
 // STATE
 
@@ -141,6 +153,7 @@ export interface CameraStateDto {
   tilt: number;
   zoom: number;
   enabled: boolean;
+  objectDetectionEnabled: boolean;
   connected: boolean;
 }
 
