@@ -43,7 +43,7 @@ export const sLayoutDto = z.object({
   order: z.number(),
   isDefault: z.boolean(),
   devices: z.array(sLayoutDeviceDto),
-  colorize: z.boolean().optional(),
+  colorize: z.boolean(),
   createdOn: z.string(),
   lastModifiedOn: z.string(),
 });
