@@ -87,7 +87,7 @@ export const sCallState = z.enum([
 ]);
 
 export const sIntercomTerminalState = z.object({
-  callState: sCallState,
+  callState: sCallState.nullable(),
   connected: z.boolean(),
   callId: z.string().nullable(),
   peer: z.string().nullable(),
@@ -114,7 +114,7 @@ export const sCallStateChanged = z.object({
   state: sCallState,
   peer: z.string().optional(),
   sipAccount: z.string().optional(),
-  sipCallId: z.string().nonempty(),
+  sipCallId: z.string().optional(),
 });
 
 // export const sIntercomCallEvent = z.object({
