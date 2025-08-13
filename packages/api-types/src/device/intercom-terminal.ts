@@ -86,6 +86,8 @@ export const sCallState = z.enum([
   'terminated',
 ]);
 
+const sCallDirection = z.enum(['incoming', 'outgoing']);
+
 export const sIntercomTerminalState = z.object({
   callState: sCallState.nullable(),
   connected: z.boolean(),
@@ -115,6 +117,7 @@ export const sCallStateChanged = z.object({
   peer: z.string().optional(),
   sipAccount: z.string().optional(),
   sipCallId: z.string().optional(),
+  direction: sCallDirection,
 });
 
 // export const sIntercomCallEvent = z.object({
