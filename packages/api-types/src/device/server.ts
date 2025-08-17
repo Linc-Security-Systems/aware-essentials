@@ -1,22 +1,7 @@
-import {
-  AccessRuleDto,
-  PersonDto,
-  PersonPresenceDto,
-  ScheduleDto,
-  ZoneDto,
-} from '../access-control';
 import { z } from 'zod';
-import { DeviceDto } from './any-device';
-import { AutomationRuleDto } from '../automation';
-import { DeviceGroupDto } from '../device-group';
-import { MacroDto } from '../macros';
-import { LayoutDto } from '../layout';
-import { ViewDto } from '../view';
-import { RoleDto, UserDto } from '../user';
 import { ModuleConfig, ModuleConfigMetadata } from '../module-config';
 import { AccessControlCapabilityReport } from '../agent-communication';
-import { SecurityLevelDto } from '../security-level';
-import { BookmarkDto } from '../bookmarks';
+import { ObjectKinds } from 'src/objects';
 
 export const SERVER = 'server';
 
@@ -69,46 +54,6 @@ export const sAgentStopped = z.object({
 export type AgentStarted = z.infer<typeof sAgentStarted>;
 export type AgentStopped = z.infer<typeof sAgentStopped>;
 
-export const sObjectKind = z.enum([
-  'accessRule',
-  'schedule',
-  'person',
-  'device',
-  'zone',
-  'personPresence',
-  'deviceGroup',
-  'view',
-  'layout',
-  'automationRule',
-  'macro',
-  'role',
-  'user',
-  'securityLevel',
-  'bookmark',
-]);
-
-export type ObjectKind = z.infer<typeof sObjectKind>;
-
-export type ObjectKinds = {
-  layout: LayoutDto;
-  view: ViewDto;
-  accessRule: AccessRuleDto;
-  schedule: ScheduleDto;
-  person: PersonDto;
-  device: DeviceDto;
-  zone: ZoneDto;
-  personPresence: PersonPresenceDto;
-  automationRule: AutomationRuleDto;
-  deviceGroup: DeviceGroupDto;
-  macro: MacroDto;
-  role: RoleDto;
-  user: UserDto;
-  securityLevel: SecurityLevelDto;
-  bookmark: BookmarkDto;
-};
-
-export const objectKinds: readonly ObjectKind[] = sObjectKind.options;
-
 export type ObjectCreated = {
   [K in keyof ObjectKinds]: {
     originator: string;
@@ -152,21 +97,3 @@ export type ServerEvent =
   | ObjectDeleted
   | AgentStarted
   | AgentStopped;
-
-export const objectLabels: Record<string, string> = {
-  accessRule: 'Access Rule',
-  schedule: 'Schedule',
-  person: 'Person',
-  device: 'Device',
-  deviceGroup: 'Device Group',
-  zone: 'Zone',
-  layout: 'Layout',
-  view: 'View',
-  role: 'Role',
-  user: 'User',
-  personPresence: 'Person Presence',
-  automationRule: 'Automation Rule',
-  macro: 'Macro',
-  securityLevel: 'Security Level',
-  bookmark: 'Bookmark',
-};
