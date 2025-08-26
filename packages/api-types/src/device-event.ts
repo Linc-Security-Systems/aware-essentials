@@ -27,9 +27,11 @@ export interface DeviceCommandTriggered {
   args: object;
 }
 
-export interface MotionDetectedEvent {
-  kind: 'motion-detected';
-}
+export const sMotionDetected = z.object({
+  kind: z.literal('motion-detected'),
+});
+
+export type MotionDetectedEvent = z.infer<typeof sMotionDetected>;
 
 export interface DeviceConnectedEvent {
   kind: 'device-connected';
@@ -125,6 +127,7 @@ export const eventSchemaByKind = {
   ...panicButtonEventSchemaByKind,
   ...presenceTrackerEventSchemaByKind,
   ...readerEventSchemaByKind,
+  'motion-detected': sMotionDetected,
 };
 
 export const eventsByDeviceType: Partial<
