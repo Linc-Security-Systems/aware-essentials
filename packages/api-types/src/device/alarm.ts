@@ -77,6 +77,7 @@ export type AlarmStateDto = {
   triggeredBy: string[];
   // map of device IDs to their alarm state (armed / disarmed)
   armed: Record<string, boolean>;
+  bypassList: string[];
 };
 
 // EVENTS
