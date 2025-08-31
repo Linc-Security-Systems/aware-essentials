@@ -111,6 +111,8 @@ export const sPermissionId = z.union([
   z.literal('alarm:acknowlede').describe('Acknowledge alarms'),
   z.literal('alarm:arm').describe('Can arm or disarm'),
   z.literal('alarm:trigger').describe('Can trigger alarms'),
+  z.literal('alarm:bypass').describe('Can bypass alarm zones'),
+  z.literal('alarm:unbypass').describe('Can unbypass alarm zones'),
   //User
   z.literal('user:read').describe('View user data'),
   z.literal('user:change-password').describe('Change user password'),

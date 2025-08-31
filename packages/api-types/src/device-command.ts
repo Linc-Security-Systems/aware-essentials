@@ -93,6 +93,14 @@ export const commandDescriptions: Record<
     description: 'Device Disarm All',
     permission: 'alarm:arm',
   },
+  'alarm.bypass': {
+    description: 'Alarm Bypass',
+    permission: 'alarm:bypass',
+  },
+  'alarm.unbypass': {
+    description: 'Alarm Unbypass',
+    permission: 'alarm:unbypass',
+  },
   'alarm.set-trigger': {
     description: 'Alarm Trigger',
     permission: 'alarm:trigger',
