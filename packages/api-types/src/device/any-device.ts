@@ -234,7 +234,7 @@ export const sEventDescription = z.object({
     .describe('Possible variants derived from event data'),
 });
 
-export const sGetDeviceCatalogResponse = z.array(sEventDescription);
+export const sGetEventCatalogResponse = z.array(sEventDescription);
 
 export const sSetUnsetRelationRequest = sDeviceRelationDto;
 
@@ -290,6 +290,4 @@ export type EventDescription = z.infer<typeof sEventDescription>;
 
 export type EventVariantDescription = z.infer<typeof sEventVariantDescription>;
 
-export type GetDeviceCatalogResponse = z.infer<
-  typeof sGetDeviceCatalogResponse
->;
+export type GetEventCatalogResponse = z.infer<typeof sGetEventCatalogResponse>;
