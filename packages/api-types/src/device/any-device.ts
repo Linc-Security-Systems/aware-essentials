@@ -220,6 +220,22 @@ export const sRemoveDevicePresetRequest = z.object({
   presetId: z.string().nonempty(),
 });
 
+export const sEventVariantDescription = z.object({
+  name: z.string().describe('The name of the variant'),
+  label: z.string().describe('A human-readable label for the variant'),
+});
+
+export const sEventDescription = z.object({
+  kind: z.string().describe('The kind of event'),
+  label: z.string().describe('A human-readable label for the event'),
+  variants: z
+    .array(sEventVariantDescription)
+    .optional()
+    .describe('Possible variants derived from event data'),
+});
+
+export const sGetDeviceCatalogResponse = z.array(sEventDescription);
+
 export const sSetUnsetRelationRequest = sDeviceRelationDto;
 
 export type DeviceType = z.infer<typeof sDeviceType>;
@@ -269,3 +285,11 @@ export type SetUnsetDeviceRelationRequest = z.infer<
 export type DeviceSearchCriteria = {
   type: DeviceType;
 };
+
+export type EventDescription = z.infer<typeof sEventDescription>;
+
+export type EventVariantDescription = z.infer<typeof sEventVariantDescription>;
+
+export type GetDeviceCatalogResponse = z.infer<
+  typeof sGetDeviceCatalogResponse
+>;
