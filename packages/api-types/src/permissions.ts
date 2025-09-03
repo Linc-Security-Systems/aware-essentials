@@ -136,6 +136,9 @@ export const sPermissionId = z.union([
   z.literal('device:discover').describe('Discover devices'), //No UI effect yet
   z.literal('device:import').describe('Import discovered devices'), //No UI effect yet
   z.literal('device:override-specs').describe('Override device specs'),
+  z.literal('device:notes').describe('View and Edit device notes'),
+  z.literal('device:alarms').describe('Configure device alarms'),
+  z.literal('device:adjacent-cameras').describe('Configure adjacent cameras'),
   //Automation
   z.literal('automation:read').describe('View automation data'),
   z.literal('automation:update').describe('Update automation data'), //No UI effect yet
