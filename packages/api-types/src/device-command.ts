@@ -99,7 +99,7 @@ export const commandDescriptions: Record<
   },
   'alarm.unbypass': {
     description: 'Alarm Unbypass',
-    permission: 'alarm:unbypass',
+    permission: 'alarm:bypass',
   },
   'alarm.set-trigger': {
     description: 'Alarm Trigger',
