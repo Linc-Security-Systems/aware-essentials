@@ -1,5 +1,6 @@
-import { DeviceDto, ObjectKinds } from '../../device';
+import { DeviceDto } from '../../device';
 import { PersonDto, ScheduleDto, ZoneDto } from '../../access-control';
+import { ObjectKinds } from '../../objects';
 
 export type SyncContext = {
   objectVersion: number;

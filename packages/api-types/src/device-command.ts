@@ -55,6 +55,14 @@ export const commandDescriptions: Record<
     description: 'Camera Disable',
     permission: 'camera:privacy-mode',
   },
+  'camera.enable-detection': {
+    description: 'Camera Enable Detection',
+    permission: 'camera:detection',
+  },
+  'camera.disable-detection': {
+    description: 'Camera Disable Detection',
+    permission: 'camera:detection',
+  },
   'door.unlock': { description: 'Door Unlock', permission: 'door:lock' },
   'door.lock': { description: 'Door Lock', permission: 'door:lock' },
   'door.release': { description: 'Door Release', permission: 'door:release' },
@@ -84,6 +92,14 @@ export const commandDescriptions: Record<
   'alarm.disarm-all': {
     description: 'Device Disarm All',
     permission: 'alarm:arm',
+  },
+  'alarm.bypass': {
+    description: 'Alarm Bypass',
+    permission: 'alarm:bypass',
+  },
+  'alarm.unbypass': {
+    description: 'Alarm Unbypass',
+    permission: 'alarm:bypass',
   },
   'alarm.set-trigger': {
     description: 'Alarm Trigger',

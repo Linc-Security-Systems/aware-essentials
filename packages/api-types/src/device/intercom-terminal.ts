@@ -79,66 +79,78 @@ export type IntercomTerminalCommand =
 
 // STATE
 
-export interface IntercomTerminalStateDto {
-  connected: boolean;
-  clientId: number | null;
-  callId: string | null;
-  userAgentId: string | null;
-  offerSdp: string | null;
-  answerSdp: string | null;
-  callState: 'idle' | 'ringing' | 'active';
-}
+export const sCallState = z.enum([
+  'connecting',
+  'connected',
+  'ringing',
+  'terminated',
+]);
+
+const sCallDirection = z.enum(['incoming', 'outgoing']);
+
+export const sIntercomTerminalState = z.object({
+  callState: sCallState.nullable(),
+  connected: z.boolean(),
+  callId: z.string().nullable(),
+  peer: z.string().nullable(),
+});
+
+export type IntercomTerminalStateDto = z.infer<typeof sIntercomTerminalState>;
+
+// export interface IntercomTerminalStateDto {
+//   connected: boolean;
+//   clientId: number | null;
+//   callId: string | null;
+//   userAgentId: string | null;
+//   offerSdp: string | null;
+//   answerSdp: string | null;
+//   callState: 'idle' | 'ringing' | 'active';
+// }
 
 // EVENTS
 
-export const sIntercomCallEvent = z.object({
-  kind: z.literal('intercom-call'),
-  userId: z.string().optional(),
-  personId: z.string().optional(),
-  callId: z.string().nonempty(),
-  offerSdp: z.string().nonempty(),
-});
-
-export const sIntercomCallCancelledEvent = z.object({
-  kind: z.literal('intercom-call-cancelled'),
+export const sCallStateChanged = z.object({
+  kind: z.literal('call-state-changed'),
   userId: z.string().optional(),
   callId: z.string().nonempty(),
+  state: sCallState,
+  peer: z.string().optional(),
+  sipAccount: z.string().optional(),
+  sipCallId: z.string().optional(),
+  direction: sCallDirection,
 });
 
-export const sIntercomCallAnsweredEvent = z.object({
-  kind: z.literal('intercom-call-answered'),
-  userId: z.string().optional(),
-  userAgentId: z.string().nonempty(),
-  callId: z.string().nonempty(),
-  answerSdp: z.string().nonempty(),
-});
+// export const sIntercomCallEvent = z.object({
+//   kind: z.literal('intercom-call'),
+//   userId: z.string().optional(),
+//   personId: z.string().optional(),
+//   callId: z.string().nonempty(),
+//   offerSdp: z.string().nonempty(),
+// });
 
-export const sIntercomCallEndedEvent = z.object({
-  kind: z.literal('intercom-call-ended'),
-  callId: z.string().nonempty(),
-});
+// export const sIntercomCallCancelledEvent = z.object({
+//   kind: z.literal('intercom-call-cancelled'),
+//   userId: z.string().optional(),
+//   callId: z.string().nonempty(),
+// });
+
+// export const sIntercomCallAnsweredEvent = z.object({
+//   kind: z.literal('intercom-call-answered'),
+//   userId: z.string().optional(),
+//   userAgentId: z.string().nonempty(),
+//   callId: z.string().nonempty(),
+//   answerSdp: z.string().nonempty(),
+// });
+
+// export const sIntercomCallEndedEvent = z.object({
+//   kind: z.literal('intercom-call-ended'),
+//   callId: z.string().nonempty(),
+// });
 
 export const intercomTerminalEventSchemaByKind = {
-  'intercom-call': sIntercomCallEvent,
-  'intercom-call-cancelled': sIntercomCallCancelledEvent,
-  'intercom-call-answered': sIntercomCallAnsweredEvent,
-  'intercom-call-ended': sIntercomCallEndedEvent,
+  'call-state-changed': sCallStateChanged,
 };
 
-export type IntercomCallEvent = z.infer<typeof sIntercomCallEvent>;
+export type CallStateChangedEvent = z.infer<typeof sCallStateChanged>;
 
-export type IntercomCallCancelledEvent = z.infer<
-  typeof sIntercomCallCancelledEvent
->;
-
-export type IntercomCallAnsweredEvent = z.infer<
-  typeof sIntercomCallAnsweredEvent
->;
-
-export type IntercomCallEndedEvent = z.infer<typeof sIntercomCallEndedEvent>;
-
-export type IntercomTerminalEvent =
-  | IntercomCallEvent
-  | IntercomCallCancelledEvent
-  | IntercomCallAnsweredEvent
-  | IntercomCallEndedEvent;
+export type IntercomTerminalEvent = CallStateChangedEvent;

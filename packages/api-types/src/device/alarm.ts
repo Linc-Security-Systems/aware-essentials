@@ -35,6 +35,20 @@ export interface DisarmCommand {
   };
 }
 
+export interface BypassCommand {
+  command: 'alarm.bypass';
+  params: {
+    deviceId: string;
+  };
+}
+
+export interface UnbypassCommand {
+  command: 'alarm.unbypass';
+  params: {
+    deviceId: string;
+  };
+}
+
 export interface ArmAllCommand {
   command: 'alarm.arm-all';
   params: object;
@@ -66,7 +80,9 @@ export type AlarmCommand =
   | ArmAllCommand
   | DisarmAllCommand
   | AcknowledgeCommand
-  | SetTriggerCommand;
+  | SetTriggerCommand
+  | BypassCommand
+  | UnbypassCommand;
 
 // STATE
 
@@ -77,6 +93,7 @@ export type AlarmStateDto = {
   triggeredBy: string[];
   // map of device IDs to their alarm state (armed / disarmed)
   armed: Record<string, boolean>;
+  bypassList: string[];
 };
 
 // EVENTS

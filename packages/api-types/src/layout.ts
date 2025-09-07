@@ -16,6 +16,7 @@ export const sAddLayoutRequest = z.object({
   imageId: z.string().nonempty(),
   order: z.number().optional(),
   devices: z.array(sLayoutDeviceDto),
+  colorize: z.boolean(),
 });
 
 export type AddLayoutRequest = z.infer<typeof sAddLayoutRequest>;
@@ -27,6 +28,7 @@ export const sUpdateLayoutRequest = z.object({
   order: z.number().optional(),
   isDefault: z.boolean().optional(),
   devices: z.array(sLayoutDeviceDto).optional(),
+  colorize: z.boolean().optional(),
 });
 
 export type UpdateLayoutRequest = { id: string } & z.infer<
@@ -41,6 +43,7 @@ export const sLayoutDto = z.object({
   order: z.number(),
   isDefault: z.boolean(),
   devices: z.array(sLayoutDeviceDto),
+  colorize: z.boolean(),
   createdOn: z.string(),
   lastModifiedOn: z.string(),
 });

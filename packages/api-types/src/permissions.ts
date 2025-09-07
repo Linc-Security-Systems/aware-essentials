@@ -47,6 +47,7 @@ export const sPermissionId = z.union([
   z.literal('camera:ptz').describe('Control camera PTZ'),
   z.literal('camera:privacy-mode').describe('Control camera privacy mode'),
   z.literal('camera:assign').describe('Assign adjacent cameras to devices'),
+  z.literal('camera:detection').describe('Enable or disable camera detection'),
   //Preset
   z.literal('preset:read').describe('Use camera presets'),
   z.literal('preset:update').describe('Update presets'),
@@ -110,6 +111,8 @@ export const sPermissionId = z.union([
   z.literal('alarm:acknowlede').describe('Acknowledge alarms'),
   z.literal('alarm:arm').describe('Can arm or disarm'),
   z.literal('alarm:trigger').describe('Can trigger alarms'),
+  z.literal('alarm:bypass').describe('Can bypass alarms'),
+
   //User
   z.literal('user:read').describe('View user data'),
   z.literal('user:change-password').describe('Change user password'),
@@ -133,6 +136,9 @@ export const sPermissionId = z.union([
   z.literal('device:discover').describe('Discover devices'), //No UI effect yet
   z.literal('device:import').describe('Import discovered devices'), //No UI effect yet
   z.literal('device:override-specs').describe('Override device specs'),
+  z.literal('device:notes').describe('View and Edit device notes'),
+  z.literal('device:alarms').describe('Configure device alarms'),
+  z.literal('device:adjacent-cameras').describe('Configure adjacent cameras'),
   //Automation
   z.literal('automation:read').describe('View automation data'),
   z.literal('automation:update').describe('Update automation data'), //No UI effect yet

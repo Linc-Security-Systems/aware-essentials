@@ -27,9 +27,11 @@ export interface DeviceCommandTriggered {
   args: object;
 }
 
-export interface MotionDetectedEvent {
-  kind: 'motion-detected';
-}
+export const sMotionDetected = z.object({
+  kind: z.literal('motion-detected'),
+});
+
+export type MotionDetectedEvent = z.infer<typeof sMotionDetected>;
 
 export interface DeviceConnectedEvent {
   kind: 'device-connected';
@@ -96,10 +98,7 @@ export const eventKindLabels: Record<DeviceEvent['kind'], string> = {
   'panic-button-pressed': 'Panic Button Pressed',
   'device-connected': 'Device Connected',
   'device-disconnected': 'Device Disconnected',
-  'intercom-call': 'Intercom Call',
-  'intercom-call-answered': 'Intercom Call Answered',
-  'intercom-call-ended': 'Intercom Call Ended',
-  'intercom-call-cancelled': 'Intercom Call Cancelled',
+  'call-state-changed': 'Call State Changed',
   'object-created': 'Object Created',
   'object-updated': 'Object Updated',
   'object-deleted': 'Object Deleted',
@@ -115,6 +114,8 @@ export const eventKindLabels: Record<DeviceEvent['kind'], string> = {
   'io-board-input-changed': 'IO Board Input Changed',
   'agent-started': 'Agent Started',
   'agent-stopped': 'Agent Stopped',
+  'door-opened': 'Door Opened',
+  'door-closed': 'Door Closed',
 };
 
 export const eventSchemaByKind = {
@@ -126,6 +127,7 @@ export const eventSchemaByKind = {
   ...panicButtonEventSchemaByKind,
   ...presenceTrackerEventSchemaByKind,
   ...readerEventSchemaByKind,
+  'motion-detected': sMotionDetected,
 };
 
 export const eventsByDeviceType: Partial<

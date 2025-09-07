@@ -1,12 +1,14 @@
 import { z } from 'zod';
 import { sPermissionId } from './permissions';
 
+export const sUserPassword = z.string().min(4).max(64);
+
 export const sNewUserRequest = z.object({
   firstName: z.string().min(1).max(64).nonempty(),
   lastName: z.string().min(1).max(64).nonempty(),
   email: z.string().email().nullable(),
   username: z.string().min(1).max(64).nonempty(),
-  password: z.string().min(8).max(64).nonempty(),
+  password: sUserPassword.nonempty(),
   roles: z.array(z.string()).min(1),
   isActive: z.boolean(),
 });
@@ -17,14 +19,14 @@ export const sUpdateUserRequest = z.object({
   lastName: z.string().min(1).max(64).optional(),
   email: z.string().email().nullable().optional(),
   username: z.string().min(3).max(64).optional(),
-  password: z.string().min(8).max(64).optional(),
+  password: sUserPassword.optional(),
   isActive: z.boolean().optional(),
   roles: z.array(z.string()).min(1).optional(),
 });
 
 export const sChangeSelfPasswordRequest = z.object({
-  oldPassword: z.string().min(1).max(64).nonempty(),
-  newPassword: z.string().min(8).max(64).nonempty(),
+  oldPassword: sUserPassword.nonempty(),
+  newPassword: sUserPassword.nonempty(),
 });
 
 export const sUserDto = z.object({
