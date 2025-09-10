@@ -5,31 +5,24 @@ import {
   merge,
   throwError,
   filter,
-  take,
   switchMap,
   EMPTY,
   catchError,
   Subscription,
   retry,
-  timeout,
-  Observable,
   map,
 } from 'rxjs';
-import { Transport } from './transport';
 import {
   AccessControlCapabilityReport,
   AccessObjectKind,
   AccessRefMap,
-  FromAgent,
-  FromServer,
-  Message,
-  PayloadByKind,
   ProviderSpecs,
   PushEventRq,
   PushStateUpdateRq,
 } from '@awarevue/api-types';
 import { AccessChangeContext, Agent, RunContext } from './agent';
 import { createValidator } from './default-validator';
+import { AgentCommunicationClient } from './agent-protocol/agent-communication-client';
 
 type ObjectCache = Record<
   AccessObjectKind,
@@ -46,60 +39,11 @@ export type AgentOptions = {
   accessControlProviders?: Record<string, AccessControlCapabilityReport>;
   agentId: string;
   replyTimeout?: number;
-  transport: Transport<Message<FromServer>, Message<FromAgent>>;
+  transport: AgentCommunicationClient<unknown>;
 };
 
 export class AgentApp {
-  private static id = 0;
-
-  private static nextId = () => `${++AgentApp.id}`;
-
   private sub: Subscription | null = null;
-
-  // getReply$ is a generic function that sends a message to server and waits for a reply.
-  private getReply$ = <TResponseKind extends keyof PayloadByKind>(
-    responseKind: TResponseKind,
-    payload: FromAgent,
-  ) => {
-    const reply$ = (id: string) =>
-      this.options.transport.messages$.pipe(
-        mergeMap((message) => {
-          if (message.kind === 'error-rs' && message.requestId === id) {
-            const error = message.error;
-            return throwError(
-              () =>
-                new Error(
-                  `Server failed to process message ${message.kind}: ${error}`,
-                ),
-            );
-          }
-          return of(message);
-        }),
-        filter(
-          (message) =>
-            message.kind === responseKind &&
-            'requestId' in message &&
-            message.requestId === id,
-        ),
-        take(1),
-        timeout(this.options.replyTimeout || 10000),
-      ) as Observable<Message<PayloadByKind[TResponseKind]>>;
-
-    return of(this.addEnvelope({ ...payload, id: AgentApp.nextId() })).pipe(
-      // send the message to the agent
-      tap((p) => this.options.transport.send(p)),
-      // wait for the agent to reply
-      mergeMap(({ id }) => reply$(id)),
-    );
-  };
-
-  private addEnvelope = <T extends FromAgent>(payload: T) => ({
-    ...payload,
-    id: AgentApp.nextId(),
-    from: this.options.agentId,
-    version: this.options.version,
-    on: Date.now(),
-  });
 
   private createAccessChangeContext = (
     context: RunContext,
@@ -138,15 +82,14 @@ export class AgentApp {
 
     return merge(
       // run the agent monitor
-      this.agent
-        .run$(context)
-        .pipe(
-          tap((message) =>
-            this.options.transport.send(
-              this.addEnvelope({ ...message, provider: context.provider }),
-            ),
-          ),
+      this.agent.run$(context).pipe(
+        tap((message) =>
+          this.options.transport.send({
+            ...message,
+            provider: context.provider,
+          }),
         ),
+      ),
       // handle messages to agent
       this.options.transport.messages$.pipe(
         mergeMap((message) => {
@@ -168,7 +111,7 @@ export class AgentApp {
                   }),
                 ),
                 // send the response
-                tap((rs) => this.options.transport.send(this.addEnvelope(rs))),
+                tap((rs) => this.options.transport.send(rs)),
               );
 
             case 'get-available-devices':
@@ -188,7 +131,7 @@ export class AgentApp {
                     error: error.message ?? 'Unknown error',
                   }),
                 ),
-                tap((rs) => this.options.transport.send(this.addEnvelope(rs))),
+                tap((rs) => this.options.transport.send(rs)),
               );
 
             case 'validate-change':
@@ -223,6 +166,12 @@ export class AgentApp {
                   requestId: message.id,
                   issues,
                 })),
+                tap({
+                  error: (error) => {
+                    // print error
+                    console.error(error);
+                  },
+                }),
                 catchError((error: Error) =>
                   of({
                     kind: 'error-rs' as const,
@@ -230,7 +179,7 @@ export class AgentApp {
                     error: error.message ?? 'Unknown error',
                   }),
                 ),
-                tap((rs) => this.options.transport.send(this.addEnvelope(rs))),
+                tap((rs) => this.options.transport.send(rs)),
               );
 
             case 'apply-change':
@@ -261,7 +210,7 @@ export class AgentApp {
                     error: error.message ?? 'Unknown error',
                   }),
                 ),
-                tap((rs) => this.options.transport.send(this.addEnvelope(rs))),
+                tap((rs) => this.options.transport.send(rs)),
               );
 
             default:
@@ -276,11 +225,13 @@ export class AgentApp {
     const registration$ = this.options.transport.connected$.pipe(
       switchMap((connected) =>
         connected
-          ? this.getReply$('register-rs', {
-              kind: 'register' as const,
-              providers: this.options.providers,
-              accessControlProviders: this.options.accessControlProviders,
-            }).pipe(retry({ delay: 3000 }))
+          ? this.options.transport
+              .getReply$('register-rs', {
+                kind: 'register' as const,
+                providers: this.options.providers,
+                accessControlProviders: this.options.accessControlProviders,
+              })
+              .pipe(retry({ delay: 3000 }))
           : EMPTY,
       ),
     );
@@ -298,12 +249,10 @@ export class AgentApp {
                 retry({ delay: 3000 }),
                 tap(() => {
                   // reply to server that we are starting
-                  this.options.transport.send(
-                    this.addEnvelope({
-                      kind: 'start-rs' as const,
-                      requestId: message.id,
-                    }),
-                  );
+                  this.options.transport.send({
+                    kind: 'start-rs' as const,
+                    requestId: message.id,
+                  });
                 }),
                 map((deviceCatalog) => ({
                   provider: message.provider,
@@ -316,12 +265,10 @@ export class AgentApp {
               )
           : of(message).pipe(
               tap(() =>
-                this.options.transport.send(
-                  this.addEnvelope({
-                    kind: 'stop-rs' as const,
-                    requestId: message.id,
-                  }),
-                ),
+                this.options.transport.send({
+                  kind: 'stop-rs' as const,
+                  requestId: message.id,
+                }),
               ),
             ),
       ),
@@ -330,6 +277,9 @@ export class AgentApp {
     const validateConfig$ = this.options.transport.messages$.pipe(
       filter((message) => message.kind === 'validate-config'),
       mergeMap((message) => {
+        if (message.kind !== 'validate-config') {
+          return EMPTY;
+        }
         const provider = message.provider;
         const config = message.config;
         return this.agent
@@ -353,7 +303,7 @@ export class AgentApp {
               }),
             ),
             // send the response
-            tap((rs) => this.options.transport.send(this.addEnvelope(rs))),
+            tap((rs) => this.options.transport.send(rs)),
           );
       }),
     );

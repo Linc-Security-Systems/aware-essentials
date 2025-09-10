@@ -1,8 +1,9 @@
-import { Message, FromAgent } from '@awarevue/api-types';
 import { Transport } from './transport';
 
-export class TransportWithLogs implements Transport {
-  constructor(private readonly decoratee: Transport) {
+export class TransportWithLogs<TIn, TOut, TPeer>
+  implements Transport<TIn, TOut, TPeer>
+{
+  constructor(private readonly decoratee: Transport<TIn, TOut, TPeer>) {
     this.decoratee.connected$.subscribe((connected) => {
       console.log(`[${new Date()}] - Transport connected: ${connected}`);
     });
@@ -10,9 +11,6 @@ export class TransportWithLogs implements Transport {
       console.log(
         `[${new Date()}] - Transport message: ${JSON.stringify(msg)}`,
       );
-    });
-    this.decoratee.errors$.subscribe((err) => {
-      console.error(`[${new Date()}] - Transport error: ${err}`);
     });
   }
 
@@ -24,17 +22,13 @@ export class TransportWithLogs implements Transport {
     return this.decoratee.messages$;
   }
 
-  get errors$() {
-    return this.decoratee.errors$;
-  }
-
   close(): void {
     console.log(`Closing transport`);
     this.decoratee.close();
   }
 
-  send(msg: Message<FromAgent>): void {
+  send(msg: TOut, to: TPeer | null): void {
     console.log(`[${new Date()}] - Sending message: ${JSON.stringify(msg)}`);
-    this.decoratee.send(msg);
+    this.decoratee.send(msg, to);
   }
 }

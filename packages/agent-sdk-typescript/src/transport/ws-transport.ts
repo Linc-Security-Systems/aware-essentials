@@ -22,22 +22,22 @@ import {
 import { Transport } from './transport';
 
 export class WsTransport
-  implements Transport<string | Buffer, string | Buffer>
+  implements Transport<string | Buffer, string | Buffer, string>
 {
   //----------------------------------------
   //  Public reactive API
   //----------------------------------------
-  readonly connected$: Observable<boolean>;
-  readonly messages$: Observable<string | Buffer>;
+  readonly connected$: Observable<[boolean, string]>;
+  readonly messages$: Observable<[string | Buffer, string]>;
   readonly errors$: Observable<Error>;
 
   //----------------------------------------
   //  Internals
   //----------------------------------------
-  private ws!: WebSocket;
+  private ws: WebSocket | null = null;
 
-  private readonly _connected$ = new BehaviorSubject<boolean>(false);
-  private readonly _messages$ = new Subject<string | Buffer>();
+  private readonly _connected$: BehaviorSubject<[boolean, string]>;
+  private readonly _messages$ = new Subject<[string | Buffer, string]>();
   private readonly _errors$ = new Subject<Error>();
   private readonly outbound$ = new Subject<string | Buffer>();
   private readonly destroy$ = new Subject<void>();
@@ -54,6 +54,7 @@ export class WsTransport
       maxDelay?: number;
     },
   ) {
+    this._connected$ = new BehaviorSubject<[boolean, string]>([false, url]);
     this.connected$ = this._connected$.asObservable();
     this.messages$ = this._messages$.asObservable();
     this.errors$ = this._errors$.asObservable();
@@ -122,12 +123,15 @@ export class WsTransport
 
     this.ws.on('open', () => {
       this.reconnectDelay = this.options?.reconnectDelay ?? 1_000; // reset back-off
-      this._connected$.next(true);
+      this._connected$.next([true, this.ws?.url]);
     });
 
     this.ws.on('message', (data) => {
       // Pass through raw data - let higher layers handle parsing
-      this._messages$.next(data instanceof Buffer ? data : data.toString());
+      this._messages$.next([
+        data instanceof Buffer ? data : data.toString(),
+        this.ws?.url,
+      ]);
     });
 
     this.ws.on('error', (err) => {
@@ -136,7 +140,7 @@ export class WsTransport
     });
 
     this.ws.on('close', () => {
-      this._connected$.next(false);
+      this._connected$.next([false, this.ws?.url]);
       if (!this.destroyed) this.scheduleReconnect();
     });
   }

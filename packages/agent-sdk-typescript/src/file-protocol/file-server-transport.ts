@@ -7,7 +7,7 @@
 //--------------------------------------------------------------
 
 import { Subject, Observable, takeUntil, map, filter } from 'rxjs';
-import { Transport } from '../transport';
+import { Transport } from '../transport/transport';
 import { RequestMessage, ResponseMessage, HttpTunnelMessage } from './types';
 import { serialize, deserialize } from './serializer';
 
