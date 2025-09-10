@@ -39,7 +39,7 @@ export type AgentOptions = {
   accessControlProviders?: Record<string, AccessControlCapabilityReport>;
   agentId: string;
   replyTimeout?: number;
-  transport: AgentCommunicationClient<unknown>;
+  client: AgentCommunicationClient<unknown>;
 };
 
 export class AgentApp {
@@ -84,14 +84,14 @@ export class AgentApp {
       // run the agent monitor
       this.agent.run$(context).pipe(
         tap((message) =>
-          this.options.transport.send({
+          this.options.client.send({
             ...message,
             provider: context.provider,
           }),
         ),
       ),
       // handle messages to agent
-      this.options.transport.messages$.pipe(
+      this.options.client.messages$.pipe(
         mergeMap((message) => {
           switch (message.kind) {
             // handle commands
@@ -111,7 +111,7 @@ export class AgentApp {
                   }),
                 ),
                 // send the response
-                tap((rs) => this.options.transport.send(rs)),
+                tap((rs) => this.options.client.send(rs)),
               );
 
             case 'get-available-devices':
@@ -131,7 +131,7 @@ export class AgentApp {
                     error: error.message ?? 'Unknown error',
                   }),
                 ),
-                tap((rs) => this.options.transport.send(rs)),
+                tap((rs) => this.options.client.send(rs)),
               );
 
             case 'validate-change':
@@ -179,7 +179,7 @@ export class AgentApp {
                     error: error.message ?? 'Unknown error',
                   }),
                 ),
-                tap((rs) => this.options.transport.send(rs)),
+                tap((rs) => this.options.client.send(rs)),
               );
 
             case 'apply-change':
@@ -210,7 +210,7 @@ export class AgentApp {
                     error: error.message ?? 'Unknown error',
                   }),
                 ),
-                tap((rs) => this.options.transport.send(rs)),
+                tap((rs) => this.options.client.send(rs)),
               );
 
             default:
@@ -222,10 +222,10 @@ export class AgentApp {
   };
 
   private process$ = () => {
-    const registration$ = this.options.transport.connected$.pipe(
+    const registration$ = this.options.client.connected$.pipe(
       switchMap((connected) =>
         connected
-          ? this.options.transport
+          ? this.options.client
               .getReply$('register-rs', {
                 kind: 'register' as const,
                 providers: this.options.providers,
@@ -236,7 +236,7 @@ export class AgentApp {
       ),
     );
 
-    const startStop$ = this.options.transport.messages$.pipe(
+    const startStop$ = this.options.client.messages$.pipe(
       filter((message) => message.kind === 'start' || message.kind === 'stop'),
       switchMap((message) =>
         message.kind === 'start'
@@ -249,7 +249,7 @@ export class AgentApp {
                 retry({ delay: 3000 }),
                 tap(() => {
                   // reply to server that we are starting
-                  this.options.transport.send({
+                  this.options.client.send({
                     kind: 'start-rs' as const,
                     requestId: message.id,
                   });
@@ -265,7 +265,7 @@ export class AgentApp {
               )
           : of(message).pipe(
               tap(() =>
-                this.options.transport.send({
+                this.options.client.send({
                   kind: 'stop-rs' as const,
                   requestId: message.id,
                 }),
@@ -274,7 +274,7 @@ export class AgentApp {
       ),
     );
 
-    const validateConfig$ = this.options.transport.messages$.pipe(
+    const validateConfig$ = this.options.client.messages$.pipe(
       filter((message) => message.kind === 'validate-config'),
       mergeMap((message) => {
         if (message.kind !== 'validate-config') {
@@ -303,7 +303,7 @@ export class AgentApp {
               }),
             ),
             // send the response
-            tap((rs) => this.options.transport.send(rs)),
+            tap((rs) => this.options.client.send(rs)),
           );
       }),
     );
@@ -323,6 +323,6 @@ export class AgentApp {
   stop() {
     this.sub?.unsubscribe();
     this.sub = null;
-    this.options.transport.close();
+    this.options.client.close();
   }
 }

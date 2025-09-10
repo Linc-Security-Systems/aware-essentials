@@ -46,6 +46,7 @@ export class AgentCommunicationHub<TPeer> {
       tap(([connected, agentId]) => {
         if (!connected && agentId) {
           this.routingTable.deleteByDownstream(agentId);
+          // simulate an unregister message from the agent
           this._additionalMessages$.next([
             {
               kind: 'unregister',
