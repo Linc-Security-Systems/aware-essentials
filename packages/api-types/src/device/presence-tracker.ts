@@ -1,4 +1,4 @@
-import { sPersonId, sZoneId } from 'src/primitives';
+import { sPersonId, sZoneId } from '../primitives';
 import { z } from 'zod';
 
 export const PRESENCE_TRACKER = 'presence-tracker';

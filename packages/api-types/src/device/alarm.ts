@@ -1,4 +1,4 @@
-import { sDeviceEvent, sDeviceId, sDuration } from 'src/primitives';
+import { sDeviceEvent, sDeviceId, sDuration } from '../primitives';
 import { z } from 'zod';
 
 /*

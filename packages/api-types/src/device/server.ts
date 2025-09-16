@@ -1,8 +1,8 @@
 import { z } from 'zod';
 import { ModuleConfig, ModuleConfigMetadata } from '../module-config';
 import { AccessControlCapabilityReport } from '../agent-communication';
-import { ObjectKinds } from 'src/objects';
-import { sMacroId } from 'src/primitives';
+import { ObjectKinds } from '../objects';
+import { sMacroId } from '../primitives';
 
 export const SERVER = 'server';
 

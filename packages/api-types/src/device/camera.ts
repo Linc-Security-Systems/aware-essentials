@@ -1,4 +1,4 @@
-import { sPresetId } from 'src/primitives';
+import { sPresetId } from '../primitives';
 import { z } from 'zod';
 
 export const CAMERA = 'camera' as const;
