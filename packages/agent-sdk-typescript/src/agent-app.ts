@@ -29,6 +29,7 @@ import {
 } from '@awarevue/api-types';
 import { AccessChangeContext, Agent, RunContext } from './agent';
 import { createValidator } from './default-validator';
+import { stringifyError } from './utils';
 
 type ObjectCache = Record<
   AccessObjectKind,
@@ -68,7 +69,7 @@ export class AgentApp {
             return throwError(
               () =>
                 new Error(
-                  `Server failed to process message ${message.kind}: ${error}`,
+                  `Server failed to process message ${payload.kind}: ${error}`,
                 ),
             );
           }
@@ -91,6 +92,27 @@ export class AgentApp {
       mergeMap(({ id }) => reply$(id)),
     );
   };
+
+  private handleResponse$ =
+    (requestId: string) => (obs: Observable<FromAgent>) =>
+      obs.pipe(
+        tap({
+          error: (error) =>
+            console.error(
+              'Error processing request',
+              requestId,
+              stringifyError(error),
+            ),
+        }),
+        catchError((error: unknown) =>
+          of({
+            kind: 'error-rs' as const,
+            requestId,
+            error: stringifyError(error),
+          }),
+        ),
+        tap((rs) => this.options.transport.send(this.addEnvelope(rs))),
+      );
 
   private addEnvelope = <T extends FromAgent>(payload: T) => ({
     ...payload,
@@ -158,16 +180,7 @@ export class AgentApp {
                   kind: 'command-rs' as const,
                   requestId: message.id,
                 })),
-                // error
-                catchError((error: Error) =>
-                  of({
-                    kind: 'error-rs' as const,
-                    requestId: message.id,
-                    error: error.message ?? 'Unknown error',
-                  }),
-                ),
-                // send the response
-                tap((rs) => this.options.transport.send(this.addEnvelope(rs))),
+                this.handleResponse$(message.id),
               );
 
             case 'get-available-devices':
@@ -179,15 +192,7 @@ export class AgentApp {
                   ...rs,
                   requestId: message.id,
                 })),
-                // error
-                catchError((error: Error) =>
-                  of({
-                    kind: 'error-rs' as const,
-                    requestId: message.id,
-                    error: error.message ?? 'Unknown error',
-                  }),
-                ),
-                tap((rs) => this.options.transport.send(this.addEnvelope(rs))),
+                this.handleResponse$(message.id),
               );
 
             case 'validate-change':
@@ -222,14 +227,7 @@ export class AgentApp {
                   requestId: message.id,
                   issues,
                 })),
-                catchError((error: Error) =>
-                  of({
-                    kind: 'error-rs' as const,
-                    requestId: message.id,
-                    error: error.message ?? 'Unknown error',
-                  }),
-                ),
-                tap((rs) => this.options.transport.send(this.addEnvelope(rs))),
+                this.handleResponse$(message.id),
               );
 
             case 'apply-change':
@@ -243,7 +241,7 @@ export class AgentApp {
                 ? throwError(
                     () =>
                       new Error(
-                        `Agent ${context.provider} does not support access change application`,
+                        `Agent ${context.provider} does not support access change apply`,
                       ),
                   )
                 : this.agent.applyAccessChange$(applyContext, message);
@@ -253,14 +251,7 @@ export class AgentApp {
                   requestId: message.id,
                   refs: result,
                 })),
-                catchError((error: Error) =>
-                  of({
-                    kind: 'error-rs' as const,
-                    requestId: message.id,
-                    error: error.message ?? 'Unknown error',
-                  }),
-                ),
-                tap((rs) => this.options.transport.send(this.addEnvelope(rs))),
+                this.handleResponse$(message.id),
               );
 
             default:
@@ -343,16 +334,7 @@ export class AgentApp {
               requestId: message.id,
               issues,
             })),
-            // error
-            catchError((error: Error) =>
-              of({
-                kind: 'error-rs' as const,
-                requestId: message.id,
-                error: error.message ?? 'Unknown error',
-              }),
-            ),
-            // send the response
-            tap((rs) => this.options.transport.send(this.addEnvelope(rs))),
+            this.handleResponse$(message.id),
           );
       }),
     );

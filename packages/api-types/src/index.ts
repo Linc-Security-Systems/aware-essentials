@@ -33,3 +33,4 @@ export * from './token-conversion';
 export * from './world-objects';
 export * from './bookmarks';
 export * from './objects';
+export * from './primitives';
