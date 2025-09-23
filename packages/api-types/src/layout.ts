@@ -6,6 +6,8 @@ export const sLayoutDeviceDto = z.object({
   y: z.number(),
   scale: z.number(),
   rotation: z.number(),
+  fov: z.number(),
+  far: z.number(),
 });
 
 export type LayoutDeviceDto = z.infer<typeof sLayoutDeviceDto>;
