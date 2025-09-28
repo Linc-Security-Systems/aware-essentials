@@ -48,7 +48,7 @@ export class AgentCommunicationClient<TPeer> {
   getReply$ = <TResponseKind extends keyof PayloadByKind>(
     responseKind: TResponseKind,
     payload: FromAgent,
-    timeoutMs = 10000,
+    timeoutMs: number,
   ) => {
     const reply$ = (id: string) =>
       this.messages$.pipe(

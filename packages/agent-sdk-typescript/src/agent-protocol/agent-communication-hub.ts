@@ -88,7 +88,7 @@ export class AgentCommunicationHub<TPeer> {
     to: string,
     responseKind: TResponseKind,
     payload: FromServer,
-    timeoutMs = 10000,
+    timeoutMs: number,
   ) => {
     const reply$ = (id: string) =>
       this.messages$.pipe(

@@ -11,18 +11,36 @@ import {
   Subscription,
   retry,
   map,
+  Observable,
 } from 'rxjs';
 import {
-  AccessControlCapabilityReport,
   AccessObjectKind,
   AccessRefMap,
+  AgentServices,
+  DeviceGraphResponse,
+  FromAgent,
   ProviderSpecs,
   PushEventRq,
   PushStateUpdateRq,
+  QUERY_DEVICE_GRAPH,
 } from '@awarevue/api-types';
 import { AccessChangeContext, Agent, RunContext } from './agent';
 import { createValidator } from './default-validator';
 import { AgentCommunicationClient } from './agent-protocol/agent-communication-client';
+
+const stringifyError = (error: unknown) => {
+  if (error instanceof Error) {
+    return `\nMessage: ${error.message}\nStack: ${error.stack}`;
+  }
+  if (typeof error === 'string') {
+    return error;
+  }
+  try {
+    return JSON.stringify(error);
+  } catch {
+    return String(error);
+  }
+};
 
 type ObjectCache = Record<
   AccessObjectKind,
@@ -35,15 +53,38 @@ export type DeviceActivity =
 
 export type AgentOptions = {
   version: number;
-  providers: Record<string, ProviderSpecs>;
-  accessControlProviders?: Record<string, AccessControlCapabilityReport>;
+  provider: string;
+  metadata: ProviderSpecs;
   agentId: string;
+  services: AgentServices;
   replyTimeout?: number;
   client: AgentCommunicationClient<unknown>;
 };
 
 export class AgentApp {
   private sub: Subscription | null = null;
+
+  private handleResponse$ =
+    (requestId: string, requestKind: string) => (obs: Observable<FromAgent>) =>
+      obs.pipe(
+        tap({
+          error: (error) =>
+            console.error(
+              'Error processing request',
+              requestKind,
+              requestId,
+              stringifyError(error),
+            ),
+        }),
+        catchError((error: unknown) =>
+          of({
+            kind: 'error-rs' as const,
+            requestId,
+            error: stringifyError(error),
+          }),
+        ),
+        tap((rs) => this.options.client.send(rs)),
+      );
 
   private createAccessChangeContext = (
     context: RunContext,
@@ -102,37 +143,22 @@ export class AgentApp {
                   kind: 'command-rs' as const,
                   requestId: message.id,
                 })),
-                // error
-                catchError((error: Error) =>
-                  of({
-                    kind: 'error-rs' as const,
-                    requestId: message.id,
-                    error: error.message ?? 'Unknown error',
-                  }),
-                ),
-                // send the response
-                tap((rs) => this.options.client.send(rs)),
+                this.handleResponse$(message.id, message.kind),
               );
 
-            case 'get-available-devices':
+            case 'query':
               // get available devices
-              return this.agent.getDevicesAndRelations$(context).pipe(
-                // success
-                map((rs) => ({
-                  kind: 'get-available-devices-rs' as const,
-                  ...rs,
-                  requestId: message.id,
-                })),
-                // error
-                catchError((error: Error) =>
-                  of({
-                    kind: 'error-rs' as const,
+              return this.agent
+                .query$(context, message.query, message.args)
+                .pipe(
+                  // successful
+                  map((rs) => ({
+                    kind: 'query-rs' as const,
+                    result: rs,
                     requestId: message.id,
-                    error: error.message ?? 'Unknown error',
-                  }),
-                ),
-                tap((rs) => this.options.client.send(rs)),
-              );
+                  })),
+                  this.handleResponse$(message.id, message.kind),
+                );
 
             case 'validate-change':
               // validate access change
@@ -166,20 +192,7 @@ export class AgentApp {
                   requestId: message.id,
                   issues,
                 })),
-                tap({
-                  error: (error) => {
-                    // print error
-                    console.error(error);
-                  },
-                }),
-                catchError((error: Error) =>
-                  of({
-                    kind: 'error-rs' as const,
-                    requestId: message.id,
-                    error: error.message ?? 'Unknown error',
-                  }),
-                ),
-                tap((rs) => this.options.client.send(rs)),
+                this.handleResponse$(message.id, message.kind),
               );
 
             case 'apply-change':
@@ -203,14 +216,7 @@ export class AgentApp {
                   requestId: message.id,
                   refs: result,
                 })),
-                catchError((error: Error) =>
-                  of({
-                    kind: 'error-rs' as const,
-                    requestId: message.id,
-                    error: error.message ?? 'Unknown error',
-                  }),
-                ),
-                tap((rs) => this.options.client.send(rs)),
+                this.handleResponse$(message.id, message.kind),
               );
 
             default:
@@ -226,11 +232,16 @@ export class AgentApp {
       switchMap((connected) =>
         connected
           ? this.options.client
-              .getReply$('register-rs', {
-                kind: 'register' as const,
-                providers: this.options.providers,
-                accessControlProviders: this.options.accessControlProviders,
-              })
+              .getReply$(
+                'register-rs',
+                {
+                  kind: 'register' as const,
+                  provider: this.options.provider,
+                  metadata: this.options.metadata,
+                  services: this.options.services,
+                },
+                this.options.replyTimeout || 10000,
+              )
               .pipe(retry({ delay: 3000 }))
           : EMPTY,
       ),
@@ -241,10 +252,14 @@ export class AgentApp {
       switchMap((message) =>
         message.kind === 'start'
           ? this.agent
-              .getDevicesAndRelations$({
-                provider: message.provider,
-                config: message.config,
-              })
+              .query$(
+                {
+                  provider: message.provider,
+                  config: message.config,
+                },
+                QUERY_DEVICE_GRAPH,
+                {},
+              )
               .pipe(
                 retry({ delay: 3000 }),
                 tap(() => {
@@ -254,7 +269,7 @@ export class AgentApp {
                     requestId: message.id,
                   });
                 }),
-                map((deviceCatalog) => ({
+                map((deviceCatalog: DeviceGraphResponse) => ({
                   provider: message.provider,
                   config: message.config,
                   lastEventForeignRef: message.lastEventForeignRef,
@@ -294,16 +309,7 @@ export class AgentApp {
               requestId: message.id,
               issues,
             })),
-            // error
-            catchError((error: Error) =>
-              of({
-                kind: 'error-rs' as const,
-                requestId: message.id,
-                error: error.message ?? 'Unknown error',
-              }),
-            ),
-            // send the response
-            tap((rs) => this.options.client.send(rs)),
+            this.handleResponse$(message.id, message.kind),
           );
       }),
     );

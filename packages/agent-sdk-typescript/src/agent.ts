@@ -7,6 +7,8 @@ import {
   AccessApplyChange,
   AccessRefMap,
   AccessObjectKind,
+  ProviderSpecs,
+  AgentServices,
 } from '@awarevue/api-types';
 import { Observable } from 'rxjs';
 import { DeviceActivity } from './agent-app';
@@ -39,10 +41,11 @@ export type AccessChangeContext = Context & {
 };
 
 export interface Agent {
+  metadata: ProviderSpecs;
+  services: Partial<AgentServices>;
   getConfigIssues$: (
     context: Context,
   ) => Observable<ValidateProviderConfigRs['issues']>;
-  getDevicesAndRelations$: (context: Context) => Observable<DeviceDiscoveryDto>;
   run$: (context: RunContext) => Observable<DeviceActivity>;
   runCommand$: (
     context: RunCommandContext,
@@ -56,6 +59,11 @@ export interface Agent {
     context: AccessChangeContext,
     change: AccessApplyChange,
   ) => Observable<AccessRefMap>;
+  query$: (
+    context: Context,
+    query: string,
+    params: unknown,
+  ) => Observable<unknown>;
   find$?: (
     context: Context,
     objectKind: AccessObjectKind,

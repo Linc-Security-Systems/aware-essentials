@@ -1,5 +1,4 @@
 import { sForeignDeviceInfo } from '../device';
-import { sDeviceDiscoveryDto } from '../device-import';
 import { sCredentialType } from '../access-control/credential';
 import { z } from 'zod';
 import {
@@ -97,14 +96,22 @@ export const sAccessControlCapabilityReport = z.object({
   oneSchedulePerDoor: z.boolean(),
 });
 
+export const sAccessControlProfile = sAccessControlCapabilityReport;
+
+export const sVisionProfile = z.object({});
+
+export const sServices = z.object({
+  accessControl: sAccessControlProfile,
+  vision: sVisionProfile,
+});
+
+export type AgentServices = z.infer<typeof sServices>;
+
 export const sRegisterRq = z.object({
   kind: z.literal('register'),
-  providers: z
-    .record(sProviderSpecs)
-    .describe(
-      'Map of providers and their specs, ones that the agent can handle',
-    ),
-  accessControlProviders: z.record(sAccessControlCapabilityReport).optional(),
+  provider: z.string().nonempty(),
+  metadata: sProviderSpecs,
+  services: sServices.partial().describe('Services supported by the provider'),
 });
 
 export const sRegisterRs = sResponsePayload(
@@ -241,21 +248,21 @@ export const sPushEventRs = sResponsePayload(
   z.object({}),
 ).describe('Response for pushing a device event');
 
-// REQUEST AVAILABLE DEVICES (DISCOVERY)
+// QUERIES
 
-export const sGetAvailableDevicesRq = z
-  .object({
-    kind: z.literal('get-available-devices'),
-    provider: z.string().nonempty(),
-  })
-  .describe('Request to get available devices from a provider via an agent');
+export const sQuery = z.object({
+  kind: z.literal('query'),
+  query: z.string().nonempty(),
+  args: z.unknown().describe('Query arguments, depends on the query type'),
+  replyUrl: z.string().nonempty().describe('URL to POST the query response to'),
+});
 
-export const sGetAvailableDevicesRs = sResponsePayload(
-  z.literal('get-available-devices-rs'),
-  sDeviceDiscoveryDto,
-).describe(
-  'Response for getting available devices from a provider via an agent',
-);
+export const sQueryRs = sResponsePayload(
+  z.literal('query-rs'),
+  z.object({
+    result: z.unknown().describe('Query result, depends on the query type'),
+  }),
+).describe('Response for a query');
 
 // ACCESS SYNC SECTION
 
@@ -365,29 +372,6 @@ export const sObjectDelete = z
     }),
   ])
   .describe('Object delete request');
-
-// export const sRelationMerge = z.object({
-//   kind: z.literal('relation-merge'),
-//   left: z.object({
-//     kind: sAccessObjectKind,
-//     objectId: z
-//       .string()
-//       .optional()
-//       .describe(
-//         'Object ID as in backend. Can be undefined if object is new to backend and agent is trying to create it',
-//       ),
-//   }),
-//   right: z.object({
-//     kind: sAccessObjectKind,
-//     objectId: z
-//       .string()
-//       .optional()
-//       .describe(
-//         'Object ID as in backend. Can be undefined if object is new to backend and agent is trying to create it',
-//       ),
-//   }),
-//   linkExists: z.boolean(),
-// });
 
 export const sAccessMutation = z
   .union([sObjectMerge, sObjectDelete])
@@ -521,8 +505,10 @@ export type PushStateUpdateRq = z.infer<typeof sPushStateUpdateRq>;
 export type PushStateUpdateRs = z.infer<typeof sPushStateUpdateRs>;
 export type PushEventRq = z.infer<typeof sPushEventRq>;
 export type PushEventRs = z.infer<typeof sPushEventRs>;
-export type GetAvailableDevicesRq = z.infer<typeof sGetAvailableDevicesRq>;
-export type GetAvailableDevicesRs = z.infer<typeof sGetAvailableDevicesRs>;
+export type QueryRq = z.infer<typeof sQuery>;
+export type QueryRs = z.infer<typeof sQueryRs>;
+// export type GetAvailableDevicesRq = z.infer<typeof sGetAvailableDevicesRq>;
+// export type GetAvailableDevicesRs = z.infer<typeof sGetAvailableDevicesRs>;
 export type AccessMutation = z.infer<typeof sAccessMutation>;
 export type AccessValidateChangeRq = z.infer<typeof sValidateChangeRq>;
 export type AccessValidateChangeRs = z.infer<typeof sValidateChangeRs>;
@@ -560,8 +546,10 @@ export type PayloadByKind = {
   'state-rs': PushStateUpdateRs;
   event: PushEventRq;
   'event-rs': PushEventRs;
-  'get-available-devices': GetAvailableDevicesRq;
-  'get-available-devices-rs': GetAvailableDevicesRs;
+  query: QueryRq;
+  'query-rs': QueryRs;
+  // 'get-available-devices': GetAvailableDevicesRq;
+  // 'get-available-devices-rs': GetAvailableDevicesRs;
   'validate-change': AccessValidateChangeRq;
   'validate-change-rs': AccessValidateChangeRs;
   'apply-change': AccessApplyChange;
@@ -573,6 +561,7 @@ export type PayloadByKind = {
 
 export type FromAgent =
   | ErrorPayload
+  | QueryRs
   | RegisterRq
   | Unregister
   | ValidateProviderConfigRs
@@ -581,7 +570,6 @@ export type FromAgent =
   | RunCommandRs
   | PushStateUpdateRq
   | PushEventRq
-  | GetAvailableDevicesRs
   | AccessValidateChangeRs
   | AccessApplyChangeRs
   | AccessApplyChangeProgress;
@@ -592,10 +580,10 @@ export type FromServer =
   | ValidateProviderConfigRq
   | StartServiceRq
   | StopServiceRq
+  | QueryRq
   | RunCommandRq
   | PushStateUpdateRs
   | PushEventRs
-  | GetAvailableDevicesRq
   | AccessValidateChangeRq
   | AccessApplyChange
   | AccessAbortChange;
@@ -611,11 +599,11 @@ const fromAgentSchemaByKind = {
   'command-rs': sRunCommandRs,
   state: sPushStateUpdateRq,
   event: sPushEventRq,
-  'get-available-devices-rs': sGetAvailableDevicesRs,
   'validate-change-rs': sValidateChangeRs,
   'apply-change-rs': sApplyChangeRs,
   'apply-change-progress': sApplyChangeProgress,
   'error-rs': sErrorPayload,
+  'query-rs': sQueryRs,
 };
 
 export const getAgentMessageIssues = (message: unknown): string[] => {
