@@ -111,6 +111,7 @@ export const sDeviceMgmtInfo = z.object({
   tags: z.array(z.string()),
   relations: z.array(sDeviceRelationSide),
   groups: z.array(z.string()),
+  enabled: z.boolean(),
   createdOn: z.string().datetime(),
   lastModifiedOn: z.string().datetime(),
 });
@@ -192,6 +193,7 @@ export const sUpdateDeviceRequest = z.object({
   specs: z.object({}).catchall(z.unknown()).optional(),
   tags: z.array(z.string()).optional(),
   relations: z.array(sDeviceRelationSide).optional(),
+  enabled: z.boolean().optional(),
 });
 
 export const sOverrideDeviceSpecsRequest = z.object({

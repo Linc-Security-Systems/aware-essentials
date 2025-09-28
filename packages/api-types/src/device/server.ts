@@ -1,7 +1,8 @@
 import { z } from 'zod';
 import { ModuleConfig, ModuleConfigMetadata } from '../module-config';
 import { AccessControlCapabilityReport } from '../agent-communication';
-import { ObjectKinds } from 'src/objects';
+import { ObjectKinds } from '../objects';
+import { sMacroId } from '../primitives';
 
 export const SERVER = 'server';
 
@@ -9,12 +10,18 @@ export const SERVER = 'server';
 
 // COMMANDS
 
-export interface RunMacro {
-  command: 'server.run-macro';
-  params: {
-    macroId: string;
-  };
-}
+export const sRunMacroCommand = z.object({
+  command: z.literal('server.run-macro'),
+  params: z.object({
+    macroId: sMacroId,
+  }),
+});
+
+export type RunMacro = z.infer<typeof sRunMacroCommand>;
+
+export const serverCommands = {
+  'server.run-macro': sRunMacroCommand,
+} as const;
 
 export type ServerCommand = RunMacro;
 

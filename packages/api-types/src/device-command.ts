@@ -1,13 +1,16 @@
-import { AlarmCommand } from './device/alarm';
-import { CameraCommand } from './device/camera';
-import { CameraLiftCommand } from './device/camera-lift';
+import { AlarmCommand, alarmCommandSchemas } from './device/alarm';
+import { CameraCommand, cameraCommands } from './device/camera';
+import { CameraLiftCommand, cameraLiftCommands } from './device/camera-lift';
 import { DeviceGatewayCommand } from './device/device-gateway';
-import { DisplayCommand } from './device/display';
-import { DoorCommand } from './device/door';
+import { DisplayCommand, displayCommands } from './device/display';
+import { DoorCommand, doorCommands } from './device/door';
 import { IntercomTerminalCommand } from './device/intercom-terminal';
-import { IoBoardCommand } from './device/io-board';
-import { PbxCommand } from './device/pbx';
-import { PresenceTrackerCommand } from './device/presence-tracker';
+import { IoBoardCommand, ioBoardCommands } from './device/io-board';
+import { PbxCommand, pbxCommands } from './device/pbx';
+import {
+  PresenceTrackerCommand,
+  presenceTrackerCommands,
+} from './device/presence-tracker';
 import { ReaderCommand } from './device/reader/index';
 import { ServerCommand } from './device/server';
 import { PermissionId } from './permissions';
@@ -32,6 +35,17 @@ export type CommandRun<TCommand extends AnyDeviceCommand = AnyDeviceCommand> = {
   deviceId: string;
   senderId?: number;
 } & TCommand;
+
+export const commandSchemas = {
+  ...alarmCommandSchemas,
+  ...cameraCommands,
+  ...cameraLiftCommands,
+  ...doorCommands,
+  ...ioBoardCommands,
+  ...pbxCommands,
+  ...presenceTrackerCommands,
+  ...displayCommands,
+} as const;
 
 export const commandDescriptions: Record<
   AnyDeviceCommand['command'],

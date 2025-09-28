@@ -1,3 +1,4 @@
+import { sPersonId, sZoneId } from '../primitives';
 import { z } from 'zod';
 
 export const PRESENCE_TRACKER = 'presence-tracker';
@@ -12,30 +13,41 @@ export interface PresenceTrackerState {
 
 // COMMANDS
 
-export interface CheckInPerson {
-  command: 'presence-tracker.check-in';
-  params: {
-    personId: string;
-    zoneId: string | null;
-  };
-}
+export const sCheckInPersonCommand = z.object({
+  command: z.literal('presence-tracker.check-in'),
+  params: z.object({
+    personId: sPersonId,
+    zoneId: sZoneId.nullable(),
+  }),
+});
 
-export interface CheckOutPerson {
-  command: 'presence-tracker.check-out';
-  params: {
-    personId: string;
-    zoneId: string | null;
-    leave: boolean;
-  };
-}
+export type CheckInPerson = z.infer<typeof sCheckInPersonCommand>;
 
-export interface TogglePresence {
-  command: 'presence-tracker.toggle-presence';
-  params: {
-    personId: string;
-    zoneId: string | null;
-  };
-}
+export const sCheckOutPersonCommand = z.object({
+  command: z.literal('presence-tracker.check-out'),
+  params: z.object({
+    personId: sPersonId,
+    zoneId: sZoneId.nullable(),
+    leave: z.boolean(),
+  }),
+});
+
+export type CheckOutPerson = z.infer<typeof sCheckOutPersonCommand>;
+export const sTogglePresenceCommand = z.object({
+  command: z.literal('presence-tracker.toggle-presence'),
+  params: z.object({
+    personId: sPersonId,
+    zoneId: sZoneId.nullable(),
+  }),
+});
+
+export type TogglePresence = z.infer<typeof sTogglePresenceCommand>;
+
+export const presenceTrackerCommands = {
+  'presence-tracker.check-in': sCheckInPersonCommand,
+  'presence-tracker.check-out': sCheckOutPersonCommand,
+  'presence-tracker.toggle-presence': sTogglePresenceCommand,
+} as const;
 
 export type PresenceTrackerCommand =
   | CheckInPerson
@@ -46,7 +58,7 @@ export type PresenceTrackerCommand =
 
 export const sPersonIn = z.object({
   kind: z.literal('person-in'),
-  personId: z.string().nonempty(),
+  personId: sPersonId,
   personFirstName: z.string().nonempty(),
   personLastName: z.string().nonempty(),
   personAvatarId: z.string().nullable(),
@@ -55,7 +67,7 @@ export const sPersonIn = z.object({
 
 export const sPersonOut = z.object({
   kind: z.literal('person-out'),
-  personId: z.string().nonempty(),
+  personId: sPersonId,
   personFirstName: z.string().nonempty(),
   personLastName: z.string().nonempty(),
   personAvatarId: z.string().nullable(),

@@ -5,31 +5,51 @@ export const DOOR = 'door' as const;
 
 // SPECS
 
-export const sDoorSpecs = z.object({});
+export const sDoorSpecs = z.object({
+  canReportOpenState: z.boolean(),
+  canReportLockState: z.boolean(),
+  canControlLock: z.boolean(),
+  canRelease: z.boolean(),
+});
 
 export type DoorSpecs = z.infer<typeof sDoorSpecs>;
 
 // COMMANDS
 
-export interface DoorUnlockCommand {
-  command: 'door.unlock';
-  params: object;
-}
+export const sDoorUnlockCommand = z.object({
+  command: z.literal('door.unlock'),
+  params: z.object({}),
+});
 
-export interface DoorLockCommand {
-  command: 'door.lock';
-  params: object;
-}
+export type DoorUnlockCommand = z.infer<typeof sDoorUnlockCommand>;
 
-export interface DoorReleaseCommand {
-  command: 'door.release';
-  params: object;
-}
+export const sDoorLockCommand = z.object({
+  command: z.literal('door.lock'),
+  params: z.object({}),
+});
 
-export interface DoorAlarmAckCommand {
-  command: 'door.alarm-ack';
-  params: object;
-}
+export type DoorLockCommand = z.infer<typeof sDoorLockCommand>;
+
+export const sDoorReleaseCommand = z.object({
+  command: z.literal('door.release'),
+  params: z.object({}),
+});
+
+export type DoorReleaseCommand = z.infer<typeof sDoorReleaseCommand>;
+
+export const sDoorAlarmAckCommand = z.object({
+  command: z.literal('door.alarm-ack'),
+  params: z.object({}),
+});
+
+export type DoorAlarmAckCommand = z.infer<typeof sDoorAlarmAckCommand>;
+
+export const doorCommands = {
+  'door.unlock': sDoorUnlockCommand,
+  'door.lock': sDoorLockCommand,
+  'door.release': sDoorReleaseCommand,
+  'door.alarm-ack': sDoorAlarmAckCommand,
+} as const;
 
 export type DoorCommand =
   | DoorUnlockCommand

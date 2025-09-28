@@ -206,7 +206,7 @@ export class AgentApp {
                 ? throwError(
                     () =>
                       new Error(
-                        `Agent ${context.provider} does not support access change application`,
+                        `Agent ${context.provider} does not support access change apply`,
                       ),
                   )
                 : this.agent.applyAccessChange$(applyContext, message);

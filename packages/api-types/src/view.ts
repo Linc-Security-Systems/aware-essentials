@@ -30,17 +30,32 @@ export const sDeviceCarouselArea = z.object({
 });
 export type DeviceCarouselArea = z.infer<typeof sDeviceCarouselArea>;
 
+export const sPlaybackTrackArea = z.object({
+  area: z.string().nonempty(),
+  type: z.literal('playbackTrack'),
+  controllerId: z.string().nonempty(),
+  source: z
+    .string()
+    .nonempty()
+    .describe(
+      'The track within the controller. It is the device ID for the camera in the track.',
+    ),
+});
+export type PlaybackTrackArea = z.infer<typeof sPlaybackTrackArea>;
+
 export type ViewAreaContents =
   | LayoutArea
   | LayoutSelectorArea
   | DeviceArea
-  | DeviceCarouselArea;
+  | DeviceCarouselArea
+  | PlaybackTrackArea;
 
 export const sViewAreaContents = z.union([
   sLayoutArea,
   sLayoutSelectorArea,
   sDeviceArea,
   sDeviceCarouselArea,
+  sPlaybackTrackArea,
 ]);
 
 export const sViewConfig = z.object({
