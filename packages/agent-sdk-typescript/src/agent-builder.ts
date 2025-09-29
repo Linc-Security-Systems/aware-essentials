@@ -1,4 +1,5 @@
 import {
+  EMPTY,
   Observable,
   ObservableInput,
   defer,
@@ -8,7 +9,12 @@ import {
   throwError,
 } from 'rxjs';
 import { Agent, Context, RunCommandContext } from './agent';
-import { AnyDeviceCommand, QueryRequestMap, QueryResponseMap } from '@awarevue/api-types';
+import {
+  AgentServices,
+  CommandTypes,
+  QueryRequestMap,
+  QueryResponseMap,
+} from '@awarevue/api-types';
 
 type HandlerResult<T> = ObservableInput<T> | PromiseLike<T> | T;
 
@@ -52,16 +58,9 @@ type NormalizedQueryHandler = (
   params: unknown,
 ) => Observable<unknown>;
 
-type NormalizedUnknownQueryHandler = (
-  context: Context,
-  query: string,
-  params: unknown,
-) => Observable<unknown>;
-
 export class AgentBuilder {
   private configIssuesHandler?: NormalizedHandler<Agent['getConfigIssues$']>;
   private runHandler?: NormalizedHandler<Agent['run$']>;
-  private runCommandHandler?: NormalizedHandler<Agent['runCommand$']>;
   private validateAccessChangeHandler?: NormalizedHandler<
     NonNullable<Agent['validateAccessChange$']>
   >;
@@ -69,15 +68,30 @@ export class AgentBuilder {
     NonNullable<Agent['applyAccessChange$']>
   >;
   private findHandler?: NormalizedHandler<NonNullable<Agent['find$']>>;
+  private readonly services: Partial<Agent['services']> = {};
   private readonly queryHandlers = new Map<string, NormalizedQueryHandler>();
   private readonly commandHandlers = new Map<
     string,
     (context: RunCommandContext, params: unknown) => Observable<unknown>
   >();
-  private unknownQueryHandler?: NormalizedUnknownQueryHandler;
+
+  private metadata?: Agent['metadata'];
 
   static create() {
     return new AgentBuilder();
+  }
+
+  withService<TService extends keyof AgentServices>(
+    serviceName: TService,
+    service: AgentServices[TService],
+  ): this {
+    this.services[serviceName] = service;
+    return this;
+  }
+
+  withMetadata(metadata: Agent['metadata']): this {
+    this.metadata = metadata;
+    return this;
   }
 
   withConfigIssues(handler: AgentHandler<Agent['getConfigIssues$']>): this {
@@ -90,17 +104,15 @@ export class AgentBuilder {
     return this;
   }
 
-  withCommandRunner(handler: AgentHandler<Agent['runCommand$']>): this {
-    this.runCommandHandler = normalizeHandler(handler);
-    return this;
-  }
-
-  handleCommand<TCommand extends AnyDeviceCommand['command'], TParams extends Devi, TResult>(
-    command: string,
+  handleCommand<
+    TCommand extends keyof CommandTypes,
+    TParams extends CommandTypes[TCommand],
+  >(
+    command: TCommand,
     handler: (
       context: RunCommandContext,
       params: TParams,
-    ) => HandlerResult<TResult>,
+    ) => HandlerResult<unknown>,
   ): this {
     this.commandHandlers.set(command, (context, params) =>
       defer(() => toObservable(handler(context, params as TParams))),
@@ -138,18 +150,6 @@ export class AgentBuilder {
     return this;
   }
 
-  onUnknownQuery(
-    handler: (
-      context: Context,
-      query: string,
-      params: unknown,
-    ) => HandlerResult<unknown>,
-  ): this {
-    this.unknownQueryHandler = (context, query, params) =>
-      defer(() => toObservable(handler(context, query, params)));
-    return this;
-  }
-
   build(): Agent {
     const configIssuesHandler = this.configIssuesHandler;
     if (!configIssuesHandler) {
@@ -161,25 +161,28 @@ export class AgentBuilder {
       throw new Error('Agent requires a run handler');
     }
 
-    const runCommandHandler = this.runCommandHandler;
-    if (!runCommandHandler) {
-      throw new Error('Agent requires a command handler');
+    if (!this.metadata) {
+      throw new Error('Agent requires metadata');
     }
 
     const queryHandlers = new Map(this.queryHandlers);
-    const unknownQueryHandler = this.unknownQueryHandler;
 
     const agent: Agent = {
+      metadata: this.metadata,
+      services: this.services || {},
       getConfigIssues$: configIssuesHandler,
       run$: runHandler,
-      runCommand$: runCommandHandler,
+      runCommand$: (context, command) => {
+        const handler = this.commandHandlers.get(command.command);
+        if (handler) {
+          return handler(context, command.params);
+        }
+        return EMPTY;
+      },
       query$: (context, query, params) => {
         const handler = queryHandlers.get(query);
         if (handler) {
           return handler(context, params);
-        }
-        if (unknownQueryHandler) {
-          return unknownQueryHandler(context, query, params);
         }
         return throwError(
           () => new Error(`No query handler registered for "${query}"`),

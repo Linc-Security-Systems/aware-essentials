@@ -57,6 +57,9 @@ export const sUiWidgetHint = z.object({
 export const sUiHint = z.union([sUiOrderHint, sUiWidgetHint]);
 
 export const sProviderSpecs = z.object({
+  version: z.number().describe('version of the agent'),
+  provider: z.string().nonempty().describe('unique provider ID'),
+  agentId: z.string().nonempty().describe('unique agent ID'),
   title: z
     .string()
     .nonempty()
@@ -109,7 +112,6 @@ export type AgentServices = z.infer<typeof sServices>;
 
 export const sRegisterRq = z.object({
   kind: z.literal('register'),
-  provider: z.string().nonempty(),
   metadata: sProviderSpecs,
   services: sServices.partial().describe('Services supported by the provider'),
 });

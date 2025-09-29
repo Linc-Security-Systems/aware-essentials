@@ -1,3 +1,4 @@
+import z from 'zod';
 import { AlarmCommand, alarmCommandSchemas } from './device/alarm';
 import { CameraCommand, cameraCommands } from './device/camera';
 import { CameraLiftCommand, cameraLiftCommands } from './device/camera-lift';
@@ -46,6 +47,10 @@ export const commandSchemas = {
   ...presenceTrackerCommands,
   ...displayCommands,
 } as const;
+
+export type CommandTypes = {
+  [K in keyof typeof commandSchemas]: z.infer<(typeof commandSchemas)[K]>;
+};
 
 export const commandDescriptions: Record<
   AnyDeviceCommand['command'],

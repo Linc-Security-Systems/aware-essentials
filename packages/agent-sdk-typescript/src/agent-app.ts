@@ -16,10 +16,8 @@ import {
 import {
   AccessObjectKind,
   AccessRefMap,
-  AgentServices,
   DeviceGraphResponse,
   FromAgent,
-  ProviderSpecs,
   PushEventRq,
   PushStateUpdateRq,
   QUERY_DEVICE_GRAPH,
@@ -52,11 +50,6 @@ export type DeviceActivity =
   | Omit<PushEventRq, 'provider'>;
 
 export type AgentOptions = {
-  version: number;
-  provider: string;
-  metadata: ProviderSpecs;
-  agentId: string;
-  services: AgentServices;
   replyTimeout?: number;
   client: AgentCommunicationClient<unknown>;
 };
@@ -236,9 +229,8 @@ export class AgentApp {
                 'register-rs',
                 {
                   kind: 'register' as const,
-                  provider: this.options.provider,
-                  metadata: this.options.metadata,
-                  services: this.options.services,
+                  metadata: this.agent.metadata,
+                  services: this.agent.services,
                 },
                 this.options.replyTimeout || 10000,
               )
