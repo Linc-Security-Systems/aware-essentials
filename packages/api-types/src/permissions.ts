@@ -196,6 +196,10 @@ export const sPermissionId = z.union([
   z.literal('access-path:create').describe('Create access path'),
   z.literal('access-path:update').describe('Update access path'),
   z.literal('access-path:delete').describe('Delete access path'),
+  //Person Types
+  z.literal('person-type:create').describe('Create person type'),
+  z.literal('person-type:update').describe('Update person type'),
+  z.literal('person-type:delete').describe('Delete person type'),
 ]);
 
 export type PermissionArea =
@@ -231,7 +235,8 @@ export type PermissionArea =
   | 'citadel-mode'
   | 'token-conversion'
   | 'bookmark'
-  | 'access-path';
+  | 'access-path'
+  | 'person-type';
 
 const permissionsToRecord = (
   permissions: typeof sPermissionId,

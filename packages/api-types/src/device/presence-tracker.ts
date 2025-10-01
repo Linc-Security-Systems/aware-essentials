@@ -62,6 +62,8 @@ export const sPersonIn = z.object({
   personFirstName: z.string().nonempty(),
   personLastName: z.string().nonempty(),
   personAvatarId: z.string().nullable(),
+  personType: z.string().nonempty(),
+  personPosition: z.string().nullable(),
   zoneId: z.string().nullable(),
 });
 
@@ -71,6 +73,8 @@ export const sPersonOut = z.object({
   personFirstName: z.string().nonempty(),
   personLastName: z.string().nonempty(),
   personAvatarId: z.string().nullable(),
+  personType: z.string().nonempty(),
+  personPosition: z.string().max(128).nullable(),
   isLeave: z.boolean(),
   zoneId: z.string().nullable(),
 });

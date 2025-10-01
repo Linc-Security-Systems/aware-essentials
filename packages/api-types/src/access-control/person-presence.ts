@@ -5,7 +5,8 @@ export const sPresencePersonDto = z.object({
   firstName: z.string(),
   lastName: z.string(),
   avatarId: z.string().nullable(),
-  staffMember: z.boolean(),
+  type: z.string().min(1).max(16),
+  position: z.string().max(128).nullable(),
 });
 
 export type PresencePersonDto = z.infer<typeof sPresencePersonDto>;
