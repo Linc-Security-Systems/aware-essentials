@@ -12,7 +12,7 @@ export const sPersonTypeDto = z.object({
   displayName: z.string().min(1).max(64),
   accessControlUser: z.boolean(),
   systemUser: z.boolean(),
-  agreement: z.string().uuid().nullable(),
+  agreements: z.array(z.string().uuid()),
   securityCheck: z.boolean(),
   inOnCreation: z.boolean(),
   logActivity: z.boolean(),
