@@ -7,6 +7,7 @@ import {
   AccessApplyChange,
   AccessRefMap,
   AccessObjectKind,
+  QueryRq,
 } from '@awarevue/api-types';
 import { Observable } from 'rxjs';
 import { DeviceActivity } from './agent-app';
@@ -48,6 +49,7 @@ export interface Agent {
     context: RunCommandContext,
     command: RunCommandRq,
   ) => Observable<unknown>;
+  getResult$?: (context: Context, query: QueryRq) => Observable<unknown>;
   validateAccessChange$?: (
     context: AccessChangeContext,
     change: AccessValidateChangeRq,

@@ -1,7 +1,11 @@
-import { sSortOptions } from '../api';
+import { sDeviceDiscoveryDto } from '../device-import';
+import { sRecordingSequence, sSortOptions } from '../api';
 import { z } from 'zod';
 
-// Query constants
+// CORE
+export const QUERY_DEVICE_GRAPH = 'core:device-graph';
+
+// CCTV
 export const QUERY_RECORDINGS_BY_TIME_RANGE = 'cctv:recordings-by-time-range';
 export const QUERY_MEDIA_SEARCH = 'cctv:media-search';
 export const QUERY_RTSP_DATA = 'cctv:rtsp-data';
@@ -12,6 +16,7 @@ export const QUERY_OBJECT_SNAPSHOT = 'cctv:object-snapshot';
 export const QUERY_OBJECT_THUMBNAIL = 'cctv:object-thumbnail';
 
 // Zod schemas for request args
+
 export const sRecordingsByTimeRangeArgs = z.object({
   timeFrom: z.number(),
   timeTo: z.number(),
@@ -30,7 +35,7 @@ export const sMediaSearchArgs = z
   })
   .partial();
 
-export const sRtspDataArgs = z.null();
+export const sRtspDataArgs = z.object({});
 
 export const sPreviewImageArgs = z.object({
   time: z.number(),
@@ -59,7 +64,9 @@ export const sObjectThumbnailArgs = z.object({
 });
 
 // Zod schemas for responses
-export const sRecordingsResponse = z.array(z.any()); // RecordingSequence[] - using z.any() as RecordingSequence might be complex
+export const sDeviceGraphResponse = sDeviceDiscoveryDto;
+
+export const sRecordingsResponse = z.array(sRecordingSequence);
 
 export const sMediaSearchMatch = z.object({
   relevance: z.number(),
@@ -72,7 +79,7 @@ export const sMediaSearchMatch = z.object({
   endTime: z.number().nullable(),
 });
 
-export const sMediaSearchResponse = z.array(sMediaSearchMatch); // MediaSearchMatchDto[] - using z.any() as MediaSearchMatchDto might be complex
+export const sMediaSearchResponse = z.array(sMediaSearchMatch);
 
 export const sRtspDataResponse = z.object({
   cameraName: z.string(),
@@ -88,14 +95,22 @@ export const sRtspDataResponse = z.object({
   ),
 });
 
-// File download responses are typed as never since they return file downloads
-export const sPreviewImageResponse = z.never();
-export const sCameraLatestFrameResponse = z.never();
-export const sScenePreviewClipResponse = z.never();
-export const sObjectSnapshotResponse = z.never();
-export const sObjectThumbnailResponse = z.never();
+// File download responses
+export const sFileResponse = z
+  .object({
+    mimeType: z.string().nonempty(),
+    data: z.string().nonempty(),
+  })
+  .nullable();
+
+export const sPreviewImageResponse = sFileResponse;
+export const sCameraLatestFrameResponse = sFileResponse;
+export const sScenePreviewClipResponse = sFileResponse;
+export const sObjectSnapshotResponse = sFileResponse;
+export const sObjectThumbnailResponse = sFileResponse;
 
 // TypeScript types derived from Zod schemas
+export type DeviceGraphResponse = z.infer<typeof sDeviceGraphResponse>;
 export type RecordingsByTimeRangeArgs = z.infer<
   typeof sRecordingsByTimeRangeArgs
 >;
@@ -123,6 +138,7 @@ export type ObjectThumbnailResponse = z.infer<typeof sObjectThumbnailResponse>;
 
 // Dictionary of request schemas by query type
 export const requestSchemasByType = {
+  [QUERY_DEVICE_GRAPH]: z.object({}),
   [QUERY_RECORDINGS_BY_TIME_RANGE]: sRecordingsByTimeRangeArgs,
   [QUERY_MEDIA_SEARCH]: sMediaSearchArgs,
   [QUERY_RTSP_DATA]: sRtspDataArgs,
@@ -135,6 +151,7 @@ export const requestSchemasByType = {
 
 // Dictionary of response schemas by query type
 export const responseSchemasByType = {
+  [QUERY_DEVICE_GRAPH]: sDeviceGraphResponse,
   [QUERY_RECORDINGS_BY_TIME_RANGE]: sRecordingsResponse,
   [QUERY_MEDIA_SEARCH]: sMediaSearchResponse,
   [QUERY_RTSP_DATA]: sRtspDataResponse,
@@ -147,6 +164,7 @@ export const responseSchemasByType = {
 
 // TypeScript mapping types for requests and responses
 export type QueryRequestMap = {
+  [QUERY_DEVICE_GRAPH]: null;
   [QUERY_RECORDINGS_BY_TIME_RANGE]: RecordingsByTimeRangeArgs;
   [QUERY_MEDIA_SEARCH]: MediaSearchArgs;
   [QUERY_RTSP_DATA]: RtspDataArgs;
@@ -158,6 +176,7 @@ export type QueryRequestMap = {
 };
 
 export type QueryResponseMap = {
+  [QUERY_DEVICE_GRAPH]: DeviceGraphResponse;
   [QUERY_RECORDINGS_BY_TIME_RANGE]: RecordingsResponse;
   [QUERY_MEDIA_SEARCH]: MediaSearchResponse;
   [QUERY_RTSP_DATA]: RtspDataResponse;

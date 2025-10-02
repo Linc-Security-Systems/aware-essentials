@@ -202,6 +202,29 @@ export const sRunCommandRs = sResponsePayload(
   z.object({}),
 ).describe('Response for running a device command');
 
+// QUERIES
+
+export const sQueryRq = z.object({
+  kind: z.literal('query'),
+  query: z.string().nonempty(),
+  device: sForeignDeviceInfo,
+  args: z.unknown().describe('Query arguments, depends on the query type'),
+  replyUrl: z
+    .string()
+    .nonempty()
+    .optional()
+    .describe(
+      'URL to optionally POST the query response to. The default is to reply via query-rs',
+    ),
+});
+
+export const sQueryRs = sResponsePayload(
+  z.literal('query-rs'),
+  z.object({
+    result: z.unknown().describe('Query result, depends on the query type'),
+  }),
+).describe('Response for a query');
+
 // PUSH DEVICE STATE UPDATE
 
 export const sPushStateUpdateRq = z
@@ -366,29 +389,6 @@ export const sObjectDelete = z
   ])
   .describe('Object delete request');
 
-// export const sRelationMerge = z.object({
-//   kind: z.literal('relation-merge'),
-//   left: z.object({
-//     kind: sAccessObjectKind,
-//     objectId: z
-//       .string()
-//       .optional()
-//       .describe(
-//         'Object ID as in backend. Can be undefined if object is new to backend and agent is trying to create it',
-//       ),
-//   }),
-//   right: z.object({
-//     kind: sAccessObjectKind,
-//     objectId: z
-//       .string()
-//       .optional()
-//       .describe(
-//         'Object ID as in backend. Can be undefined if object is new to backend and agent is trying to create it',
-//       ),
-//   }),
-//   linkExists: z.boolean(),
-// });
-
 export const sAccessMutation = z
   .union([sObjectMerge, sObjectDelete])
   .describe('Access object change description');
@@ -517,6 +517,8 @@ export type StopServiceRq = z.infer<typeof sStopServiceRq>;
 export type StopServiceRs = z.infer<typeof sStopServiceRs>;
 export type RunCommandRq = z.infer<typeof sRunCommandRq>;
 export type RunCommandRs = z.infer<typeof sRunCommandRs>;
+export type QueryRq = z.infer<typeof sQueryRq>;
+export type QueryRs = z.infer<typeof sQueryRs>;
 export type PushStateUpdateRq = z.infer<typeof sPushStateUpdateRq>;
 export type PushStateUpdateRs = z.infer<typeof sPushStateUpdateRs>;
 export type PushEventRq = z.infer<typeof sPushEventRq>;
@@ -556,6 +558,8 @@ export type PayloadByKind = {
   'stop-rs': StopServiceRs;
   command: RunCommandRq;
   'command-rs': RunCommandRs;
+  query: QueryRq;
+  'query-rs': QueryRs;
   state: PushStateUpdateRq;
   'state-rs': PushStateUpdateRs;
   event: PushEventRq;
@@ -579,6 +583,7 @@ export type FromAgent =
   | StartServiceRs
   | StopServiceRs
   | RunCommandRs
+  | QueryRs
   | PushStateUpdateRq
   | PushEventRq
   | GetAvailableDevicesRs
@@ -593,6 +598,7 @@ export type FromServer =
   | StartServiceRq
   | StopServiceRq
   | RunCommandRq
+  | QueryRq
   | PushStateUpdateRs
   | PushEventRs
   | GetAvailableDevicesRq
@@ -609,6 +615,7 @@ const fromAgentSchemaByKind = {
   'start-rs': sStartServiceRs,
   'stop-rs': sStopServiceRs,
   'command-rs': sRunCommandRs,
+  'query-rs': sQueryRs,
   state: sPushStateUpdateRq,
   event: sPushEventRq,
   'get-available-devices-rs': sGetAvailableDevicesRs,
