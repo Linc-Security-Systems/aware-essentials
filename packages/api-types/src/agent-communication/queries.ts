@@ -164,7 +164,7 @@ export const responseSchemasByType = {
 
 // TypeScript mapping types for requests and responses
 export type QueryRequestMap = {
-  [QUERY_DEVICE_GRAPH]: null;
+  [QUERY_DEVICE_GRAPH]: object;
   [QUERY_RECORDINGS_BY_TIME_RANGE]: RecordingsByTimeRangeArgs;
   [QUERY_MEDIA_SEARCH]: MediaSearchArgs;
   [QUERY_RTSP_DATA]: RtspDataArgs;
