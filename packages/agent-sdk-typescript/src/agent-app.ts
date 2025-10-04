@@ -183,6 +183,17 @@ export class AgentApp {
                 this.handleResponse$(message.id),
               );
 
+            case 'query':
+              return this.agent.getResult$(context, message).pipe(
+                // success
+                map((result) => ({
+                  kind: 'query-rs' as const,
+                  requestId: message.id,
+                  result,
+                })),
+                this.handleResponse$(message.id),
+              );
+
             case 'get-available-devices':
               // get available devices
               return this.agent.getDevicesAndRelations$(context).pipe(
