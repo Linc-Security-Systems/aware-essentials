@@ -1,4 +1,4 @@
-import { sForeignDeviceInfo } from '../device';
+import { sAnyDeviceSpecs, sForeignDeviceInfo, sPresetDto } from '../device';
 import { sDeviceDiscoveryDto } from '../device-import';
 import { sCredentialType } from '../access-control/credential';
 import { z } from 'zod';
@@ -8,6 +8,12 @@ import {
   sCreateScheduleRequest,
   sCreateZoneRequest,
 } from '../access-control';
+
+export const sAgentDeviceInfo = sForeignDeviceInfo.and(sAnyDeviceSpecs).and(
+  z.object({
+    presets: z.array(sPresetDto),
+  }),
+);
 
 // PROTOCOL ENVELOPE
 
@@ -187,7 +193,7 @@ export const sStopServiceRs = sResponsePayload(
 export const sRunCommandRq = z
   .object({
     kind: z.literal('command'),
-    device: sForeignDeviceInfo,
+    device: sAgentDeviceInfo,
     command: z.string().nonempty(),
     batchId: z
       .string()
@@ -207,7 +213,7 @@ export const sRunCommandRs = sResponsePayload(
 export const sQueryRq = z.object({
   kind: z.literal('query'),
   query: z.string().nonempty(),
-  device: sForeignDeviceInfo,
+  device: sAgentDeviceInfo,
   args: z.unknown().describe('Query arguments, depends on the query type'),
   replyUrl: z
     .string()
@@ -499,6 +505,7 @@ export const sAbortChange = z
 
 // TYPESCRIPT INFERRED TYPES
 
+export type AgentDeviceInfo = z.infer<typeof sAgentDeviceInfo>;
 export type MessageHeader = z.infer<typeof sMessageHeader>;
 export type Message<TPayload> = MessageHeader & TPayload;
 export type ErrorPayload = z.infer<typeof sErrorPayload>;
