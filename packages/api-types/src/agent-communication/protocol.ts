@@ -647,7 +647,9 @@ export const getAgentMessageIssues = (message: unknown): string[] => {
   }
   const result2 = schema.safeParse(message);
   if (!result2.success) {
-    return result2.error.errors.map((e) => e.message);
+    return result2.error.errors.map(
+      (e) => `${e.path.map((p) => p.toString()).join('.')} - ${e.message}`,
+    );
   }
   return [];
 };
