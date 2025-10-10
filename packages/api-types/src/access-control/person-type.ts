@@ -15,7 +15,6 @@ export const sPersonTypeDto = z.object({
   agreements: z.array(z.string().uuid()),
   securityCheck: z.boolean(),
   inOnCreation: z.boolean(),
-  logActivity: z.boolean(),
   createdOn: z.string().date(),
   lastModifiedOn: z.string().date(),
 });

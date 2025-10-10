@@ -29,6 +29,7 @@ export const sPersonPresenceDto = z.object({
   onLeave: z.boolean(),
   lastCheckInOn: z.number().nullable(),
   lastCheckOutOn: z.number().nullable(),
+  securityChecked: z.boolean(),
 });
 
 export type PersonPresenceDto = z.infer<typeof sPersonPresenceDto>;

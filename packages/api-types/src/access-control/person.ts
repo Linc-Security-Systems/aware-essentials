@@ -1,5 +1,6 @@
 import { sAssignedCredential } from './credential';
 import z from 'zod';
+import { sPersonAgeementDto } from './person-agreement';
 
 export const sPersonAccessRule = z.object({
   id: z.string(),
@@ -25,6 +26,7 @@ export const sPersonDto = z.object({
   refs: z.record(z.union([z.string(), z.array(z.string())])),
   version: z.number(),
   type: z.string().min(1).max(64),
+  agreements: z.array(sPersonAgeementDto),
 });
 
 export const sCreatePersonRequest = z.object({

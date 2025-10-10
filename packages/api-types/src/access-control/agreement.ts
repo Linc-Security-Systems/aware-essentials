@@ -9,6 +9,7 @@ export const sAgreementDto = z.object({
 });
 
 export const sCreateAgreementRequest = sAgreementDto.omit({
+  id: true,
   createdOn: true,
   lastModifiedOn: true,
 });

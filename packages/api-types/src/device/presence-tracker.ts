@@ -65,6 +65,7 @@ export const sPersonIn = z.object({
   personType: z.string().nonempty(),
   personPosition: z.string().nullable(),
   zoneId: z.string().nullable(),
+  securityChecked: z.boolean(),
 });
 
 export const sPersonOut = z.object({
@@ -77,6 +78,7 @@ export const sPersonOut = z.object({
   personPosition: z.string().max(128).nullable(),
   isLeave: z.boolean(),
   zoneId: z.string().nullable(),
+  securityChecked: z.boolean(),
 });
 
 export const presenceTrackerEventSchemaByKind = {
