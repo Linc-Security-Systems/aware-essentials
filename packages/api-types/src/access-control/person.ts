@@ -1,5 +1,6 @@
 import { sAssignedCredential } from './credential';
 import z from 'zod';
+import { sPersonAgeementDto } from './person-agreement';
 
 export const sPersonAccessRule = z.object({
   id: z.string(),
@@ -10,7 +11,7 @@ export const sPersonDto = z.object({
   id: z.string(),
   firstName: z.string().min(1).max(64),
   lastName: z.string().min(1).max(64),
-  position: z.string().nullable(),
+  position: z.string().max(128).nullable(),
   validFrom: z.string().date().nullable(),
   validTo: z.string().date().nullable(),
   accessSuspended: z.boolean(),
@@ -24,6 +25,8 @@ export const sPersonDto = z.object({
   customFields: z.record(z.string()).nullable(),
   refs: z.record(z.union([z.string(), z.array(z.string())])),
   version: z.number(),
+  type: z.string().min(1).max(64),
+  agreements: z.array(sPersonAgeementDto),
 });
 
 export const sCreatePersonRequest = z.object({
@@ -38,6 +41,7 @@ export const sCreatePersonRequest = z.object({
   credentials: z.array(sAssignedCredential),
   accessRules: z.array(z.string().nonempty()),
   customFields: z.record(z.string()).nullable(),
+  type: z.string().min(1).max(16),
 });
 
 export const sUpdatePersonRequest = sCreatePersonRequest

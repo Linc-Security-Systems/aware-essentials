@@ -9,6 +9,8 @@ import {
   CreateScheduleRequest,
   CreateZoneRequest,
   CreateAccessRuleRequest,
+  PersonTypeDto,
+  AgreementDto,
 } from './access-control';
 import { AutomationRuleDto, AutomationRuleProps } from './automation';
 import { BookmarkDto } from './bookmarks';
@@ -36,6 +38,8 @@ export const sObjectKind = z.enum([
   'user',
   'securityLevel',
   'bookmark',
+  'personType',
+  'agreement',
 ]);
 
 export type ObjectKind = z.infer<typeof sObjectKind>;
@@ -56,6 +60,8 @@ export type ObjectKinds = {
   user: UserDto;
   securityLevel: SecurityLevelDto;
   bookmark: BookmarkDto;
+  personType: PersonTypeDto;
+  agreement: AgreementDto;
 };
 
 export type ObjectDto = ObjectKinds;
@@ -84,6 +90,8 @@ export const objectLabels: Record<string, string> = {
   macro: 'Macro',
   securityLevel: 'Security Level',
   bookmark: 'Bookmark',
+  personType: 'Person Type',
+  agreement: 'Agreement',
 };
 
 export const objectKinds: readonly ObjectKind[] = sObjectKind.options;
