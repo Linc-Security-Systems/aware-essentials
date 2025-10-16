@@ -310,7 +310,10 @@ export class AgentApp {
                   provider: message.provider,
                   config: message.config,
                   lastEventForeignRef: message.lastEventForeignRef,
-                  lastEventTimestamp: message.lastEventTimestamp,
+                  lastEventTimestamp:
+                    message.lastEventTimestamp === null
+                      ? null
+                      : Math.min(Date.now(), message.lastEventTimestamp),
                   deviceCatalog,
                 })),
                 mergeMap((context) => this.runProvider$(context)),
