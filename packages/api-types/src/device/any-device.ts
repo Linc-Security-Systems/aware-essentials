@@ -107,6 +107,7 @@ export const sPresetDto = z.object({
 export const sDeviceMgmtInfo = z.object({
   id: z.string(),
   presets: z.array(sPresetDto),
+  providerAssignedName: z.string().nonempty(),
   notes: z.string().nullable(),
   tags: z.array(z.string()),
   relations: z.array(sDeviceRelationSide),
