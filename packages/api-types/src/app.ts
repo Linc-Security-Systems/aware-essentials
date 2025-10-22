@@ -6,6 +6,7 @@ export const sAppInfo = z.object({
   serverDeviceId: z.string(),
   alarmDeviceId: z.string(),
   globalZoneId: z.string(),
+  presenceTrackerId: z.string(),
 });
 
 export type AppInfo = z.infer<typeof sAppInfo>;
