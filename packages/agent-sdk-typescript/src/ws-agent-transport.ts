@@ -50,7 +50,10 @@ export class WsAgentTransport implements Transport {
   private readonly maxDelay = 30_000; // cap at 30 s
   private destroyed = false;
 
-  constructor(private readonly url: string) {
+  constructor(
+    private readonly url: string,
+    private readonly apiKey: string,
+  ) {
     this.connected$ = this._connected$.asObservable();
     this.messages$ = this._messages$.asObservable();
     this.errors$ = this._errors$.asObservable();
@@ -110,7 +113,10 @@ export class WsAgentTransport implements Transport {
   /** Establish or re-establish a WebSocket connection. */
   private connect(): void {
     this.ws = new WebSocket(this.url, {
-      headers: { 'User-Agent': 'Aware Agent SDK' },
+      headers: {
+        'User-Agent': 'Aware Agent SDK',
+        Authorization: `ApiKey ${this.apiKey}`,
+      },
     });
 
     this.ws.on('open', () => {

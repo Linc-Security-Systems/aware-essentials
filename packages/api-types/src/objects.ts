@@ -21,6 +21,7 @@ import { MacroDto } from './macros';
 import { SecurityLevelDto } from './security-level';
 import { RoleDto, UserDto } from './user';
 import { ViewDto } from './view';
+import { ApiKeyDto } from './api-keys';
 
 export const sObjectKind = z.enum([
   'accessRule',
@@ -40,6 +41,7 @@ export const sObjectKind = z.enum([
   'bookmark',
   'personType',
   'agreement',
+  'apiKey',
 ]);
 
 export type ObjectKind = z.infer<typeof sObjectKind>;
@@ -62,6 +64,7 @@ export type ObjectKinds = {
   bookmark: BookmarkDto;
   personType: PersonTypeDto;
   agreement: AgreementDto;
+  apiKey: ApiKeyDto;
 };
 
 export type ObjectDto = ObjectKinds;
@@ -92,6 +95,7 @@ export const objectLabels: Record<string, string> = {
   bookmark: 'Bookmark',
   personType: 'Person Type',
   agreement: 'Agreement',
+  apiKey: 'API Key',
 };
 
 export const objectKinds: readonly ObjectKind[] = sObjectKind.options;
