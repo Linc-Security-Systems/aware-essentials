@@ -204,6 +204,8 @@ export const sPermissionId = z.union([
   z.literal('agreement:create').describe('Create agreements'),
   z.literal('agreement:update').describe('Update agreements'),
   z.literal('agreement:delete').describe('Delete agreements'),
+  z.literal('api-key:create').describe('Create API key'),
+  z.literal('api-key:revoke').describe('Revoke API key'),
 ]);
 
 export type PermissionArea =
@@ -241,7 +243,8 @@ export type PermissionArea =
   | 'bookmark'
   | 'access-path'
   | 'person-type'
-  | 'agreement';
+  | 'agreement'
+  | 'api-key';
 
 const permissionsToRecord = (
   permissions: typeof sPermissionId,
