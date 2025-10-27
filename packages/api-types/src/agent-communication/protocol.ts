@@ -215,13 +215,6 @@ export const sQueryRq = z.object({
   query: z.string().nonempty(),
   device: sAgentDeviceInfo,
   args: z.unknown().describe('Query arguments, depends on the query type'),
-  replyUrl: z
-    .string()
-    .nonempty()
-    .optional()
-    .describe(
-      'URL to optionally POST the query response to. The default is to reply via query-rs',
-    ),
 });
 
 export const sQueryRs = sResponsePayload(
@@ -230,6 +223,18 @@ export const sQueryRs = sResponsePayload(
     result: z.unknown().describe('Query result, depends on the query type'),
   }),
 ).describe('Response for a query');
+
+// FILE PUSH INSTRUCTIONS
+
+export const sPushFile = z
+  .object({
+    kind: z.literal('push-file'),
+    query: z.string().nonempty(),
+    device: sAgentDeviceInfo,
+    args: z.unknown().describe('Query arguments, depends on the query type'),
+    url: z.string().nonempty().describe('URL to pull the file from'),
+  })
+  .describe('Instruction to push a file from an agent to file relay');
 
 // PUSH DEVICE STATE UPDATE
 
@@ -526,6 +531,7 @@ export type RunCommandRq = z.infer<typeof sRunCommandRq>;
 export type RunCommandRs = z.infer<typeof sRunCommandRs>;
 export type QueryRq = z.infer<typeof sQueryRq>;
 export type QueryRs = z.infer<typeof sQueryRs>;
+export type PushFile = z.infer<typeof sPushFile>;
 export type PushStateUpdateRq = z.infer<typeof sPushStateUpdateRq>;
 export type PushStateUpdateRs = z.infer<typeof sPushStateUpdateRs>;
 export type PushEventRq = z.infer<typeof sPushEventRq>;
@@ -567,6 +573,7 @@ export type PayloadByKind = {
   'command-rs': RunCommandRs;
   query: QueryRq;
   'query-rs': QueryRs;
+  'push-file': PushFile;
   state: PushStateUpdateRq;
   'state-rs': PushStateUpdateRs;
   event: PushEventRq;
@@ -606,6 +613,7 @@ export type FromServer =
   | StopServiceRq
   | RunCommandRq
   | QueryRq
+  | PushFile
   | PushStateUpdateRs
   | PushEventRs
   | GetAvailableDevicesRq

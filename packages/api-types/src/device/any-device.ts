@@ -14,6 +14,7 @@ import { sDeviceRelationDto, sDeviceRelationSide } from '../device-relation';
 import { DEVICE_GATEWAY } from './device-gateway';
 import { PRESENCE_TRACKER } from './presence-tracker';
 import { DISPLAY } from './display';
+import { RECORDER, sRecorderSpecs } from './recorder';
 
 export const DEVICE_TYPES = [
   ALARM,
@@ -31,6 +32,7 @@ export const DEVICE_TYPES = [
   DEVICE_GATEWAY,
   PRESENCE_TRACKER,
   DISPLAY,
+  RECORDER,
 ] as const;
 
 const sDeviceType = z.enum(DEVICE_TYPES);
@@ -74,6 +76,10 @@ const sReaderSpecsWithType = z.object({ type: z.literal('reader') });
 
 export const sDisplaySpecsWithType = z.object({ type: z.literal(DISPLAY) });
 
+export const sRecorderSpecsWithType = sRecorderSpecs.merge(
+  z.object({ type: z.literal(RECORDER) }),
+);
+
 export const sAnyDeviceSpecs = z.discriminatedUnion('type', [
   sAlarmSpecsWithType,
   sCameraSpecsWithType,
@@ -90,6 +96,7 @@ export const sAnyDeviceSpecs = z.discriminatedUnion('type', [
   sPresenceTrackerSpecsWithType,
   sReaderSpecsWithType,
   sDisplaySpecsWithType,
+  sRecorderSpecsWithType,
 ]);
 
 export const sProviderMetadata = z.object({}).catchall(z.unknown());
@@ -171,6 +178,9 @@ export const sIntercomOperatorDto = sIntercomOperatorSpecsWithType
   .and(sDeviceMgmtInfo)
   .and(sForeignDeviceInfo);
 export const sDisplayDto = sDisplaySpecsWithType
+  .and(sDeviceMgmtInfo)
+  .and(sForeignDeviceInfo);
+export const sRecorderDto = sRecorderSpecsWithType
   .and(sDeviceMgmtInfo)
   .and(sForeignDeviceInfo);
 
@@ -262,6 +272,7 @@ export type ServerDto = z.infer<typeof sServerDto>;
 export type AlarmDto = z.infer<typeof sAlarmDto>;
 export type IntercomOperatorDto = z.infer<typeof sIntercomOperatorDto>;
 export type DisplayDto = z.infer<typeof sDisplayDto>;
+export type RecorderDto = z.infer<typeof sRecorderDto>;
 
 export type AddDeviceRequest = z.infer<typeof sAddDeviceRequest>;
 

@@ -8,6 +8,7 @@ import {
   AccessRefMap,
   AccessObjectKind,
   QueryRq,
+  PushFile,
 } from '@awarevue/api-types';
 import { Observable } from 'rxjs';
 import { DeviceActivity } from './agent-app';
@@ -63,4 +64,5 @@ export interface Agent {
     objectKind: AccessObjectKind,
     objectIds: string[],
   ) => Observable<Record<string, Record<string, unknown>>>;
+  pushFile?: (context: Context, req: PushFile) => Observable<boolean>;
 }

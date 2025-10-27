@@ -194,6 +194,21 @@ export class AgentApp {
                 this.handleResponse$(message.id),
               );
 
+            case 'push-file':
+              if (!this.agent.pushFile) {
+                return throwError(
+                  () =>
+                    new Error(
+                      `Agent ${context.provider} does not support file pushing`,
+                    ),
+                );
+              }
+              return this.agent.pushFile(context, message).pipe(
+                // success - no return value
+                mergeMap(() => EMPTY),
+                this.handleResponse$(message.id),
+              );
+
             case 'get-available-devices':
               // get available devices
               return this.agent.getDevicesAndRelations$(context).pipe(

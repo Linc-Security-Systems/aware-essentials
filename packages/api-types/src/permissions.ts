@@ -30,6 +30,7 @@ const deviceTypePermissions: Omit<
     .literal('device:intercom-terminal')
     .describe('View intercom terminals'),
   display: z.literal('device:display').describe('View displays'),
+  recorder: z.literal('device:recorder').describe('View recorders'),
 };
 
 const sDeviceTypePermissions = Object.values(deviceTypePermissions);
