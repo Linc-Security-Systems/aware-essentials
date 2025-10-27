@@ -14,6 +14,7 @@ import {
   timeout,
   Observable,
   map,
+  startWith,
 } from 'rxjs';
 import { Transport } from './transport';
 import {
@@ -146,7 +147,7 @@ export class AgentApp {
     };
   };
 
-  private runProvider$ = (context: RunContext) => {
+  private runProvider$ = (context: RunContext & { startRequestId: string }) => {
     const changeValidator$ = createValidator(this.agent);
     // we assume that there will be only one validate-apply cycle per agent at the same time
     let objectCache: ObjectCache = {
@@ -170,7 +171,19 @@ export class AgentApp {
         ),
       // handle messages to agent
       this.options.transport.messages$.pipe(
+        startWith(null), // emit immediately to ensure subscription is active
         mergeMap((message) => {
+          // Send start-rs on the first emission (null) to signal we're ready
+          if (message === null) {
+            this.options.transport.send(
+              this.addEnvelope({
+                kind: 'start-rs' as const,
+                requestId: context.startRequestId,
+              }),
+            );
+            return EMPTY;
+          }
+
           switch (message.kind) {
             // handle commands
             case 'command':
@@ -312,15 +325,6 @@ export class AgentApp {
               })
               .pipe(
                 retry({ delay: 3000 }),
-                tap(() => {
-                  // reply to server that we are starting
-                  this.options.transport.send(
-                    this.addEnvelope({
-                      kind: 'start-rs' as const,
-                      requestId: message.id,
-                    }),
-                  );
-                }),
                 map((deviceCatalog) => ({
                   provider: message.provider,
                   config: message.config,
@@ -330,6 +334,7 @@ export class AgentApp {
                       ? null
                       : Math.min(Date.now(), message.lastEventTimestamp),
                   deviceCatalog,
+                  startRequestId: message.id,
                 })),
                 mergeMap((context) => this.runProvider$(context)),
               )
