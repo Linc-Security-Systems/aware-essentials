@@ -16,6 +16,10 @@ export const sDeviceRelationKind = z.enum([
   'isUnlockedBy',
   'controls',
   'isControlledBy',
+  'records',
+  'isRecordedBy',
+  'reads',
+  'isReadBy',
 ]);
 
 export const sDeviceRelationDto = z
@@ -51,6 +55,10 @@ export const relationKinds: Record<DeviceRelationKind, DeviceRelationKind> = {
   isUnlockedBy: 'isUnlockedBy',
   controls: 'controls',
   isControlledBy: 'isControlledBy',
+  records: 'records',
+  isRecordedBy: 'isRecordedBy',
+  reads: 'reads',
+  isReadBy: 'isReadBy',
 };
 
 export const inverseRelationKinds: Record<
@@ -72,6 +80,10 @@ export const inverseRelationKinds: Record<
   isUnlockedBy: 'unlocks',
   controls: 'isControlledBy',
   isControlledBy: 'controls',
+  records: 'isRecordedBy',
+  isRecordedBy: 'records',
+  reads: 'isReadBy',
+  isReadBy: 'reads',
 };
 
 export type DeviceRelationDto = z.infer<typeof sDeviceRelationDto>;

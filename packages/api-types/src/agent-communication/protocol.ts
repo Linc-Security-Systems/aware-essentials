@@ -1,4 +1,3 @@
-import { sAnyDeviceSpecs, sForeignDeviceInfo, sPresetDto } from '../device';
 import { sDeviceDiscoveryDto } from '../device-import';
 import { sCredentialType } from '../access-control/credential';
 import { z } from 'zod';
@@ -8,12 +7,7 @@ import {
   sCreateScheduleRequest,
   sCreateZoneRequest,
 } from '../access-control';
-
-export const sAgentDeviceInfo = sForeignDeviceInfo.and(sAnyDeviceSpecs).and(
-  z.object({
-    presets: z.array(sPresetDto),
-  }),
-);
+import { sAgentDeviceInfo } from '../primitives';
 
 // PROTOCOL ENVELOPE
 

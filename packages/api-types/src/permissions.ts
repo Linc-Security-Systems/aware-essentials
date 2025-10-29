@@ -30,7 +30,15 @@ const deviceTypePermissions: Omit<
     .literal('device:intercom-terminal')
     .describe('View intercom terminals'),
   display: z.literal('device:display').describe('View displays'),
-  recorder: z.literal('device:recorder').describe('View recorders'),
+  'nvr-recorder': z
+    .literal('device:nvr-recorder')
+    .describe('View NVR recorders'),
+  'nvr-exporter': z
+    .literal('device:nvr-exporter')
+    .describe('View NVR exporters'),
+  'nvr-analytics-server': z
+    .literal('device:nvr-analytics-server')
+    .describe('View NVR analytics servers'),
 };
 
 const sDeviceTypePermissions = Object.values(deviceTypePermissions);

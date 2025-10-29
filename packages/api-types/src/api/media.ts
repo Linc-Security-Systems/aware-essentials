@@ -42,10 +42,6 @@ export const sGetObjectThumbnailRequest = z.object({
   providerAssignedRef: z.string().nonempty(),
 });
 
-export const sGetExportLinkResponse = z.object({
-  relativeUrl: z.string().nonempty(),
-});
-
 export const sSortOptions = z.union([
   z.literal('time_asc'),
   z.literal('time_desc'),
@@ -89,8 +85,6 @@ export type GetObjectSnapshotRequest = z.infer<
 export type GetObjectThumbnailRequest = z.infer<
   typeof sGetObjectThumbnailRequest
 >;
-
-export type GetExportLinkResponse = z.infer<typeof sGetExportLinkResponse>;
 
 export type MediaSearchQueryDto = z.infer<typeof sMediaSearchQueryDto>;
 

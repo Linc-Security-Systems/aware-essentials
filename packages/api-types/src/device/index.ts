@@ -14,4 +14,6 @@ export * from './alarm';
 export * from './device-gateway';
 export * from './presence-tracker';
 export * from './display';
-export * from './recorder';
+export * from './nvr-recorder';
+export * from './nvr-exporter';
+export * from './nvr-analytics-server';

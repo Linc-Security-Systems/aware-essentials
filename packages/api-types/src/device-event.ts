@@ -19,6 +19,10 @@ import {
 import { ReaderEvent, readerEventSchemaByKind } from './device/reader/index';
 import { ServerEvent } from './device/server';
 import { DeviceType } from './device/any-device';
+import {
+  NvrExporterEvent,
+  nvrExporterEventSchemasByKind,
+} from './device/nvr-exporter';
 
 export interface DeviceCommandTriggered {
   kind: 'device-command';
@@ -59,7 +63,8 @@ export type AnyDeviceEvent =
   | ServerEvent
   | DeviceGatewayEvent
   | PresenceTrackerEvent
-  | IoBoardEvent;
+  | IoBoardEvent
+  | NvrExporterEvent;
 
 export const sEventHeader = z.object({
   id: z.string().nonempty(),
@@ -116,6 +121,8 @@ export const eventKindLabels: Record<DeviceEvent['kind'], string> = {
   'agent-stopped': 'Agent Stopped',
   'door-opened': 'Door Opened',
   'door-closed': 'Door Closed',
+  'nvr-export-started': 'NVR Export Started',
+  'nvr-export-deleted': 'NVR Export Deleted',
 };
 
 export const eventSchemaByKind = {
@@ -127,6 +134,7 @@ export const eventSchemaByKind = {
   ...panicButtonEventSchemaByKind,
   ...presenceTrackerEventSchemaByKind,
   ...readerEventSchemaByKind,
+  ...nvrExporterEventSchemasByKind,
   'motion-detected': sMotionDetected,
 };
 
@@ -147,6 +155,9 @@ export const eventsByDeviceType: Partial<
   ) as DeviceEvent['kind'][],
   reader: Object.keys(readerEventSchemaByKind) as DeviceEvent['kind'][],
   'motion-sensor': ['motion-detected' as const],
+  'nvr-exporter': Object.keys(
+    nvrExporterEventSchemasByKind,
+  ) as DeviceEvent['kind'][],
 };
 
 export const isDeviceEvent = (event: unknown): event is AnyDeviceEvent => {
