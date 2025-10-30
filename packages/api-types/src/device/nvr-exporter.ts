@@ -89,20 +89,21 @@ export const QUERY_GET_EXPORTS = 'cctv:get-exports';
 
 export const sGetExportsArgs = z.object({});
 
-export const sGetExportsResponse = z.array(
-  z.object({
-    name: z.string().nonempty(),
-    endTime: z.number().int().nonnegative(),
-    startTime: z.number().int().nonnegative(),
-    id: z.string().nonempty(),
-    status: z.string().nonempty(),
-    size: z.string().nonempty().optional(),
-    exportId: z.string().nonempty().optional(),
-    expires: z.number().int().nonnegative().optional(),
-  }),
-);
+export const sExportItem = z.object({
+  name: z.string().nonempty(),
+  endTime: z.number().int().nonnegative(),
+  startTime: z.number().int().nonnegative(),
+  id: z.string().nonempty(),
+  status: z.string().nonempty(),
+  size: z.string().nonempty().optional(),
+  expires: z.number().int().nonnegative().optional(),
+});
+
+export const sGetExportsResponse = z.array(sExportItem);
 
 export type GetExportsArgs = z.infer<typeof sGetExportsArgs>;
+
+export type ExportItem = z.infer<typeof sExportItem>;
 
 export type GetExportsResponse = z.infer<typeof sGetExportsResponse>;
 
