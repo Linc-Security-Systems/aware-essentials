@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { sPaginatedQueryResponseOf } from './query';
 
 export const sCreateExportRequest = z.object({
+  name: z.string().nonempty(),
   deviceId: z.string().nonempty(),
   timeFrom: z.number().nonnegative(),
   timeTo: z.number().nonnegative(),
