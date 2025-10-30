@@ -36,6 +36,13 @@ export const sDeleteExportCommand = z.object({
 
 export type DeleteExportCommand = z.infer<typeof sDeleteExportCommand>;
 
+export type NvrExporterCommand = StartExportCommand | DeleteExportCommand;
+
+export const nvrExporterCommandSchemas = {
+  'nvr-exporter.start-export': sStartExportCommand,
+  'nvr-exporter.delete-export': sDeleteExportCommand,
+} as const;
+
 // EVENTS
 
 export const sExportStarted = z.object({

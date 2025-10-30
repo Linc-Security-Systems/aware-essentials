@@ -6,6 +6,10 @@ import { DisplayCommand, displayCommands } from './device/display';
 import { DoorCommand, doorCommands } from './device/door';
 import { IntercomTerminalCommand } from './device/intercom-terminal';
 import { IoBoardCommand, ioBoardCommands } from './device/io-board';
+import {
+  NvrExporterCommand,
+  nvrExporterCommandSchemas,
+} from './device/nvr-exporter';
 import { PbxCommand, pbxCommands } from './device/pbx';
 import {
   PresenceTrackerCommand,
@@ -27,7 +31,8 @@ export type AnyDeviceCommand =
   | IntercomTerminalCommand
   | PbxCommand
   | PresenceTrackerCommand
-  | DisplayCommand;
+  | DisplayCommand
+  | NvrExporterCommand;
 
 export type CommandRun<TCommand extends AnyDeviceCommand = AnyDeviceCommand> = {
   timestamp: number;
@@ -45,6 +50,7 @@ export const commandSchemas = {
   ...pbxCommands,
   ...presenceTrackerCommands,
   ...displayCommands,
+  ...nvrExporterCommandSchemas,
 } as const;
 
 export const commandDescriptions: Record<
@@ -175,5 +181,13 @@ export const commandDescriptions: Record<
   'display.set-view': {
     description: 'Display Set View',
     permission: 'display:read',
+  },
+  'nvr-exporter.start-export': {
+    description: 'NVR Exporter Start Export',
+    permission: 'camera:playback-export',
+  },
+  'nvr-exporter.delete-export': {
+    description: 'NVR Exporter Delete Export',
+    permission: 'camera:playback-export',
   },
 };
