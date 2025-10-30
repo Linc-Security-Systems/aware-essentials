@@ -1,6 +1,16 @@
 import { z } from 'zod';
 import { sPaginatedQueryResponseOf } from './query';
 
+export const sCreateExportRequest = z.object({
+  deviceId: z.string().nonempty(),
+  timeFrom: z.number().nonnegative(),
+  timeTo: z.number().nonnegative(),
+});
+
+export const sCreateExportResponse = z.object({
+  exportId: z.string().nonempty(),
+});
+
 export const sRecordingSequence = z.object({
   start: z.number().nonnegative(),
   end: z.number().nonnegative(),
@@ -65,6 +75,10 @@ export const sGetLatestFrameRequest = z.object({
   width: z.number().nonnegative(),
   height: z.number().nonnegative(),
 });
+
+export type CreateExportRequest = z.infer<typeof sCreateExportRequest>;
+
+export type CreateExportResponse = z.infer<typeof sCreateExportResponse>;
 
 export type RecordingSequence = z.infer<typeof sRecordingSequence>;
 
