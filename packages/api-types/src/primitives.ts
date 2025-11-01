@@ -19,11 +19,15 @@ export const sFileResponse = z
   })
   .nullable();
 
-export const sAgentDeviceInfo = sForeignDeviceInfo.and(sAnyDeviceSpecs).and(
+export const sAgentDeviceInfo = z.intersection(
+  sForeignDeviceInfo,
+  sAnyDeviceSpecs,
   z.object({
     presets: z.array(sPresetDto),
   }),
 );
+
+export type AgentDeviceInfo = z.infer<typeof sAgentDeviceInfo>;
 
 // reusable device argument. This schema can be checked at runtime to see if it's a device ID or full device info and substituted accordingly.
 export const sDeviceParam = sDeviceId.or(sAgentDeviceInfo);
