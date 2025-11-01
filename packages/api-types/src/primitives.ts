@@ -27,7 +27,5 @@ export const sAgentDeviceInfo = z.intersection(
   }),
 );
 
-export type AgentDeviceInfo = z.infer<typeof sAgentDeviceInfo>;
-
 // reusable device argument. This schema can be checked at runtime to see if it's a device ID or full device info and substituted accordingly.
 export const sDeviceParam = sDeviceId.or(sAgentDeviceInfo);
