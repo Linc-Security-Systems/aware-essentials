@@ -23,6 +23,10 @@ import {
   NvrExporterEvent,
   nvrExporterEventSchemasByKind,
 } from './device/nvr-exporter';
+import {
+  DeviceOtherEvent,
+  deviceOtherEventSchemasByKind,
+} from './device/other';
 
 export interface DeviceCommandTriggered {
   kind: 'device-command';
@@ -64,7 +68,8 @@ export type AnyDeviceEvent =
   | DeviceGatewayEvent
   | PresenceTrackerEvent
   | IoBoardEvent
-  | NvrExporterEvent;
+  | NvrExporterEvent
+  | DeviceOtherEvent;
 
 export const sEventHeader = z.object({
   id: z.string().nonempty(),
@@ -123,6 +128,7 @@ export const eventKindLabels: Record<DeviceEvent['kind'], string> = {
   'door-closed': 'Door Closed',
   'nvr-export-started': 'NVR Export Started',
   'nvr-export-deleted': 'NVR Export Deleted',
+  'notification-created': 'Notification Created',
 };
 
 export const eventSchemaByKind = {
@@ -135,6 +141,7 @@ export const eventSchemaByKind = {
   ...presenceTrackerEventSchemaByKind,
   ...readerEventSchemaByKind,
   ...nvrExporterEventSchemasByKind,
+  ...deviceOtherEventSchemasByKind,
   'motion-detected': sMotionDetected,
 };
 

@@ -29,3 +29,7 @@ export const sAgentDeviceInfo = z.intersection(
 
 // reusable device argument. This schema can be checked at runtime to see if it's a device ID or full device info and substituted accordingly.
 export const sDeviceParam = sDeviceId.or(sAgentDeviceInfo);
+
+export const sNotificationSeverity = z.enum(['info', 'warning', 'critical']);
+
+export type NotificationSeverity = z.infer<typeof sNotificationSeverity>;

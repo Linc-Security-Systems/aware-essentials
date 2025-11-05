@@ -1,6 +1,6 @@
 {
   "name": "@awarevue/api-types",
-  "version": "2.0.6",
+  "version": "2.0.7",
   "description": "Common types between backend, agent(s) and frontend(s)",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

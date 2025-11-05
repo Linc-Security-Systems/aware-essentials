@@ -39,6 +39,9 @@ const deviceTypePermissions: Omit<
   'nvr-analytics-server': z
     .literal('device:nvr-analytics-server')
     .describe('View NVR analytics servers'),
+  'device-other': z
+    .literal('device:device-other')
+    .describe('View other devices'),
 };
 
 const sDeviceTypePermissions = Object.values(deviceTypePermissions);
