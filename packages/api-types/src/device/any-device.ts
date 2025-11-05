@@ -20,7 +20,7 @@ import {
   NVR_ANALYTICS_SERVER,
   sAnalyticsServerSpecs,
 } from './nvr-analytics-server';
-import { DEVICE_OTHER, sDeviceOtherSpecs } from './other';
+import { SYSTEM, sSystemDeviceSpecs } from './system';
 
 export const DEVICE_TYPES = [
   ALARM,
@@ -41,7 +41,7 @@ export const DEVICE_TYPES = [
   NVR_RECORDER,
   NVR_EXPORTER,
   NVR_ANALYTICS_SERVER,
-  DEVICE_OTHER,
+  SYSTEM,
 ] as const;
 
 const sDeviceType = z.enum(DEVICE_TYPES);
@@ -101,9 +101,9 @@ export const sNvrAnalyticsServerSpecsWithType = sAnalyticsServerSpecs.merge(
   }),
 );
 
-export const sOtherSpecsWithType = z
-  .object({ type: z.literal(DEVICE_OTHER) })
-  .merge(sDeviceOtherSpecs);
+export const sSystemDeviceSpecsWithType = z
+  .object({ type: z.literal(SYSTEM) })
+  .merge(sSystemDeviceSpecs);
 
 export const sAnyDeviceSpecs = z.discriminatedUnion('type', [
   sAlarmSpecsWithType,
@@ -124,7 +124,7 @@ export const sAnyDeviceSpecs = z.discriminatedUnion('type', [
   sRecorderSpecsWithType,
   sNvrExporterSpecsWithType,
   sNvrAnalyticsServerSpecsWithType,
-  sOtherSpecsWithType,
+  sSystemDeviceSpecsWithType,
 ]);
 
 export const sProviderMetadata = z.object({}).catchall(z.unknown());
@@ -220,7 +220,7 @@ export const sNvrAnalyticsServerDto = sNvrAnalyticsServerSpecsWithType
   .and(sDeviceMgmtInfo)
   .and(sForeignDeviceInfo);
 
-export const sDeviceOtherDto = sOtherSpecsWithType
+export const sSystemDeviceDto = sSystemDeviceSpecsWithType
   .and(sDeviceMgmtInfo)
   .and(sForeignDeviceInfo);
 
@@ -315,7 +315,7 @@ export type DisplayDto = z.infer<typeof sDisplayDto>;
 export type RecorderDto = z.infer<typeof sRecorderDto>;
 export type NvrExporterDto = z.infer<typeof sNvrExporterDto>;
 export type NvrAnalyticsServerDto = z.infer<typeof sNvrAnalyticsServerDto>;
-export type OtherDto = z.infer<typeof sDeviceOtherDto>;
+export type SystemDeviceDto = z.infer<typeof sSystemDeviceDto>;
 
 export type AddDeviceRequest = z.infer<typeof sAddDeviceRequest>;
 

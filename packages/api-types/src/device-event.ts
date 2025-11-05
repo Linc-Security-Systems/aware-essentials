@@ -24,9 +24,9 @@ import {
   nvrExporterEventSchemasByKind,
 } from './device/nvr-exporter';
 import {
-  DeviceOtherEvent,
-  deviceOtherEventSchemasByKind,
-} from './device/other';
+  SystemDeviceEvent,
+  systemDeviceEventSchemasByKind,
+} from './device/system';
 
 export interface DeviceCommandTriggered {
   kind: 'device-command';
@@ -69,7 +69,7 @@ export type AnyDeviceEvent =
   | PresenceTrackerEvent
   | IoBoardEvent
   | NvrExporterEvent
-  | DeviceOtherEvent;
+  | SystemDeviceEvent;
 
 export const sEventHeader = z.object({
   id: z.string().nonempty(),
@@ -141,7 +141,7 @@ export const eventSchemaByKind = {
   ...presenceTrackerEventSchemaByKind,
   ...readerEventSchemaByKind,
   ...nvrExporterEventSchemasByKind,
-  ...deviceOtherEventSchemasByKind,
+  ...systemDeviceEventSchemasByKind,
   'motion-detected': sMotionDetected,
 };
 

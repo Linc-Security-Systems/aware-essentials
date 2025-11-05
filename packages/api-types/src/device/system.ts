@@ -1,17 +1,17 @@
 import { sNotificationSeverity } from '../primitives';
 import { z } from 'zod';
 
-export const DEVICE_OTHER = 'device-other' as const;
+export const SYSTEM = 'system' as const;
 
 // SPECS
 
-export const sDeviceOtherSpecs = z.object({});
-export type DeviceOtherSpecs = z.infer<typeof sDeviceOtherSpecs>;
+export const sSystemDeviceSpecs = z.object({});
+export type SystemDeviceSpecs = z.infer<typeof sSystemDeviceSpecs>;
 
 // STATE
 
-export const sDeviceOtherStateDto = z.record(z.unknown());
-export type DeviceOtherStateDto = z.infer<typeof sDeviceOtherStateDto>;
+export const sSystemDeviceStateDto = z.record(z.unknown());
+export type SystemDeviceStateDto = z.infer<typeof sSystemDeviceStateDto>;
 
 // EVENTS
 
@@ -23,10 +23,10 @@ export const sNotificationCreated = z.object({
   metadata: z.record(z.unknown()).optional(),
 });
 
-export const deviceOtherEventSchemasByKind = {
+export const systemDeviceEventSchemasByKind = {
   'notification-created': sNotificationCreated,
 } as const;
 
 export type NotificationCreated = z.infer<typeof sNotificationCreated>;
 
-export type DeviceOtherEvent = NotificationCreated;
+export type SystemDeviceEvent = NotificationCreated;
