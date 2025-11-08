@@ -19,7 +19,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@awarevue/agent-sdk@workspace:packages/agent-sdk-typescript"
   dependencies:
-    "@awarevue/api-types": "npm:^2.0.11"
+    "@awarevue/api-types": "npm:^2.0.12"
     "@types/node": "npm:^20.12.7"
     "@typescript-eslint/eslint-plugin": "npm:^8.31.1"
     "@typescript-eslint/parser": "npm:^8.31.1"
@@ -33,7 +33,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@awarevue/api-types@npm:^2.0.11, @awarevue/api-types@workspace:packages/api-types":
+"@awarevue/api-types@npm:^2.0.12, @awarevue/api-types@workspace:packages/api-types":
   version: 0.0.0-use.local
   resolution: "@awarevue/api-types@workspace:packages/api-types"
   dependencies:
