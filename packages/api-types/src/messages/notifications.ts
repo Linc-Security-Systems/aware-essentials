@@ -19,13 +19,13 @@ export type NotificationAcknowledgedPayload = z.infer<
 >;
 
 interface NotificationEventMap {
-  'notifications:created': NotificationCreatedPayload;
-  'notifications:acknowledged': NotificationAcknowledgedPayload;
+  new: NotificationCreatedPayload;
+  ack: NotificationAcknowledgedPayload;
 }
 
 const validators: { [K in keyof NotificationEventMap]: z.ZodTypeAny } = {
-  'notifications:created': sNotificationCreatedPayload,
-  'notifications:acknowledged': sNotificationAcknowledgedPayload,
+  new: sNotificationCreatedPayload,
+  ack: sNotificationAcknowledgedPayload,
 };
 
 export type NotificationWsMessage = {
