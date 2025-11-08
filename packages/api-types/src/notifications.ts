@@ -11,3 +11,17 @@ export const sNotificationDto = z.object({
   acknowledgedBy: z.string().nonempty().nullable(),
   acknowledgedOn: z.number().int().nonnegative().nullable(),
 });
+
+export type NotificationDto = z.infer<typeof sNotificationDto>;
+
+export const sNotificationSearchParams = z.object({
+  deviceId: z.array(sDeviceId).optional(),
+  severity: z.array(sNotificationSeverity).optional(),
+  acknowledged: z.boolean().optional(),
+  timeFrom: z.number().int().nonnegative().optional(),
+  timeTo: z.number().int().nonnegative().optional(),
+});
+
+export type NotificationSearchParams = z.infer<
+  typeof sNotificationSearchParams
+>;

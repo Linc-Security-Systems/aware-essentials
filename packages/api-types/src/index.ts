@@ -35,3 +35,4 @@ export * from './bookmarks';
 export * from './objects';
 export * from './primitives';
 export * from './api-keys';
+export * from './notifications';
