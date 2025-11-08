@@ -178,6 +178,10 @@ export const commandDescriptions: Record<
     permission: 'presence:update',
   },
   'server.run-macro': { description: 'Run Macro', permission: 'macro:run' },
+  'server.notify': {
+    description: 'Publish Notification',
+    permission: 'notification:create',
+  },
   'display.set-view': {
     description: 'Display Set View',
     permission: 'display:read',

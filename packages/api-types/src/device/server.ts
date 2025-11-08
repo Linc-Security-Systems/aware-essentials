@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { ModuleConfig, ModuleConfigMetadata } from '../module-config';
 import { AccessControlCapabilityReport } from '../agent-communication';
 import { ObjectKinds } from '../objects';
-import { sMacroId } from '../primitives';
+import { sDeviceId, sMacroId, sNotificationSeverity } from '../primitives';
 
 export const SERVER = 'server';
 
@@ -17,13 +17,28 @@ export const sRunMacroCommand = z.object({
   }),
 });
 
+export const sNotify = z.object({
+  command: z.literal('server.notify'),
+  params: z.object({
+    source: sDeviceId,
+    message: z.string().nonempty(),
+    severity: sNotificationSeverity,
+    metadata: z.record(z.unknown()),
+    notificationRef: z.string().nonempty().nullable(),
+    recipientId: z.string().nonempty().nullable(),
+  }),
+});
+
 export type RunMacro = z.infer<typeof sRunMacroCommand>;
+
+export type Notify = z.infer<typeof sNotify>;
 
 export const serverCommands = {
   'server.run-macro': sRunMacroCommand,
+  'server.notify': sNotify,
 } as const;
 
-export type ServerCommand = RunMacro;
+export type ServerCommand = RunMacro | Notify;
 
 // STATE
 

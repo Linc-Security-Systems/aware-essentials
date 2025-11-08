@@ -165,6 +165,7 @@ export const sPermissionId = z.union([
   z.literal('macro:delete').describe('Delete macro'),
   z.literal('macro:create').describe('Create macro'),
   z.literal('macro:run').describe('Run macro'),
+  z.literal('notification:create').describe('Send notifications'),
   //Templates
   z.literal('template:read').describe('View templates'),
   z.literal('template:update').describe('Update templates'),
