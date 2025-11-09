@@ -1,4 +1,4 @@
-import { DeviceEvent } from '../device-event';
+import { DeviceEvent } from '../events';
 
 export interface AlarmSearchQueryDto {
   deviceId?: string[];

@@ -1,23 +1,27 @@
 import {
-  CameraQueryRequestMap,
-  CameraQueryResponseMap,
   cameraRequestSchemas,
   cameraResponseSchemas,
-  NvrExporterQueryRequestMap,
-  NvrExporterQueryResponseMap,
-  nvrExporterRequestSchemas,
-  nvrExporterResponseSchemas,
-  NvrRecorderQueryRequestMap,
-  NvrRecorderQueryResponseMap,
-  nvrRecorderRequestSchemas,
-  nvrRecorderResponseSchemas,
-} from '../device';
+  CameraQueryRequestMap,
+  CameraQueryResponseMap,
+} from './camera';
 import {
-  NvrAnalyticsQueryRequestMap,
-  NvrAnalyticsQueryResponseMap,
   nvrAnalyticsRequestSchemas,
   nvrAnalyticsResponseSchemas,
-} from '../device/nvr-analytics-server';
+  NvrAnalyticsQueryRequestMap,
+  NvrAnalyticsQueryResponseMap,
+} from './nvr-analytics-server';
+import {
+  nvrExporterRequestSchemas,
+  nvrExporterResponseSchemas,
+  NvrExporterQueryRequestMap,
+  NvrExporterQueryResponseMap,
+} from './nvr-exporter';
+import {
+  nvrRecorderRequestSchemas,
+  nvrRecorderResponseSchemas,
+  NvrRecorderQueryRequestMap,
+  NvrRecorderQueryResponseMap,
+} from './nvr-recorder';
 
 // Dictionary of request schemas by query type
 export const requestSchemasByType = {

@@ -40,3 +40,20 @@ export type DeviceParam = z.infer<typeof sDeviceParam>;
 export const sNotificationSeverity = z.enum(['info', 'warning', 'critical']);
 
 export type NotificationSeverity = z.infer<typeof sNotificationSeverity>;
+
+export const sCameraPresetInfo = z.object({
+  name: z.string().nonempty(),
+  isDefault: z.boolean(),
+  values: z.unknown(),
+});
+
+export type CameraPresetInfo = z.infer<typeof sCameraPresetInfo>;
+
+export const sCallState = z.enum([
+  'connecting',
+  'connected',
+  'ringing',
+  'terminated',
+]);
+
+export const sCallDirection = z.enum(['incoming', 'outgoing']);

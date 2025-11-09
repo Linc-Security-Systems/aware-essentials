@@ -1,30 +1,23 @@
-import { AlarmCommand, alarmCommandSchemas } from './device/alarm';
-import { CameraCommand, cameraCommands } from './device/camera';
-import { CameraLiftCommand, cameraLiftCommands } from './device/camera-lift';
-import { DeviceGatewayCommand } from './device/device-gateway';
-import { DisplayCommand, displayCommands } from './device/display';
-import { DoorCommand, doorCommands } from './device/door';
-import { IntercomTerminalCommand } from './device/intercom-terminal';
-import { IoBoardCommand, ioBoardCommands } from './device/io-board';
-import {
-  NvrExporterCommand,
-  nvrExporterCommandSchemas,
-} from './device/nvr-exporter';
-import { PbxCommand, pbxCommands } from './device/pbx';
+import { AlarmCommand, alarmCommandSchemas } from './alarm';
+import { CameraCommand, cameraCommands } from './camera';
+import { CameraLiftCommand, cameraLiftCommands } from './camera-lift';
+import { DisplayCommand, displayCommands } from './display';
+import { DoorCommand, doorCommands } from './door';
+import { IntercomTerminalCommand } from './intercom-terminal';
+import { IoBoardCommand, ioBoardCommands } from './io-board';
+import { NvrExporterCommand, nvrExporterCommandSchemas } from './nvr-exporter';
+import { PbxCommand, pbxCommands } from './pbx';
 import {
   PresenceTrackerCommand,
   presenceTrackerCommands,
-} from './device/presence-tracker';
-import { ReaderCommand } from './device/reader/index';
-import { ServerCommand } from './device/server';
-import { PermissionId } from './permissions';
+} from './presence-tracker';
+import { ServerCommand } from './server';
+import { PermissionId } from '../permissions';
 
 export type AnyDeviceCommand =
   | ServerCommand
-  | DeviceGatewayCommand
   | CameraCommand
   | DoorCommand
-  | ReaderCommand
   | IoBoardCommand
   | CameraLiftCommand
   | AlarmCommand

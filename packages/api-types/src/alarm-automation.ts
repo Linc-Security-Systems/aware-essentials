@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { DeviceEvent } from './device-event';
+import { DeviceEvent } from './events';
 import { DeviceType } from './device';
 import { AutomationRuleBody } from './automation';
 import { worldObjects } from './world-objects';

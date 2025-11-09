@@ -11,24 +11,6 @@ export const sIoBoardSpecs = z.object({
 
 export type IoBoardSpecs = z.infer<typeof sIoBoardSpecs>;
 
-// COMMANDS
-
-export const sIoBoardSetOutputCommand = z.object({
-  command: z.literal('io-board.set-output'),
-  params: z.object({
-    output: z.string().nonempty(),
-    value: z.boolean(),
-  }),
-});
-
-export const ioBoardCommands = {
-  'io-board.set-output': sIoBoardSetOutputCommand,
-} as const;
-
-export type IoBoardSetOutputCommand = z.infer<typeof sIoBoardSetOutputCommand>;
-
-export type IoBoardCommand = IoBoardSetOutputCommand;
-
 // STATE
 
 export interface IoBoardStateDto {
@@ -36,21 +18,3 @@ export interface IoBoardStateDto {
   inputValues: Record<string, boolean>;
   outputValues: Record<string, boolean>;
 }
-
-// EVENTS
-
-export const sIoBoardInputChangedEvent = z.object({
-  kind: z.literal('io-board-input-changed'),
-  inputName: z.string().nonempty(),
-  value: z.boolean(),
-});
-
-export const ioBoardEventSchemaByKind = {
-  'io-board-input-changed': sIoBoardInputChangedEvent,
-} as const;
-
-export type IoBoardInputChangedEvent = z.infer<
-  typeof sIoBoardInputChangedEvent
->;
-
-export type IoBoardEvent = IoBoardInputChangedEvent;

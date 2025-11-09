@@ -1,6 +1,6 @@
 import z from 'zod';
-import { CommandRun } from '../device-command';
-import { DeviceEvent } from '../device-event';
+import { CommandRun } from '../commands/all';
+import { DeviceEvent } from '../events';
 import { WebSocketMessage } from './web-socket';
 
 export type CommandRunPayload = CommandRun;

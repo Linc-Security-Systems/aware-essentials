@@ -1,7 +1,5 @@
 export const INTERCOM_OPERATOR = 'intercom-operator' as const;
 
-// COMMANDS
-
 // STATE
 
 export interface IntercomOperatorStateDto {
@@ -16,5 +14,3 @@ export interface IntercomOperatorStateDto {
     [callId: string]: string;
   };
 }
-
-// EVENTS

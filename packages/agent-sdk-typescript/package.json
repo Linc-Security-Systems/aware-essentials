@@ -1,6 +1,6 @@
 {
   "name": "@awarevue/agent-sdk",
-  "version": "2.0.13",
+  "version": "2.0.14",
   "description": "SDK for building Agent implementations that speak the Aware protocol.",
   "author": "Yaser Awajan",
   "license": "MIT",
@@ -27,7 +27,7 @@
     "lint:fix": "yarn lint --fix"
   },
   "dependencies": {
-    "@awarevue/api-types": "^2.0.13",
+    "@awarevue/api-types": "^2.0.14",
     "rxjs": "^7.8.2",
     "ws": "^8",
     "zod": "3.24.2"

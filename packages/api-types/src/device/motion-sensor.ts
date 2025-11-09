@@ -14,5 +14,3 @@ export interface MotionSensorStateDto {
   isMotionDetected: boolean;
   connected: boolean;
 }
-
-// EVENTS
