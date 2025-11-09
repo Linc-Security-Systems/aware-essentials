@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { ModuleConfig, ModuleConfigMetadata } from '../module-config';
 import { AccessControlCapabilityReport } from '../agent-communication';
 import { ObjectKinds } from '../objects';
-import { sDeviceId, sMacroId, sNotificationSeverity } from '../primitives';
+import { sDeviceParam, sMacroId, sNotificationSeverity } from '../primitives';
 
 export const SERVER = 'server';
 
@@ -20,7 +20,7 @@ export const sRunMacroCommand = z.object({
 export const sNotify = z.object({
   command: z.literal('server.notify'),
   params: z.object({
-    source: sDeviceId,
+    source: sDeviceParam,
     message: z.string().nonempty(),
     severity: sNotificationSeverity,
     metadata: z.record(z.unknown()),

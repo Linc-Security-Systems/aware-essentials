@@ -27,8 +27,15 @@ export const sAgentDeviceInfo = z.intersection(
   }),
 );
 
-// reusable device argument. This schema can be checked at runtime to see if it's a device ID or full device info and substituted accordingly.
-export const sDeviceParam = sDeviceId.or(sAgentDeviceInfo);
+export const sForeignDeviceId = z.tuple([
+  z.string().nonempty().describe('Foreign system identifier'),
+  z.string().nonempty().describe('Device identifier in foreign system'),
+]);
+
+// a pointer to a device, can be local device id, foreign device info, or full device info for agents
+export const sDeviceParam = sDeviceId.or(sAgentDeviceInfo).or(sForeignDeviceId);
+
+export type DeviceParam = z.infer<typeof sDeviceParam>;
 
 export const sNotificationSeverity = z.enum(['info', 'warning', 'critical']);
 
