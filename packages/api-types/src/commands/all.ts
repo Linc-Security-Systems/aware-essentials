@@ -11,7 +11,7 @@ import {
   PresenceTrackerCommand,
   presenceTrackerCommands,
 } from './presence-tracker';
-import { ServerCommand } from './server';
+import { ServerCommand, serverCommands } from './server';
 import { PermissionId } from '../permissions';
 
 export type AnyDeviceCommand =
@@ -44,6 +44,7 @@ export const commandSchemas = {
   ...presenceTrackerCommands,
   ...displayCommands,
   ...nvrExporterCommandSchemas,
+  ...serverCommands,
 } as const;
 
 export const commandDescriptions: Record<
