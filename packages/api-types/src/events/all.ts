@@ -19,13 +19,16 @@ import {
   nvrExporterEventSchemasByKind,
 } from './nvr-exporter';
 import { DeviceType } from '../device';
+import { NotificationSeverity } from 'src/primitives';
 
-export interface DeviceCommandTriggered {
-  kind: 'device-command';
-  userId?: string;
-  command: string;
-  args: object;
-}
+export const sDeviceCommandTriggered = z.object({
+  kind: z.literal('device-command'),
+  userId: z.string().nonempty().optional(),
+  command: z.string().nonempty(),
+  args: z.record(z.unknown()),
+});
+
+export type DeviceCommandTriggered = z.infer<typeof sDeviceCommandTriggered>;
 
 export const sMotionDetected = z.object({
   kind: z.literal('motion-detected'),
@@ -33,14 +36,33 @@ export const sMotionDetected = z.object({
 
 export type MotionDetectedEvent = z.infer<typeof sMotionDetected>;
 
-export interface DeviceConnectedEvent {
-  kind: 'device-connected';
-  clientId?: number; // for soft devices
+export const sDeviceConnectedEvent = z.object({
+  kind: z.literal('device-connected'),
+  clientId: z.number().int().positive().optional(),
+});
+
+export type DeviceConnectedEvent = z.infer<typeof sDeviceConnectedEvent>;
+
+export const sDeviceDisconnectedEvent = z.object({
+  kind: z.literal('device-disconnected'),
+  clientId: z.number().int().positive().optional(),
+});
+
+export type DeviceDisconnectedEvent = z.infer<typeof sDeviceDisconnectedEvent>;
+
+export interface NotificationCreatedEvent {
+  kind: 'notification-created';
+  notificationId: string;
+  message: string;
+  severity: NotificationSeverity;
+  metadata: Record<string, unknown>;
+  notificationRef: string | null;
+  recipientId: string | null;
 }
 
-export interface DeviceDisconnectedEvent {
-  kind: 'device-disconnected';
-  clientId?: number;
+export interface NotificationAcknowledgedEvent {
+  kind: 'notification-acknowledged';
+  notificationId: string;
 }
 
 // DEVICE EVENTS
@@ -55,6 +77,8 @@ export type AnyDeviceEvent =
   | PanicButtonEvent
   | DeviceConnectedEvent
   | DeviceDisconnectedEvent
+  | NotificationCreatedEvent
+  | NotificationAcknowledgedEvent
   | IntercomTerminalEvent
   | ServerEvent
   | PresenceTrackerEvent
@@ -118,6 +142,8 @@ export const eventKindLabels: Record<DeviceEvent['kind'], string> = {
   'door-closed': 'Door Closed',
   'nvr-export-started': 'NVR Export Started',
   'nvr-export-deleted': 'NVR Export Deleted',
+  'notification-created': 'Notification Created',
+  'notification-acknowledged': 'Notification Acknowledged',
 };
 
 export const eventSchemaByKind = {
@@ -131,6 +157,9 @@ export const eventSchemaByKind = {
   ...readerEventSchemaByKind,
   ...nvrExporterEventSchemasByKind,
   'motion-detected': sMotionDetected,
+  'device-command': sDeviceCommandTriggered,
+  'device-connected': sDeviceConnectedEvent,
+  'device-disconnected': sDeviceDisconnectedEvent,
 };
 
 export const eventsByDeviceType: Partial<
