@@ -20,12 +20,15 @@ export const sFileResponse = z
   .nullable();
 
 export const sAgentDeviceInfo = z.intersection(
-  sForeignDeviceInfo,
+  sForeignDeviceInfo.merge(
+    z.object({
+      presets: z.array(sPresetDto),
+    }),
+  ),
   sAnyDeviceSpecs,
-  z.object({
-    presets: z.array(sPresetDto),
-  }),
 );
+
+export type AgentDeviceInfo = z.infer<typeof sAgentDeviceInfo>;
 
 export const sForeignDeviceId = z.tuple([
   z.string().nonempty().describe('Foreign system identifier'),

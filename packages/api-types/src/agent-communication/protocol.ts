@@ -504,7 +504,6 @@ export const sAbortChange = z
 
 // TYPESCRIPT INFERRED TYPES
 
-export type AgentDeviceInfo = z.infer<typeof sAgentDeviceInfo>;
 export type MessageHeader = z.infer<typeof sMessageHeader>;
 export type Message<TPayload> = MessageHeader & TPayload;
 export type ErrorPayload = z.infer<typeof sErrorPayload>;
