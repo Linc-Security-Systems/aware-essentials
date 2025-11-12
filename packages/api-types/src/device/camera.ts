@@ -14,6 +14,7 @@ export const sStreamInfo = z.object({
   id: z.string().nonempty(),
   displayName: z.string().nonempty(),
   externalPlayerUrl: z.string().nullable(),
+  rtspUrl: z.string().nonempty(),
 });
 
 export const sCameraSpecs = z.object({
