@@ -1,3 +1,4 @@
+import { z } from 'zod';
 import {
   cameraRequestSchemas,
   cameraResponseSchemas,
@@ -23,12 +24,24 @@ import {
   NvrRecorderQueryResponseMap,
 } from './nvr-recorder';
 
+// queries that apply to all devices
+export const sEventCapsQueryArgs = {};
+
+export type EventCapsQueryArgs = typeof sEventCapsQueryArgs;
+
+export const QUERY_EVENT_CAPS = 'device:event-caps';
+
+export const sEventCapsQueryResponse = z.array(z.string());
+
+export type EventCapsQueryResponse = z.infer<typeof sEventCapsQueryResponse>;
+
 // Dictionary of request schemas by query type
 export const requestSchemasByType = {
   ...nvrRecorderRequestSchemas,
   ...nvrExporterRequestSchemas,
   ...nvrAnalyticsRequestSchemas,
   ...cameraRequestSchemas,
+  [QUERY_EVENT_CAPS]: sEventCapsQueryArgs,
 } as const;
 
 // Dictionary of response schemas by query type
@@ -37,18 +50,23 @@ export const responseSchemasByType = {
   ...nvrExporterResponseSchemas,
   ...nvrAnalyticsResponseSchemas,
   ...cameraResponseSchemas,
+  [QUERY_EVENT_CAPS]: sEventCapsQueryResponse,
 } as const;
 
 // TypeScript mapping types for requests and responses
 export type QueryRequestMap = NvrAnalyticsQueryRequestMap &
   NvrRecorderQueryRequestMap &
   CameraQueryRequestMap &
-  NvrExporterQueryRequestMap;
+  NvrExporterQueryRequestMap & {
+    [QUERY_EVENT_CAPS]: EventCapsQueryArgs;
+  };
 
 export type QueryResponseMap = NvrAnalyticsQueryResponseMap &
   NvrRecorderQueryResponseMap &
   CameraQueryResponseMap &
-  NvrExporterQueryResponseMap;
+  NvrExporterQueryResponseMap & {
+    [QUERY_EVENT_CAPS]: EventCapsQueryResponse;
+  };
 
 // Helper types for type inference
 export type QueryType = keyof QueryRequestMap;
