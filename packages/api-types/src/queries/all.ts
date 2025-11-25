@@ -25,9 +25,9 @@ import {
 } from './nvr-recorder';
 
 // queries that apply to all devices
-export const sEventCapsQueryArgs = {};
+export const sEventCapsQueryArgs = z.object({});
 
-export type EventCapsQueryArgs = typeof sEventCapsQueryArgs;
+export type EventCapsQueryArgs = z.infer<typeof sEventCapsQueryArgs>;
 
 export const QUERY_EVENT_CAPS = 'device:event-caps';
 
