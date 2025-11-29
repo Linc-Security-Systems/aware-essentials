@@ -19,8 +19,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@awarevue/agent-sdk@workspace:packages/agent-sdk-typescript"
   dependencies:
-    "@awarevue/api-types": "npm:^2.0.21"
+    "@awarevue/api-types": "npm:^2.0.22"
     "@types/node": "npm:^20.12.7"
+    "@types/ws": "npm:^8.18.1"
     "@typescript-eslint/eslint-plugin": "npm:^8.31.1"
     "@typescript-eslint/parser": "npm:^8.31.1"
     eslint: "npm:^9.25.1"
@@ -33,7 +34,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@awarevue/api-types@npm:^2.0.21, @awarevue/api-types@workspace:packages/api-types":
+"@awarevue/api-types@npm:^2.0.22, @awarevue/api-types@workspace:packages/api-types":
   version: 0.0.0-use.local
   resolution: "@awarevue/api-types@workspace:packages/api-types"
   dependencies:
@@ -1363,6 +1364,15 @@ __metadata:
   version: 2.0.3
   resolution: "@types/stack-utils@npm:2.0.3"
   checksum: 10c0/1f4658385ae936330581bcb8aa3a066df03867d90281cdf89cc356d404bd6579be0f11902304e1f775d92df22c6dd761d4451c804b0a4fba973e06211e9bd77c
+  languageName: node
+  linkType: hard
+
+"@types/ws@npm:^8.18.1":
+  version: 8.18.1
+  resolution: "@types/ws@npm:8.18.1"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10c0/61aff1129143fcc4312f083bc9e9e168aa3026b7dd6e70796276dcfb2c8211c4292603f9c4864fae702f2ed86e4abd4d38aa421831c2fd7f856c931a481afbab
   languageName: node
   linkType: hard
 

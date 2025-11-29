@@ -15,6 +15,7 @@ import {
   Observable,
   map,
   startWith,
+  throwIfEmpty,
 } from 'rxjs';
 import { Transport } from './transport';
 import {
@@ -22,7 +23,6 @@ import {
   AccessObjectKind,
   AccessRefMap,
   FromAgent,
-  Message,
   PayloadByKind,
   ProviderSpecs,
   PushEventRq,
@@ -31,6 +31,7 @@ import {
 import { AccessChangeContext, Agent, RunContext } from './agent';
 import { createValidator } from './default-validator';
 import { stringifyError } from './utils';
+import { AgentError } from './agent-error';
 
 type ObjectCache = Record<
   AccessObjectKind,
@@ -84,7 +85,7 @@ export class AgentApp {
         ),
         take(1),
         timeout(this.options.replyTimeout || 10000),
-      ) as Observable<Message<PayloadByKind[TResponseKind]>>;
+      );
 
     return of(this.addEnvelope({ ...payload, id: AgentApp.nextId() })).pipe(
       // send the message to the agent
@@ -110,6 +111,7 @@ export class AgentApp {
             kind: 'error-rs' as const,
             requestId,
             error: stringifyError(error),
+            code: error instanceof AgentError ? error.code : undefined,
           }),
         ),
         tap((rs) => this.options.transport.send(this.addEnvelope(rs))),
@@ -188,6 +190,14 @@ export class AgentApp {
             // handle commands
             case 'command':
               return this.agent.runCommand$(context, message).pipe(
+                // if command observable completes without emitting, throw not supported error
+                throwIfEmpty(
+                  () =>
+                    new AgentError(
+                      `Agent ${context.provider} does not support command ${message.command}`,
+                      'NOT_SUPPORTED',
+                    ),
+                ),
                 // success
                 map(() => ({
                   kind: 'command-rs' as const,
@@ -197,7 +207,24 @@ export class AgentApp {
               );
 
             case 'query':
+              if (!this.agent.getResult$) {
+                return throwError(
+                  () =>
+                    new AgentError(
+                      `Agent ${context.provider} does not support queries`,
+                      'NOT_SUPPORTED',
+                    ),
+                );
+              }
               return this.agent.getResult$(context, message).pipe(
+                // if query observable completes without emitting, throw not supported error
+                throwIfEmpty(
+                  () =>
+                    new AgentError(
+                      `Agent ${context.provider} does not support query ${message.query}`,
+                      'NOT_SUPPORTED',
+                    ),
+                ),
                 // success
                 map((result) => ({
                   kind: 'query-rs' as const,
@@ -211,8 +238,9 @@ export class AgentApp {
               if (!this.agent.pushFile) {
                 return throwError(
                   () =>
-                    new Error(
+                    new AgentError(
                       `Agent ${context.provider} does not support file pushing`,
+                      'NOT_SUPPORTED',
                     ),
                 );
               }
@@ -235,30 +263,30 @@ export class AgentApp {
               );
 
             case 'validate-change':
-              // validate access change
-              const validateOb$ = !this.agent.validateAccessChange$
-                ? throwError(
-                    () =>
-                      new Error(
-                        `Agent ${context.provider} does not support access change validation`,
-                      ),
-                  )
-                : changeValidator$(context, message).pipe(
-                    mergeMap(([issues, cache]) => {
-                      objectCache = cache;
-                      const validationContext = this.createAccessChangeContext(
-                        context,
-                        message.refMap,
-                        objectCache,
-                      );
-                      return issues.length > 0
-                        ? of(issues)
-                        : this.agent.validateAccessChange$(
-                            validationContext,
-                            message,
-                          );
-                    }),
-                  );
+              const validateOb$ = throwError(
+                () =>
+                  new AgentError(
+                    `Agent ${context.provider} does not support access change validation`,
+                    'NOT_SUPPORTED',
+                  ),
+              );
+              if (this.agent.validateAccessChange$) {
+                const v$ = this.agent.validateAccessChange$;
+                // validate access change
+                return changeValidator$(context, message).pipe(
+                  mergeMap(([issues, cache]) => {
+                    objectCache = cache;
+                    const validationContext = this.createAccessChangeContext(
+                      context,
+                      message.refMap,
+                      objectCache,
+                    );
+                    return issues.length > 0
+                      ? of(issues)
+                      : v$(validationContext, message);
+                  }),
+                );
+              }
 
               return validateOb$.pipe(
                 map((issues) => ({
@@ -279,8 +307,9 @@ export class AgentApp {
               const applyOb$ = !this.agent.applyAccessChange$
                 ? throwError(
                     () =>
-                      new Error(
+                      new AgentError(
                         `Agent ${context.provider} does not support access change apply`,
+                        'NOT_SUPPORTED',
                       ),
                   )
                 : this.agent.applyAccessChange$(applyContext, message);

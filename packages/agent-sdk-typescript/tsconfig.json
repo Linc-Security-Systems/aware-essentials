@@ -2,12 +2,20 @@
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "dist",
-    "module": "CommonJS",
+    "module": "node16",
     "target": "es2019",
-    "moduleResolution": "node",
+    "moduleResolution": "node16",
     "esModuleInterop": true,
     "declaration": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "noImplicitAny": true,
+    "alwaysStrict": true
   },
   "include": ["src/**/*"]
 }

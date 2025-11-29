@@ -32,10 +32,15 @@ export const sResponsePayload = <TKind, T extends z.ZodRawShape>(
   // success branch
   z.object({ requestId: z.string().nonempty(), kind }).and(sPayload);
 
+export const sAgentErrorCode = z.enum(['NOT_SUPPORTED', 'TIMEOUT']);
+
+export type AgentErrorCode = z.infer<typeof sAgentErrorCode>;
+
 export const sErrorPayload = sResponsePayload(
   z.literal('error-rs'),
   z.object({
     error: z.string().nonempty().describe('Error message if request failed'),
+    code: sAgentErrorCode.optional().describe('Optional error code'),
   }),
 );
 

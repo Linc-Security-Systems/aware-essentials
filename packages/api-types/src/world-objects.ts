@@ -36,4 +36,8 @@ export const worldObjects: WorldObject[] = [
     id: 'bicycle',
     label: 'Bicycle',
   },
+  {
+    id: 'car',
+    label: 'Car',
+  },
 ];
