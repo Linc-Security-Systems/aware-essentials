@@ -27,6 +27,7 @@ import {
   AccessObjectKind,
   ProviderSpecs,
   AccessControlCapabilityReport,
+  AccessValidateChangeRs,
 } from '@awarevue/api-types';
 import { AccessChangeContext, Agent, RunContext } from './agent';
 import { createValidator } from './default-validator';
@@ -214,7 +215,7 @@ export class AgentApp {
                       `Agent ${context.provider} does not support queries`,
                       'NOT_SUPPORTED',
                     ),
-                );
+                ).pipe(this.handleResponse$(message.id));
               }
               return this.agent.getResult$(context, message).pipe(
                 // if query observable completes without emitting, throw not supported error
@@ -263,17 +264,18 @@ export class AgentApp {
               );
 
             case 'validate-change':
-              const validateOb$ = throwError(
-                () =>
-                  new AgentError(
-                    `Agent ${context.provider} does not support access change validation`,
-                    'NOT_SUPPORTED',
-                  ),
-              );
+              let validateOb$: Observable<AccessValidateChangeRs['issues']> =
+                throwError(
+                  () =>
+                    new AgentError(
+                      `Agent ${context.provider} does not support access change validation`,
+                      'NOT_SUPPORTED',
+                    ),
+                );
               if (this.agent.validateAccessChange$) {
                 const v$ = this.agent.validateAccessChange$;
                 // validate access change
-                return changeValidator$(context, message).pipe(
+                validateOb$ = changeValidator$(context, message).pipe(
                   mergeMap(([issues, cache]) => {
                     objectCache = cache;
                     const validationContext = this.createAccessChangeContext(
