@@ -1,5 +1,9 @@
 import { z } from 'zod';
-import { sAnyDeviceSpecs, sForeignDeviceInfo, sPresetDto } from './device';
+import {
+  sAnyDeviceSpecs,
+  sForeignDeviceInfo,
+  sPresetDto,
+} from './objects/device';
 
 export const sDeviceId = z.string().uuid().nonempty();
 export const sPresetId = z.string().uuid().nonempty();

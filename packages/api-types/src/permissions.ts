@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { DeviceType } from './device';
+import { DeviceType } from './objects/device';
 
 type DeviceTypePermissionsMap = {
   [K in DeviceType]: z.ZodLiteral<`device:${K}`>;

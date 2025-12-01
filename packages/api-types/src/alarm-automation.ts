@@ -1,8 +1,8 @@
 import { z } from 'zod';
-import { DeviceEvent } from './events';
-import { DeviceType } from './device';
-import { AutomationRuleBody } from './automation';
-import { worldObjects } from './world-objects';
+import { DeviceEvent } from './api/events';
+import { DeviceType } from './objects/device';
+import { worldObjects } from './objects/world-object';
+import { AutomationRuleBody } from './objects/automation-rule';
 
 export const sAlarmBehavior = z.enum([
   'ignore',

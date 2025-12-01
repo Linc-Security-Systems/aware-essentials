@@ -1,0 +1,17 @@
+import { JSONSchema4 } from 'json-schema';
+import { UiHint } from './agent-metadata';
+
+export interface ModuleConfig {
+  app: {
+    modules: string[];
+  };
+  [moduleName: string]: Record<string, unknown>;
+}
+
+export interface ModuleConfigMetadata {
+  allModules: string[];
+  moduleTitles: Record<string, string>;
+  moduleDefaults: Record<string, Record<string, unknown>>;
+  moduleSchemas: Record<string, JSONSchema4>;
+  moduleUiHints: Record<string, UiHint[]>;
+}
