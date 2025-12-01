@@ -2,9 +2,9 @@
   "compilerOptions": {
     "outDir": "./dist",
     "target": "ES2020",
-    "module": "es2020",
+    "module": "node16",
     "declaration": true,
-    "moduleResolution": "bundler",
+    "moduleResolution": "node16",
     "strict": true,
     "esModuleInterop": true
   }
