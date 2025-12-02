@@ -9,6 +9,9 @@ export const sDoorSpecs = z.object({
   canReportLockState: z.boolean(),
   canControlLock: z.boolean(),
   canRelease: z.boolean(),
+  style: z
+    .enum(['single', 'double', 'sliding', 'hatch', 'roller', 'window'])
+    .optional(),
 });
 
 export type DoorSpecs = z.infer<typeof sDoorSpecs>;
