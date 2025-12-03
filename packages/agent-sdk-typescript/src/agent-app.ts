@@ -16,6 +16,7 @@ import {
   map,
   startWith,
   throwIfEmpty,
+  delay,
 } from 'rxjs';
 import { Transport } from './transport';
 import {
@@ -161,174 +162,175 @@ export class AgentApp {
       zone: {},
     };
 
-    return merge(
-      // run the agent monitor
-      this.agent
-        .run$(context)
-        .pipe(
-          tap((message) =>
-            this.options.transport.send(
-              this.addEnvelope({ ...message, provider: context.provider }),
+    return this.options.transport.messages$.pipe(
+      startWith(null), // emit immediately to ensure subscription is active
+      mergeMap((message) => {
+        // Send start-rs on the first emission (null) to signal we're ready
+        if (message === null) {
+          this.options.transport.send(
+            this.addEnvelope({
+              kind: 'start-rs' as const,
+              requestId: context.startRequestId,
+            }),
+          );
+          return of(null).pipe(
+            delay(1000),
+            mergeMap(() =>
+              this.agent.run$(context).pipe(
+                tap((message) =>
+                  this.options.transport.send(
+                    this.addEnvelope({
+                      ...message,
+                      provider: context.provider,
+                    }),
+                  ),
+                ),
+              ),
             ),
-          ),
-        ),
-      // handle messages to agent
-      this.options.transport.messages$.pipe(
-        startWith(null), // emit immediately to ensure subscription is active
-        mergeMap((message) => {
-          // Send start-rs on the first emission (null) to signal we're ready
-          if (message === null) {
-            this.options.transport.send(
-              this.addEnvelope({
-                kind: 'start-rs' as const,
-                requestId: context.startRequestId,
-              }),
+          );
+        }
+
+        switch (message.kind) {
+          // handle commands
+          case 'command':
+            return this.agent.runCommand$(context, message).pipe(
+              // if command observable completes without emitting, throw not supported error
+              throwIfEmpty(
+                () =>
+                  new AgentError(
+                    `Agent ${context.provider} does not support command ${message.command}`,
+                    'NOT_SUPPORTED',
+                  ),
+              ),
+              // success
+              map(() => ({
+                kind: 'command-rs' as const,
+                requestId: message.id,
+              })),
+              this.handleResponse$(message.id),
             );
+
+          case 'query':
+            if (!this.agent.getResult$) {
+              return throwError(
+                () =>
+                  new AgentError(
+                    `Agent ${context.provider} does not support queries`,
+                    'NOT_SUPPORTED',
+                  ),
+              ).pipe(this.handleResponse$(message.id));
+            }
+            return this.agent.getResult$(context, message).pipe(
+              // if query observable completes without emitting, throw not supported error
+              throwIfEmpty(
+                () =>
+                  new AgentError(
+                    `Agent ${context.provider} does not support query ${message.query}`,
+                    'NOT_SUPPORTED',
+                  ),
+              ),
+              // success
+              map((result) => ({
+                kind: 'query-rs' as const,
+                requestId: message.id,
+                result,
+              })),
+              this.handleResponse$(message.id),
+            );
+
+          case 'push-file':
+            if (!this.agent.pushFile) {
+              return throwError(
+                () =>
+                  new AgentError(
+                    `Agent ${context.provider} does not support file pushing`,
+                    'NOT_SUPPORTED',
+                  ),
+              );
+            }
+            return this.agent.pushFile(context, message).pipe(
+              // success - no return value
+              mergeMap(() => EMPTY),
+              this.handleResponse$(message.id),
+            );
+
+          case 'get-available-devices':
+            // get available devices
+            return this.agent.getDevicesAndRelations$(context).pipe(
+              // success
+              map((rs) => ({
+                kind: 'get-available-devices-rs' as const,
+                ...rs,
+                requestId: message.id,
+              })),
+              this.handleResponse$(message.id),
+            );
+
+          case 'validate-change':
+            let validateOb$: Observable<AccessValidateChangeRs['issues']> =
+              throwError(
+                () =>
+                  new AgentError(
+                    `Agent ${context.provider} does not support access change validation`,
+                    'NOT_SUPPORTED',
+                  ),
+              );
+            if (this.agent.validateAccessChange$) {
+              const v$ = this.agent.validateAccessChange$;
+              // validate access change
+              validateOb$ = changeValidator$(context, message).pipe(
+                mergeMap(([issues, cache]) => {
+                  objectCache = cache;
+                  const validationContext = this.createAccessChangeContext(
+                    context,
+                    message.refMap,
+                    objectCache,
+                  );
+                  return issues.length > 0
+                    ? of(issues)
+                    : v$(validationContext, message);
+                }),
+              );
+            }
+
+            return validateOb$.pipe(
+              map((issues) => ({
+                kind: 'validate-change-rs' as const,
+                requestId: message.id,
+                issues,
+              })),
+              this.handleResponse$(message.id),
+            );
+
+          case 'apply-change':
+            // apply access change
+            const applyContext = this.createAccessChangeContext(
+              context,
+              message.refMap,
+              objectCache,
+            );
+            const applyOb$ = !this.agent.applyAccessChange$
+              ? throwError(
+                  () =>
+                    new AgentError(
+                      `Agent ${context.provider} does not support access change apply`,
+                      'NOT_SUPPORTED',
+                    ),
+                )
+              : this.agent.applyAccessChange$(applyContext, message);
+            return applyOb$.pipe(
+              map((result) => ({
+                kind: 'apply-change-rs' as const,
+                requestId: message.id,
+                refs: result,
+              })),
+              this.handleResponse$(message.id),
+            );
+
+          default:
             return EMPTY;
-          }
-
-          switch (message.kind) {
-            // handle commands
-            case 'command':
-              return this.agent.runCommand$(context, message).pipe(
-                // if command observable completes without emitting, throw not supported error
-                throwIfEmpty(
-                  () =>
-                    new AgentError(
-                      `Agent ${context.provider} does not support command ${message.command}`,
-                      'NOT_SUPPORTED',
-                    ),
-                ),
-                // success
-                map(() => ({
-                  kind: 'command-rs' as const,
-                  requestId: message.id,
-                })),
-                this.handleResponse$(message.id),
-              );
-
-            case 'query':
-              if (!this.agent.getResult$) {
-                return throwError(
-                  () =>
-                    new AgentError(
-                      `Agent ${context.provider} does not support queries`,
-                      'NOT_SUPPORTED',
-                    ),
-                ).pipe(this.handleResponse$(message.id));
-              }
-              return this.agent.getResult$(context, message).pipe(
-                // if query observable completes without emitting, throw not supported error
-                throwIfEmpty(
-                  () =>
-                    new AgentError(
-                      `Agent ${context.provider} does not support query ${message.query}`,
-                      'NOT_SUPPORTED',
-                    ),
-                ),
-                // success
-                map((result) => ({
-                  kind: 'query-rs' as const,
-                  requestId: message.id,
-                  result,
-                })),
-                this.handleResponse$(message.id),
-              );
-
-            case 'push-file':
-              if (!this.agent.pushFile) {
-                return throwError(
-                  () =>
-                    new AgentError(
-                      `Agent ${context.provider} does not support file pushing`,
-                      'NOT_SUPPORTED',
-                    ),
-                );
-              }
-              return this.agent.pushFile(context, message).pipe(
-                // success - no return value
-                mergeMap(() => EMPTY),
-                this.handleResponse$(message.id),
-              );
-
-            case 'get-available-devices':
-              // get available devices
-              return this.agent.getDevicesAndRelations$(context).pipe(
-                // success
-                map((rs) => ({
-                  kind: 'get-available-devices-rs' as const,
-                  ...rs,
-                  requestId: message.id,
-                })),
-                this.handleResponse$(message.id),
-              );
-
-            case 'validate-change':
-              let validateOb$: Observable<AccessValidateChangeRs['issues']> =
-                throwError(
-                  () =>
-                    new AgentError(
-                      `Agent ${context.provider} does not support access change validation`,
-                      'NOT_SUPPORTED',
-                    ),
-                );
-              if (this.agent.validateAccessChange$) {
-                const v$ = this.agent.validateAccessChange$;
-                // validate access change
-                validateOb$ = changeValidator$(context, message).pipe(
-                  mergeMap(([issues, cache]) => {
-                    objectCache = cache;
-                    const validationContext = this.createAccessChangeContext(
-                      context,
-                      message.refMap,
-                      objectCache,
-                    );
-                    return issues.length > 0
-                      ? of(issues)
-                      : v$(validationContext, message);
-                  }),
-                );
-              }
-
-              return validateOb$.pipe(
-                map((issues) => ({
-                  kind: 'validate-change-rs' as const,
-                  requestId: message.id,
-                  issues,
-                })),
-                this.handleResponse$(message.id),
-              );
-
-            case 'apply-change':
-              // apply access change
-              const applyContext = this.createAccessChangeContext(
-                context,
-                message.refMap,
-                objectCache,
-              );
-              const applyOb$ = !this.agent.applyAccessChange$
-                ? throwError(
-                    () =>
-                      new AgentError(
-                        `Agent ${context.provider} does not support access change apply`,
-                        'NOT_SUPPORTED',
-                      ),
-                  )
-                : this.agent.applyAccessChange$(applyContext, message);
-              return applyOb$.pipe(
-                map((result) => ({
-                  kind: 'apply-change-rs' as const,
-                  requestId: message.id,
-                  refs: result,
-                })),
-                this.handleResponse$(message.id),
-              );
-
-            default:
-              return EMPTY;
-          }
-        }),
-      ),
+        }
+      }),
     );
   };
 
