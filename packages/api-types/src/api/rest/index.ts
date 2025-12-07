@@ -32,3 +32,4 @@ export * from './user';
 export * from './view';
 export * from './webrtc-playback';
 export * from './io-device';
+export * from './device';

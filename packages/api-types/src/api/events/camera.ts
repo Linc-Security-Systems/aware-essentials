@@ -1,4 +1,4 @@
-import { sCameraPresetInfo } from '../../primitives';
+import { sCameraPresetInfo, sWorldObjectId } from '../../primitives';
 import { z } from 'zod';
 
 // EVENTS
@@ -22,7 +22,7 @@ export const sObjectLocator = sBoxLocator;
 
 export const sObjectDetectionData = z
   .object({
-    objectKind: z.string().nullable(),
+    objectKind: sWorldObjectId.nullable(),
     probability: z.number(),
     identifiedObjectId: z.string().nullable(),
     frameTime: z.number(),

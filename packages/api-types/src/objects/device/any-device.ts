@@ -10,7 +10,7 @@ import { INTERCOM_TERMINAL, sIntercomTerminalSpecs } from './intercom-terminal';
 import { PBX, sPbxSpecs } from './pbx';
 import { SERVER } from './server';
 import { ALARM, sAlarmSpecs } from './alarm';
-import { sDeviceRelationDto, sDeviceRelationSide } from './device-relation';
+import { sDeviceRelationSide } from './device-relation';
 import { DEVICE_GATEWAY } from './device-gateway';
 import { PRESENCE_TRACKER } from './presence-tracker';
 import { DISPLAY } from './display';
@@ -44,7 +44,7 @@ export const DEVICE_TYPES = [
   SYSTEM,
 ] as const;
 
-const sDeviceType = z.enum(DEVICE_TYPES);
+export const sDeviceType = z.enum(DEVICE_TYPES);
 
 const sAlarmSpecsWithType = sAlarmSpecs.merge(
   z.object({ type: z.literal(ALARM) }),
@@ -224,55 +224,6 @@ export const sSystemDeviceDto = sSystemDeviceSpecsWithType
   .and(sDeviceMgmtInfo)
   .and(sForeignDeviceInfo);
 
-export const sAddDeviceRequest = z.object({
-  name: z.string().nonempty(),
-  foreignRef: z.string().nonempty(),
-  notes: z.string().nullable(),
-  provider: z.string().nonempty(),
-  providerMetadata: sProviderMetadata,
-  tags: z.array(z.string().nonempty()),
-  relations: z.array(sDeviceRelationSide),
-  type: sDeviceType,
-  specs: z.object({}).catchall(z.unknown()).optional(),
-});
-
-export const sUpdateDeviceRequest = z.object({
-  id: z.string().nonempty(),
-  name: z.string().optional(),
-  notes: z.string().nullable().optional(),
-  providerMetadata: z.object({}).catchall(z.unknown()).optional(),
-  specs: z.object({}).catchall(z.unknown()).optional(),
-  tags: z.array(z.string()).optional(),
-  relations: z.array(sDeviceRelationSide).optional(),
-  enabled: z.boolean().optional(),
-});
-
-export const sOverrideDeviceSpecsRequest = z.object({
-  id: z.string(),
-  specs: z.object({}).catchall(z.unknown()),
-});
-
-export const sAddDevicePresetRequest = z.object({
-  name: z.string().nonempty(),
-  params: z.object({}).catchall(z.unknown()),
-  assignedRef: z.string().nullable(),
-  isDefault: z.boolean(),
-  deviceId: z.string().nonempty(),
-});
-
-export const sUpdateDevicePresetRequest = z.object({
-  name: z.string().optional(),
-  isDefault: z.boolean().optional(),
-  assignedRef: z.string().nullable().optional(),
-  deviceId: z.string().nonempty(),
-  presetId: z.string().nonempty(),
-});
-
-export const sRemoveDevicePresetRequest = z.object({
-  deviceId: z.string().nonempty(),
-  presetId: z.string().nonempty(),
-});
-
 export const sEventVariantDescription = z.object({
   name: z.string().describe('The name of the variant'),
   label: z.string().describe('A human-readable label for the variant'),
@@ -286,10 +237,6 @@ export const sEventDescription = z.object({
     .optional()
     .describe('Possible variants derived from event data'),
 });
-
-export const sGetEventCatalogResponse = z.array(sEventDescription);
-
-export const sSetUnsetRelationRequest = sDeviceRelationDto;
 
 export type DeviceType = z.infer<typeof sDeviceType>;
 
@@ -316,35 +263,4 @@ export type RecorderDto = z.infer<typeof sRecorderDto>;
 export type NvrExporterDto = z.infer<typeof sNvrExporterDto>;
 export type NvrAnalyticsServerDto = z.infer<typeof sNvrAnalyticsServerDto>;
 export type SystemDeviceDto = z.infer<typeof sSystemDeviceDto>;
-
-export type AddDeviceRequest = z.infer<typeof sAddDeviceRequest>;
-
-export type UpdateDeviceRequest = z.infer<typeof sUpdateDeviceRequest>;
-
-export type OverrideDeviceSpecsRequest = z.infer<
-  typeof sOverrideDeviceSpecsRequest
->;
-
-export type AddDevicePresetRequest = z.infer<typeof sAddDevicePresetRequest>;
-
-export type UpdateDevicePresetRequest = z.infer<
-  typeof sUpdateDevicePresetRequest
->;
-
-export type RemoveDevicePresetRequest = z.infer<
-  typeof sRemoveDevicePresetRequest
->;
-
-export type SetUnsetDeviceRelationRequest = z.infer<
-  typeof sSetUnsetRelationRequest
->;
-
-export type DeviceSearchCriteria = {
-  type: DeviceType;
-};
-
 export type EventDescription = z.infer<typeof sEventDescription>;
-
-export type EventVariantDescription = z.infer<typeof sEventVariantDescription>;
-
-export type GetEventCatalogResponse = z.infer<typeof sGetEventCatalogResponse>;
