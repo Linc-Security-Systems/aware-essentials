@@ -34,6 +34,7 @@ import { AccessChangeContext, Agent, RunContext } from './agent';
 import { createValidator } from './default-validator';
 import { stringifyError } from './utils';
 import { AgentError } from './agent-error';
+import { AGENT_PROTOCOL_VERSION } from './constants';
 
 type ObjectCache = Record<
   AccessObjectKind,
@@ -45,7 +46,6 @@ export type DeviceActivity =
   | Omit<PushEventRq, 'provider'>;
 
 export type AgentOptions = {
-  version: number;
   providers: Record<string, ProviderSpecs>;
   accessControlProviders?: Record<string, AccessControlCapabilityReport>;
   agentId: string;
@@ -123,7 +123,7 @@ export class AgentApp {
     ...payload,
     id: AgentApp.nextId(),
     from: this.options.agentId,
-    version: this.options.version,
+    version: AGENT_PROTOCOL_VERSION,
     on: Date.now(),
   });
 
