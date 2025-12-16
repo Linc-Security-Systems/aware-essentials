@@ -1,11 +1,12 @@
 import { z } from 'zod';
+import { sIoOutputSlotId } from '../../primitives';
 
 // COMMANDS
 
 export const sIoBoardSetOutputCommand = z.object({
   command: z.literal('io-board.set-output'),
   params: z.object({
-    output: z.string().nonempty(),
+    output: sIoOutputSlotId,
     value: z.boolean(),
   }),
 });

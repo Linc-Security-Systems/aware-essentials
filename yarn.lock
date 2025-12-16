@@ -19,7 +19,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@awarevue/agent-sdk@workspace:packages/agent-sdk-typescript"
   dependencies:
-    "@awarevue/api-types": "npm:^2.0.30"
+    "@awarevue/api-types": "npm:2.0.31"
     "@types/node": "npm:^20.12.7"
     "@types/ws": "npm:^8.18.1"
     "@typescript-eslint/eslint-plugin": "npm:^8.31.1"
@@ -27,14 +27,18 @@ __metadata:
     eslint: "npm:^9.25.1"
     eslint-config-prettier: "npm:^10.1.2"
     eslint-plugin-import: "npm:^2.31.0"
-    rxjs: "npm:^7.8.2"
+    rxjs: "npm:7.8.2"
     typescript: "npm:^5.8.3"
     ws: "npm:^8"
-    zod: "npm:3.24.2"
+    zod: "npm:3.25.76"
+  peerDependencies:
+    "@awarevue/api-types": 2.0.31
+    rxjs: ^7.8.2
+    ws: ^8
   languageName: unknown
   linkType: soft
 
-"@awarevue/api-types@npm:^2.0.30, @awarevue/api-types@workspace:packages/api-types":
+"@awarevue/api-types@npm:2.0.31, @awarevue/api-types@workspace:packages/api-types":
   version: 0.0.0-use.local
   resolution: "@awarevue/api-types@workspace:packages/api-types"
   dependencies:
@@ -5581,7 +5585,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rxjs@npm:^7.8.2":
+"rxjs@npm:7.8.2":
   version: 7.8.2
   resolution: "rxjs@npm:7.8.2"
   dependencies:
@@ -6595,10 +6599,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod@npm:3.24.2":
-  version: 3.24.2
-  resolution: "zod@npm:3.24.2"
-  checksum: 10c0/c638c7220150847f13ad90635b3e7d0321b36cce36f3fc6050ed960689594c949c326dfe2c6fa87c14b126ee5d370ccdebd6efb304f41ef5557a4aaca2824565
+"zod@npm:3.25.76":
+  version: 3.25.76
+  resolution: "zod@npm:3.25.76"
+  checksum: 10c0/5718ec35e3c40b600316c5b4c5e4976f7fee68151bc8f8d90ec18a469be9571f072e1bbaace10f1e85cf8892ea12d90821b200e980ab46916a6166a4260a983c
   languageName: node
   linkType: hard
 

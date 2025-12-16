@@ -1,3 +1,11 @@
+/**
+ * P R I M I T I V E S
+ * These are the basic building blocks used throughout the API type definitions.
+ * Funactionally, product components compare schema attribute types to these primitives - by reference equality - to provide custom handling
+ * for common data types. We're not talking about int, string and that, we're talking about
+ * domain-specific types like DeviceId, PresetId, Duration, URL, etc.
+ */
+
 import { z } from 'zod';
 import {
   sAnyDeviceSpecs,
@@ -13,6 +21,14 @@ export const sZoneId = z.string().uuid().nonempty();
 export const sMacroId = z.string().uuid().nonempty();
 
 export const sWorldObjectId = z.string().nonempty();
+
+export const sIoInputSlotId = z.string().nonempty();
+
+export type IoInputSlotId = z.infer<typeof sIoInputSlotId>;
+
+export const sIoOutputSlotId = z.string().nonempty();
+
+export type IoOutputSlotId = z.infer<typeof sIoOutputSlotId>;
 
 // general
 export const sDuration = z.number().min(0).describe('Duration in milliseconds');
