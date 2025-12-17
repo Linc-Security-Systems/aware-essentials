@@ -6,7 +6,7 @@ import { z } from 'zod';
 export const sArmCommand = z.object({
   command: z.literal('alarm.arm'),
   params: z.object({
-    deviceId: sDeviceId,
+    deviceIds: z.array(sDeviceId),
   }),
 });
 
@@ -15,7 +15,7 @@ export type ArmCommand = z.infer<typeof sArmCommand>;
 export const sDisarmCommand = z.object({
   command: z.literal('alarm.disarm'),
   params: z.object({
-    deviceId: sDeviceId,
+    deviceIds: z.array(sDeviceId),
     duration: sDuration.optional().describe('Duration in milliseconds'),
   }),
 });
@@ -25,7 +25,7 @@ export type DisarmCommand = z.infer<typeof sDisarmCommand>;
 export const sBypassCommand = z.object({
   command: z.literal('alarm.bypass'),
   params: z.object({
-    deviceId: sDeviceId,
+    deviceIds: z.array(sDeviceId),
   }),
 });
 
@@ -34,7 +34,7 @@ export type BypassCommand = z.infer<typeof sBypassCommand>;
 export const sUnbypassCommand = z.object({
   command: z.literal('alarm.unbypass'),
   params: z.object({
-    deviceId: sDeviceId,
+    deviceIds: z.array(sDeviceId),
   }),
 });
 
