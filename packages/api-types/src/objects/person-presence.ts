@@ -7,6 +7,7 @@ export const sPresencePersonDto = z.object({
   avatarId: z.string().nullable(),
   type: z.string().min(1).max(16),
   position: z.string().max(128).nullable(),
+  archived: z.boolean(),
 });
 
 export type PresencePersonDto = z.infer<typeof sPresencePersonDto>;
@@ -27,7 +28,6 @@ export const sPersonPresenceDto = z.object({
   zone: z.union([sPresenceZoneDto, z.string()]),
   online: z.boolean().nullable(),
   onLeave: z.boolean(),
-  archived: z.boolean(),
   lastCheckInOn: z.number().nullable(),
   lastCheckOutOn: z.number().nullable(),
   securityChecked: z.boolean(),
