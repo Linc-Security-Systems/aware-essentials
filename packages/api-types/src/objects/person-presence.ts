@@ -27,6 +27,7 @@ export const sPersonPresenceDto = z.object({
   zone: z.union([sPresenceZoneDto, z.string()]),
   online: z.boolean().nullable(),
   onLeave: z.boolean(),
+  archived: z.boolean(),
   lastCheckInOn: z.number().nullable(),
   lastCheckOutOn: z.number().nullable(),
   securityChecked: z.boolean(),
