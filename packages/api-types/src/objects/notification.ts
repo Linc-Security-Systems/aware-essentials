@@ -9,6 +9,7 @@ export const sNotificationDto = z.object({
   metadata: z.record(z.unknown()),
   notificationRef: z.string().nonempty().nullable(),
   createdOn: z.number().int().nonnegative(),
+  recipientId: z.string().nonempty().nullable(),
   acknowledgedBy: z.string().nonempty().nullable(),
   acknowledgedOn: z.number().int().nonnegative().nullable(),
 });

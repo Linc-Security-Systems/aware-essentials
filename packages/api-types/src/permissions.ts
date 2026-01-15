@@ -1,48 +1,4 @@
 import { z } from 'zod';
-import { DeviceType } from './objects/device';
-
-type DeviceTypePermissionsMap = {
-  [K in DeviceType]: z.ZodLiteral<`device:${K}`>;
-};
-
-// Some Device Types omitted for now until we work out if they are needed
-const deviceTypePermissions: Omit<
-  DeviceTypePermissionsMap,
-  | 'server'
-  | 'alarm'
-  | 'pbx'
-  | 'device-gateway'
-  | 'reader'
-  | 'io-board'
-  | 'camera-lift'
-  | 'intercom-operator'
-  | 'presence-tracker'
-> = {
-  camera: z.literal('device:camera').describe('View cameras'),
-  door: z.literal('device:door').describe('View doors'),
-  'motion-sensor': z
-    .literal('device:motion-sensor')
-    .describe('View motion sensors'),
-  'panic-button': z
-    .literal('device:panic-button')
-    .describe('View panic buttons'),
-  'intercom-terminal': z
-    .literal('device:intercom-terminal')
-    .describe('View intercom terminals'),
-  display: z.literal('device:display').describe('View displays'),
-  'nvr-recorder': z
-    .literal('device:nvr-recorder')
-    .describe('View NVR recorders'),
-  'nvr-exporter': z
-    .literal('device:nvr-exporter')
-    .describe('View NVR exporters'),
-  'nvr-analytics-server': z
-    .literal('device:nvr-analytics-server')
-    .describe('View NVR analytics servers'),
-  system: z.literal('device:system').describe('View system devices'),
-};
-
-const sDeviceTypePermissions = Object.values(deviceTypePermissions);
 
 export const sPermissionId = z.union([
   //Layout
@@ -66,32 +22,24 @@ export const sPermissionId = z.union([
   //Door
   z.literal('door:release').describe('Release door'),
   z.literal('door:lock').describe('Lock or unlock door'),
-  //Camera Lift
-  z.literal('camera-lift:activate').describe('Activate camera lifts'),
-  //IO Board
-  z.literal('io-board:activate').describe('Activate IO board outputs'),
   //Public View
-  z.literal('public-view:read').describe('Read public view data'),
+  z.literal('public-view:read').describe('See public views'),
   z.literal('public-view:update').describe('Update public views'),
-  z.literal('public-view:delete').describe('Delete public view'),
-  z.literal('public-view:create').describe('Create public view'),
+  z.literal('public-view:delete').describe('Delete public views'),
+  z.literal('public-view:create').describe('Create public views'),
   //Private View
-  z.literal('private-view:read').describe('Read private view data'),
-  z.literal('private-view:update').describe('Update private views'),
-  z.literal('private-view:delete').describe('Delete private view'),
-  z.literal('private-view:create').describe('Create private view'),
+  z.literal('private-view:read').describe('Manage own views'),
   //Person
-  z.literal('person:read').describe('Read person data'),
-  z.literal('person:update').describe('Update person data'),
-  z.literal('person:delete').describe('Delete person'),
-  z.literal('person:create').describe('Create person'),
+  z.literal('person:read').describe('View people'),
+  z.literal('person:update').describe('Update people'),
+  z.literal('person:delete').describe('Delete people'),
+  z.literal('person:create').describe('Create people'),
   z.literal('person:assign').describe('Assign credentials and access rules'),
   z.literal('person:print').describe('Print person details'),
-  //Doors and Groups (needs access to doors to be useful)
-  z.literal('door-group:read').describe('Read door group data'),
-  z.literal('door-group:update').describe('Update door group'),
-  z.literal('door-group:delete').describe('Delete door group'),
-  z.literal('door-group:create').describe('Create door group'),
+  //Zones
+  z.literal('zone:update').describe('Update zone'),
+  z.literal('zone:delete').describe('Delete zone'),
+  z.literal('zone:create').describe('Create zone'),
   //Access Rule
   z.literal('access-rule:read').describe('Read access rule data'),
   z.literal('access-rule:update').describe('Update access rules'),
@@ -120,9 +68,7 @@ export const sPermissionId = z.union([
   z.literal('alarm:read').describe('View alarms'),
   z.literal('alarm:acknowlede').describe('Acknowledge alarms'),
   z.literal('alarm:arm').describe('Can arm or disarm'),
-  z.literal('alarm:trigger').describe('Can trigger alarms'),
   z.literal('alarm:bypass').describe('Can bypass alarms'),
-
   //User
   z.literal('user:read').describe('View user data'),
   z.literal('user:change-password').describe('Change user password'),
@@ -134,7 +80,6 @@ export const sPermissionId = z.union([
   z.literal('user:change-roles').describe('Change user roles'),
   z.literal('user:create').describe('Create user'),
   //Role
-  z.literal('role:read').describe('View role data'),
   z.literal('role:create').describe('Create role'),
   z.literal('role:delete').describe('Delete role'),
   z.literal('role:update').describe('Update role data'),
@@ -143,17 +88,17 @@ export const sPermissionId = z.union([
   z.literal('module:update').describe('Update module settings'),
   z.literal('module:enable').describe('Enable and disable modules'),
   //Device
-  z.literal('device:discover').describe('Discover devices'), //No UI effect yet
-  z.literal('device:import').describe('Import discovered devices'), //No UI effect yet
-  z.literal('device:override-specs').describe('Override device specs'),
+  z.literal('device:discover').describe('Scan for device changes'),
+  z.literal('device:import').describe('Apply device changes'),
+  z.literal('device:override-specs').describe('Configure device capabilities'),
   z.literal('device:notes').describe('View and Edit device notes'),
+  z.literal('device:rename').describe('Rename device'),
   z.literal('device:alarms').describe('Configure device alarms'),
-  z.literal('device:adjacent-cameras').describe('Configure adjacent cameras'),
   //Automation
   z.literal('automation:read').describe('View automation data'),
-  z.literal('automation:update').describe('Update automation data'), //No UI effect yet
-  z.literal('automation:delete').describe('Delete automation'), //No UI effect yet
-  z.literal('automation:create').describe('Create automation'), //No UI effect yet
+  z.literal('automation:update').describe('Update automation data'),
+  z.literal('automation:delete').describe('Delete automation'),
+  z.literal('automation:create').describe('Create automation'),
   //Device Groups
   z.literal('device-group:read').describe('View device groups'),
   z.literal('device-group:update').describe('Update device groups'),
@@ -165,35 +110,26 @@ export const sPermissionId = z.union([
   z.literal('macro:delete').describe('Delete macro'),
   z.literal('macro:create').describe('Create macro'),
   z.literal('macro:run').describe('Run macro'),
-  z.literal('notification:create').describe('Send notifications'),
+  //Notifications
+  z.literal('notification:read').describe('Receive notifications'),
+  z.literal('notification:acknowledge').describe('Acknowledge notifications'),
   //Templates
-  z.literal('template:read').describe('View templates'),
   z.literal('template:update').describe('Update templates'),
   z.literal('template:delete').describe('Delete template'),
   z.literal('template:create').describe('Create template'),
   //Custom Fields
-  z.literal('custom-field:read').describe('View custom fields'),
   z.literal('custom-field:update').describe('Update custom fields'),
   z.literal('custom-field:delete').describe('Delete custom field'),
   z.literal('custom-field:create').describe('Create custom field'),
-  //Media
-  z.literal('media:read').describe('View media page'),
-  //About
-  z.literal('about:read').describe('View about data'),
-  //Intercom
-  z.literal('intercom:read').describe('View intercom data'), //No UI effect yet
   //Display
   z.literal('display:read').describe('Cast to displays'),
-  ...sDeviceTypePermissions, //No UI effects yet
   //Security Level
-  z.literal('security-level:read').describe('View security levels'),
   z.literal('security-level:update').describe('Update security levels'),
   z.literal('security-level:delete').describe('Delete security level'),
   z.literal('security-level:create').describe('Create security level'),
   //Citadel mode
   z.literal('citadel-mode:toggle').describe('Enter / exit citadel mode'),
   //Token Conversion
-  z.literal('token-conversion:read').describe('View token conversion data'),
   z.literal('token-conversion:update').describe('Update token conversion data'),
   z.literal('token-conversion:delete').describe('Delete token conversion'),
   z.literal('token-conversion:create').describe('Create token conversion'),
@@ -215,8 +151,15 @@ export const sPermissionId = z.union([
   z.literal('agreement:create').describe('Create agreements'),
   z.literal('agreement:update').describe('Update agreements'),
   z.literal('agreement:delete').describe('Delete agreements'),
+  //API Keys
   z.literal('api-key:create').describe('Create API key'),
   z.literal('api-key:revoke').describe('Revoke API key'),
+  //Access Authority
+  z.literal('access-authority:read').describe('View access authority data'),
+  z
+    .literal('access-authority:sync')
+    .describe('Perform access sync with provider'),
+  z.literal('access-authority:delete').describe('Remove and access authority'),
 ]);
 
 export type PermissionArea =
@@ -227,7 +170,7 @@ export type PermissionArea =
   | 'public-view'
   | 'private-view'
   | 'person'
-  | 'door-group'
+  | 'zone'
   | 'access-rule'
   | 'schedule'
   | 'presence'
@@ -243,9 +186,6 @@ export type PermissionArea =
   | 'macro'
   | 'template'
   | 'custom-field'
-  | 'media'
-  | 'about'
-  | 'intercom'
   | 'device'
   | 'display'
   | 'security-level'
@@ -255,7 +195,9 @@ export type PermissionArea =
   | 'access-path'
   | 'person-type'
   | 'agreement'
-  | 'api-key';
+  | 'api-key'
+  | 'access-authority'
+  | 'notification';
 
 const permissionsToRecord = (
   permissions: typeof sPermissionId,
