@@ -22,6 +22,10 @@ export const sPermissionId = z.union([
   //Door
   z.literal('door:release').describe('Release door'),
   z.literal('door:lock').describe('Lock or unlock door'),
+  //Camera Lift
+  z.literal('camera-lift:activate').describe('Activate camera lifts'),
+  //IO Board
+  z.literal('io-board:activate').describe('Activate IO board outputs'),
   //Public View
   z.literal('public-view:read').describe('See public views'),
   z.literal('public-view:update').describe('Update public views'),
@@ -68,6 +72,7 @@ export const sPermissionId = z.union([
   z.literal('alarm:read').describe('View alarms'),
   z.literal('alarm:acknowlede').describe('Acknowledge alarms'),
   z.literal('alarm:arm').describe('Can arm or disarm'),
+  z.literal('alarm:trigger').describe('Can trigger alarms'),
   z.literal('alarm:bypass').describe('Can bypass alarms'),
   //User
   z.literal('user:read').describe('View user data'),
@@ -111,7 +116,8 @@ export const sPermissionId = z.union([
   z.literal('macro:create').describe('Create macro'),
   z.literal('macro:run').describe('Run macro'),
   //Notifications
-  z.literal('notification:read').describe('Receive notifications'),
+  z.literal('notification:all').describe('Receive all notifications'),
+  z.literal('notification:create').describe('Send notifications'),
   z.literal('notification:acknowledge').describe('Acknowledge notifications'),
   //Templates
   z.literal('template:update').describe('Update templates'),
@@ -121,6 +127,8 @@ export const sPermissionId = z.union([
   z.literal('custom-field:update').describe('Update custom fields'),
   z.literal('custom-field:delete').describe('Delete custom field'),
   z.literal('custom-field:create').describe('Create custom field'),
+  //Intercom
+  z.literal('intercom:read').describe('View intercom data'),
   //Display
   z.literal('display:read').describe('Cast to displays'),
   //Security Level
