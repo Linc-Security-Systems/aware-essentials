@@ -1,11 +1,12 @@
 import { sCredentialType } from '../../objects/credential';
 import { z } from 'zod';
+import { sPersonId } from '../../primitives';
 
 // EVENTS
 
 export const sDoorAccessEvent = z.object({
   kind: z.literal('door-access'),
-  personId: z.string().optional(),
+  personId: sPersonId.optional(),
   token: z.string().nullable(),
   tokenType: sCredentialType.nullable(),
   allowed: z.boolean(),
