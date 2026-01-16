@@ -3,7 +3,6 @@ import { CameraCommand, cameraCommands } from './camera';
 import { CameraLiftCommand, cameraLiftCommands } from './camera-lift';
 import { DisplayCommand, displayCommands } from './display';
 import { DoorCommand, doorCommands } from './door';
-import { IntercomTerminalCommand } from './intercom-terminal';
 import { IoBoardCommand, ioBoardCommands } from './io-board';
 import { NvrExporterCommand, nvrExporterCommandSchemas } from './nvr-exporter';
 import { PbxCommand, pbxCommands } from './pbx';
@@ -21,7 +20,6 @@ export type AnyDeviceCommand =
   | IoBoardCommand
   | CameraLiftCommand
   | AlarmCommand
-  | IntercomTerminalCommand
   | PbxCommand
   | PresenceTrackerCommand
   | DisplayCommand
@@ -119,33 +117,9 @@ export const commandDescriptions: Record<
     description: 'Alarm Trigger',
     permission: 'alarm:trigger',
   },
-  'intercom-terminal.dial': {
-    description: 'Intercom Call',
-    permission: 'intercom:read',
-  },
-  'intercom-terminal.cancel-call': {
-    description: 'Intercom Call Cancel',
-    permission: 'intercom:read',
-  },
-  'intercom-terminal.answer': {
-    description: 'Intercom Call Answer',
-    permission: 'intercom:read',
-  },
-  'intercom-terminal.hang-up': {
-    description: 'Intercom Call End',
-    permission: 'intercom:read',
-  },
-  'intercom-terminal.connect': {
-    description: 'Intercom Terminal Connect',
-    permission: 'intercom:read',
-  },
-  'intercom-terminal.disconnect': {
-    description: 'Intercom Terminal Disconnect',
-    permission: 'intercom:read',
-  },
   'pbx.call': {
     description: 'Automated Phone Call',
-    permission: 'intercom:read',
+    permission: 'alarm:trigger',
   },
   'camera.preset-activate': {
     description: 'Camera Preset Activate',

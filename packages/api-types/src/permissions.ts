@@ -127,8 +127,6 @@ export const sPermissionId = z.union([
   z.literal('custom-field:update').describe('Update custom fields'),
   z.literal('custom-field:delete').describe('Delete custom field'),
   z.literal('custom-field:create').describe('Create custom field'),
-  //Intercom
-  z.literal('intercom:read').describe('View intercom data'),
   //Display
   z.literal('display:read').describe('Cast to displays'),
   //Security Level
@@ -163,11 +161,15 @@ export const sPermissionId = z.union([
   z.literal('api-key:create').describe('Create API key'),
   z.literal('api-key:revoke').describe('Revoke API key'),
   //Access Authority
-  z.literal('access-authority:read').describe('View access authority data'),
+  z
+    .literal('access-authority:read')
+    .describe('View access control authority data'),
   z
     .literal('access-authority:sync')
-    .describe('Perform access sync with provider'),
-  z.literal('access-authority:delete').describe('Remove and access authority'),
+    .describe('Perform access control sync with provider'),
+  z
+    .literal('access-authority:delete')
+    .describe('Remove an access control authority'),
 ]);
 
 export type PermissionArea =
