@@ -13,7 +13,6 @@ export const sPermissionId = z.union([
   z.literal('camera:ptz').describe('Control camera PTZ'),
   z.literal('camera:privacy-mode').describe('Control camera privacy mode'),
   z.literal('camera:assign').describe('Assign adjacent cameras to devices'),
-  z.literal('camera:detection').describe('Enable or disable camera detection'),
   //Preset
   z.literal('preset:read').describe('Use camera presets'),
   z.literal('preset:update').describe('Update presets'),
@@ -50,7 +49,6 @@ export const sPermissionId = z.union([
   z.literal('access-rule:delete').describe('Delete access rule'),
   z.literal('access-rule:create').describe('Create access rule'),
   //Schedule
-  z.literal('schedule:read').describe('Read schedule data'),
   z.literal('schedule:update').describe('Update schedule data'),
   z.literal('schedule:delete').describe('Delete schedule'),
   z.literal('schedule:create').describe('Create schedule'),
@@ -116,7 +114,7 @@ export const sPermissionId = z.union([
   z.literal('macro:create').describe('Create macro'),
   z.literal('macro:run').describe('Run macro'),
   //Notifications
-  z.literal('notification:all').describe('Receive all notifications'),
+  z.literal('notification:read').describe('Receive notifications'),
   z.literal('notification:create').describe('Send notifications'),
   z.literal('notification:acknowledge').describe('Acknowledge notifications'),
   //Templates
@@ -142,7 +140,7 @@ export const sPermissionId = z.union([
   //Bookmarks
   z.literal('bookmark:read').describe('View bookmarks'),
   z.literal('bookmark:create').describe('Create bookmark'),
-  z.literal('bookmark:update').describe('Update bookmark'),
+  z.literal('bookmark:update').describe('Update bookmark'), //No UI effect yet
   z.literal('bookmark:delete').describe('Delete bookmark'),
   //Access Paths
   z.literal('access-path:read').describe('View access paths'),
@@ -163,13 +161,9 @@ export const sPermissionId = z.union([
   //Access Authority
   z
     .literal('access-authority:read')
-    .describe('View access control authority data'),
-  z
-    .literal('access-authority:sync')
-    .describe('Perform access control sync with provider'),
-  z
-    .literal('access-authority:delete')
-    .describe('Remove an access control authority'),
+    .describe('View access control authorities'),
+  z.literal('access-authority:sync').describe('Perform access sync'),
+  z.literal('access-authority:delete').describe('Remove an access authority'),
 ]);
 
 export type PermissionArea =
