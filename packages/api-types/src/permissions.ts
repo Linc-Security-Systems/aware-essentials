@@ -13,6 +13,7 @@ export const sPermissionId = z.union([
   z.literal('camera:ptz').describe('Control camera PTZ'),
   z.literal('camera:privacy-mode').describe('Control camera privacy mode'),
   z.literal('camera:assign').describe('Assign adjacent cameras to devices'),
+  z.literal('camera:detection').describe('Enable/Disable camera detections'),
   //Preset
   z.literal('preset:read').describe('Use camera presets'),
   z.literal('preset:update').describe('Update presets'),
