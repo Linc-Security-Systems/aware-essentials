@@ -15,11 +15,12 @@ export const sStreamInfo = z.object({
   displayName: z.string().nonempty(),
   externalPlayerUrl: z.string().nullable(),
   rtspUrl: z.string().nonempty(),
+  recordingCapable: z.boolean(),
+  lensType: z.enum(['flat', 'fisheye']),
+  mountPoint: z.enum(['wall', 'ceiling', 'floor']),
 });
 
 export const sCameraSpecs = z.object({
-  lensType: z.enum(['flat', 'fisheye']),
-  mountPoint: z.enum(['wall', 'ceiling', 'floor']),
   ptzCapable: z.boolean(),
   ptzPanSpeed: z.number(),
   ptzTiltSpeed: z.number(),
@@ -30,10 +31,10 @@ export const sCameraSpecs = z.object({
   tiltMax: z.number().min(-1).max(1),
   zoomMin: z.number().min(0).max(1),
   zoomMax: z.number().min(0).max(1),
-  recordingCapable: z.boolean(),
   webrtcPlaybackSource: sWebRtcPlaybackSource.nullable(),
   streams: z.array(sStreamInfo),
   defaultStreamId: z.string().nonempty(),
+  streamNaming: z.enum(['cameraStreamNo', 'cameraStream', 'stream']),
 });
 
 export type WebRtcPlaybackSource = z.infer<typeof sWebRtcPlaybackSource>;
