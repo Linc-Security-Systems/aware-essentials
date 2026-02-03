@@ -18,6 +18,7 @@ export const sStreamInfo = z.object({
   recordingCapable: z.boolean(),
   lensType: z.enum(['flat', 'fisheye']),
   mountPoint: z.enum(['wall', 'ceiling', 'floor']),
+  webrtcPlaybackSource: sWebRtcPlaybackSource.nullable(),
 });
 
 export const sCameraSpecs = z.object({
@@ -31,7 +32,6 @@ export const sCameraSpecs = z.object({
   tiltMax: z.number().min(-1).max(1),
   zoomMin: z.number().min(0).max(1),
   zoomMax: z.number().min(0).max(1),
-  webrtcPlaybackSource: sWebRtcPlaybackSource.nullable(),
   streams: z.array(sStreamInfo),
   defaultStreamId: z.string().nonempty(),
   streamNaming: z.enum(['cameraStreamNo', 'cameraStream', 'stream']),
