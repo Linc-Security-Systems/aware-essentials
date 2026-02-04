@@ -65,6 +65,7 @@ export const sMediaSearchQueryDto = z
     deviceId: z.array(z.string().nonempty()),
     similarTo: z.string().optional(),
     label: z.array(z.string().nonempty()),
+    sub_label: z.array(z.string().nonempty()),
     timeFrom: z.number().nonnegative(),
     timeTo: z.number().nonnegative(),
     sortBy: sSortOptions,

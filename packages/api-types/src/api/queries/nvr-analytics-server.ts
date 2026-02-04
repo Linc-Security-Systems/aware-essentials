@@ -15,6 +15,7 @@ export const sMediaSearchArgs = z
     q: z.string(),
     similarTo: z.string().optional(),
     label: z.array(z.string().nonempty()),
+    sub_label: z.array(z.string().nonempty()),
     timeFrom: z.number().nonnegative(),
     timeTo: z.number().nonnegative(),
     sortBy: sSortOptions,
