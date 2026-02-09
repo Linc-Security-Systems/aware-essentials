@@ -56,6 +56,7 @@ export const sGetObjectThumbnailRequest = z.object({
 export const sSortOptions = z.union([
   z.literal('time_asc'),
   z.literal('time_desc'),
+  z.literal('relevance'),
 ]);
 
 export const sMediaSearchQueryDto = z
@@ -65,7 +66,7 @@ export const sMediaSearchQueryDto = z
     deviceId: z.array(z.string().nonempty()),
     similarTo: z.string().optional(),
     label: z.array(z.string().nonempty()),
-    sub_label: z.array(z.string().nonempty()),
+    subLabel: z.array(z.string().nonempty()),
     timeFrom: z.number().nonnegative(),
     timeTo: z.number().nonnegative(),
     sortBy: sSortOptions,
@@ -112,6 +113,12 @@ export type MediaSearchMatchDto = {
   deviceId: string;
   probability: number;
   objectKind: string;
+  subLabel: string | null;
   startTime: number;
   endTime: number | null;
+};
+
+export type MediaFacePeopleDto = {
+  id: string;
+  name: string;
 };

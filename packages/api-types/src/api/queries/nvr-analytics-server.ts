@@ -15,7 +15,7 @@ export const sMediaSearchArgs = z
     q: z.string(),
     similarTo: z.string().optional(),
     label: z.array(z.string().nonempty()),
-    sub_label: z.array(z.string().nonempty()),
+    subLabel: z.array(z.string().nonempty()),
     timeFrom: z.number().nonnegative(),
     timeTo: z.number().nonnegative(),
     sortBy: sSortOptions,
@@ -29,6 +29,7 @@ export const sMediaSearchMatch = z.object({
   provider: z.string(),
   probability: z.number(),
   objectKind: z.string(),
+  subLabel: z.string(),
   startTime: z.number(),
   endTime: z.number().nullable(),
 });
@@ -101,6 +102,30 @@ export const sObjectLabelResponse = z.array(z.string());
 
 export type ObjectLabelsResponse = z.infer<typeof sObjectLabelResponse>;
 
+// -- Faces
+
+export const QUERY_MEDIA_FACES = 'cctv:media-faces';
+
+export const sMediaFacesArgs = z.object({});
+
+export type MediaFacesArgs = z.infer<typeof sMediaFacesArgs>;
+
+export const sMediaFacesResponse = z.record(z.string(), z.array(z.string()));
+
+export type MediaFacesResponse = z.infer<typeof sMediaFacesResponse>;
+
+// -- Face People
+
+export const QUERY_MEDIA_FACE_PEOPLE = 'cctv:media-face-people';
+
+export const sMediaFacePeopleArgs = z.object({});
+
+export type MediaFacePeopleArgs = z.infer<typeof sMediaFacePeopleArgs>;
+
+export const sMediaFacePeopleResponse = z.array(z.string());
+
+export type MediaFacePeopleResponse = z.infer<typeof sMediaFacePeopleResponse>;
+
 // SCHEMA DICTIONARIES AND TYPE MAPS
 
 // Dictionary of request schemas by query type
@@ -110,6 +135,8 @@ export const nvrAnalyticsRequestSchemas = {
   [QUERY_OBJECT_SNAPSHOT]: sObjectSnapshotArgs,
   [QUERY_OBJECT_THUMBNAIL]: sObjectThumbnailArgs,
   [QUERY_OBJECT_LABELS]: sObjectLabelsArgs,
+  [QUERY_MEDIA_FACES]: sMediaFacesArgs,
+  [QUERY_MEDIA_FACE_PEOPLE]: sMediaFacePeopleArgs,
 } as const;
 
 // Dictionary of response schemas by query type
@@ -119,6 +146,8 @@ export const nvrAnalyticsResponseSchemas = {
   [QUERY_OBJECT_SNAPSHOT]: sObjectSnapshotResponse,
   [QUERY_OBJECT_THUMBNAIL]: sObjectThumbnailResponse,
   [QUERY_OBJECT_LABELS]: sObjectLabelResponse,
+  [QUERY_MEDIA_FACES]: sMediaFacesResponse,
+  [QUERY_MEDIA_FACE_PEOPLE]: sMediaFacePeopleResponse,
 } as const;
 
 // TypeScript mapping types for requests and responses
@@ -128,6 +157,8 @@ export type NvrAnalyticsQueryRequestMap = {
   [QUERY_OBJECT_SNAPSHOT]: ObjectSnapshotArgs;
   [QUERY_OBJECT_THUMBNAIL]: ObjectThumbnailArgs;
   [QUERY_OBJECT_LABELS]: ObjectLabelsArgs;
+  [QUERY_MEDIA_FACES]: MediaFacesArgs;
+  [QUERY_MEDIA_FACE_PEOPLE]: MediaFacePeopleArgs;
 };
 
 export type NvrAnalyticsQueryResponseMap = {
@@ -136,4 +167,6 @@ export type NvrAnalyticsQueryResponseMap = {
   [QUERY_OBJECT_SNAPSHOT]: ObjectSnapshotResponse;
   [QUERY_OBJECT_THUMBNAIL]: ObjectThumbnailResponse;
   [QUERY_OBJECT_LABELS]: ObjectLabelsResponse;
+  [QUERY_MEDIA_FACES]: MediaFacesResponse;
+  [QUERY_MEDIA_FACE_PEOPLE]: MediaFacePeopleResponse;
 };
