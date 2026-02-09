@@ -34,12 +34,15 @@ export const sPlaybackTrackArea = z.object({
   area: z.string().nonempty(),
   type: z.literal('playbackTrack'),
   controllerId: z.string().nonempty(),
-  source: z
-    .string()
-    .nonempty()
-    .describe(
-      'The track within the controller. It is the device ID for the camera in the track.',
-    ),
+  source: z.object({
+    deviceId: z.string().nonempty(),
+    streamId: z
+      .string()
+      .nonempty()
+      .describe(
+        'The track within the controller. It is the stream ID for the camera in the track.',
+      ),
+  }),
 });
 export type PlaybackTrackArea = z.infer<typeof sPlaybackTrackArea>;
 

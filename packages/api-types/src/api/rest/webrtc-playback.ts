@@ -1,7 +1,12 @@
 import z from 'zod';
 
+const playbackSource = z.object({
+  deviceId: z.string().nonempty(),
+  streamId: z.string().nonempty(),
+});
+
 export const sCreatePlaybackControllerRequest = z.object({
-  sources: z.array(z.string().nonempty()),
+  sources: z.array(playbackSource),
   initTime: z.number().nonnegative(),
 });
 
