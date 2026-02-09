@@ -7,6 +7,7 @@ export const sStartExportCommand = z.object({
   params: z.object({
     requestId: z.string().nonempty(),
     device: sDeviceParam,
+    streamId: z.string().nonempty(),
     timeFrom: z.number().int().nonnegative(),
     timeTo: z.number().int().nonnegative(),
     name: z.string().nonempty(),

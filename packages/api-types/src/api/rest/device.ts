@@ -35,6 +35,9 @@ export const sUpdateDeviceRequest = z.object({
 export const sOverrideDeviceSpecsRequest = z.object({
   id: z.string(),
   specs: z.object({}).catchall(z.unknown()),
+  specUpdates: z
+    .array(z.object({ path: z.string(), value: z.unknown() }))
+    .optional(),
 });
 
 export const sAddDevicePresetRequest = z.object({
