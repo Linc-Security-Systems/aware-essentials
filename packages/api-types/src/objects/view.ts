@@ -19,6 +19,7 @@ export const sDeviceArea = z.object({
   area: z.string().nonempty(),
   type: z.literal('device'),
   deviceId: z.string().nonempty(),
+  streamId: z.string().nonempty().optional(),
 });
 export type DeviceArea = z.infer<typeof sDeviceArea>;
 
