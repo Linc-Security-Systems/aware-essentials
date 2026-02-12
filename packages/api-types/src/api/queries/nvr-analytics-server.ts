@@ -210,7 +210,7 @@ export type MediaFacePersonRemoveResponse = z.infer<
   typeof sMediaFacePersonRemoveResponse
 >;
 
-// -- Media Face Image
+// -- Media Face Image (Gets the image associated with a face in the media library)
 
 export const QUERY_MEDIA_FACE_IMAGE = 'cctv:media-face-image';
 
@@ -224,6 +224,24 @@ export type MediaFaceImageArgs = z.infer<typeof sMediaFaceImageArgs>;
 export const sMediaFaceImageResponse = sFileResponse;
 
 export type MediaFaceImageResponse = z.infer<typeof sMediaFaceImageResponse>;
+
+// -- Media Face Train (Assigns an unrecognized face in the media library to a person in the face recognition system)
+
+export const QUERY_MEDIA_FACE_TRAIN = 'cctv:media-face-train';
+
+export const sMediaFaceTrainArgs = z.object({
+  id: z.string().nonempty(),
+  imageId: z.string().nonempty(),
+});
+
+export type MediaFaceTrainArgs = z.infer<typeof sMediaFaceTrainArgs>;
+
+export const sMediaFaceTrainResponse = z.object({
+  success: z.boolean(),
+  message: z.string(),
+});
+
+export type MediaFaceTrainResponse = z.infer<typeof sMediaFaceTrainResponse>;
 
 // SCHEMA DICTIONARIES AND TYPE MAPS
 
@@ -241,6 +259,7 @@ export const nvrAnalyticsRequestSchemas = {
   [QUERY_MEDIA_FACE_PERSON_ADD]: sMediaFacePersonAddArgs,
   [QUERY_MEDIA_FACE_PERSON_REMOVE]: sMediaFacePersonRemoveArgs,
   [QUERY_MEDIA_FACE_IMAGE]: sMediaFaceImageArgs,
+  [QUERY_MEDIA_FACE_TRAIN]: sMediaFaceTrainArgs,
 } as const;
 
 // Dictionary of response schemas by query type
@@ -257,6 +276,7 @@ export const nvrAnalyticsResponseSchemas = {
   [QUERY_MEDIA_FACE_PERSON_ADD]: sMediaFacePersonAddResponse,
   [QUERY_MEDIA_FACE_PERSON_REMOVE]: sMediaFacePersonRemoveResponse,
   [QUERY_MEDIA_FACE_IMAGE]: sMediaFaceImageResponse,
+  [QUERY_MEDIA_FACE_TRAIN]: sMediaFaceTrainResponse,
 } as const;
 
 // TypeScript mapping types for requests and responses
@@ -273,6 +293,7 @@ export type NvrAnalyticsQueryRequestMap = {
   [QUERY_MEDIA_FACE_PERSON_ADD]: MediaFacePersonAddArgs;
   [QUERY_MEDIA_FACE_PERSON_REMOVE]: MediaFacePersonRemoveArgs;
   [QUERY_MEDIA_FACE_IMAGE]: MediaFaceImageArgs;
+  [QUERY_MEDIA_FACE_TRAIN]: MediaFaceTrainArgs;
 };
 
 export type NvrAnalyticsQueryResponseMap = {
@@ -288,4 +309,5 @@ export type NvrAnalyticsQueryResponseMap = {
   [QUERY_MEDIA_FACE_PERSON_ADD]: MediaFacePersonAddResponse;
   [QUERY_MEDIA_FACE_PERSON_REMOVE]: MediaFacePersonRemoveResponse;
   [QUERY_MEDIA_FACE_IMAGE]: MediaFaceImageResponse;
+  [QUERY_MEDIA_FACE_TRAIN]: MediaFaceTrainResponse;
 };
