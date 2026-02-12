@@ -19,6 +19,7 @@ export const sDeviceArea = z.object({
   area: z.string().nonempty(),
   type: z.literal('device'),
   deviceId: z.string().nonempty(),
+  streamId: z.string().nonempty().optional(),
 });
 export type DeviceArea = z.infer<typeof sDeviceArea>;
 
@@ -26,6 +27,14 @@ export const sDeviceCarouselArea = z.object({
   area: z.string().nonempty(),
   type: z.literal('deviceCarousel'),
   deviceIds: z.array(z.string().nonempty()),
+  streams: z
+    .array(
+      z.object({
+        deviceId: z.string().nonempty(),
+        streamId: z.string().nonempty(),
+      }),
+    )
+    .optional(),
   timeIntervalMs: z.number().nonnegative(),
 });
 export type DeviceCarouselArea = z.infer<typeof sDeviceCarouselArea>;
