@@ -8,6 +8,7 @@ export const sSecurityLevelDto = z.object({
   color: z.string().length(6),
   checkFrequency: z.number().int().min(0).max(100),
   checkOnExit: z.boolean(),
+  alwaysShowCheck: z.boolean(),
   default: z.boolean(),
 });
 
