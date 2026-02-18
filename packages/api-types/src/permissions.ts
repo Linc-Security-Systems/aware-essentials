@@ -40,6 +40,7 @@ export const sPermissionId = z.union([
   z.literal('person:create').describe('Create people'),
   z.literal('person:assign').describe('Assign credentials and access rules'),
   z.literal('person:print').describe('Print person details'),
+  z.literal('person:face').describe('Manage face recognition data'),
   //Zones
   z.literal('zone:update').describe('Update zone'),
   z.literal('zone:delete').describe('Delete zone'),
