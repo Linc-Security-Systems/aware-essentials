@@ -144,6 +144,8 @@ export const eventKindLabels: Record<DeviceEvent['kind'], string> = {
   'nvr-export-deleted': 'NVR Export Deleted',
   'notification-created': 'Notification Created',
   'notification-acknowledged': 'Notification Acknowledged',
+  'user-logged-in': 'User Logged In',
+  'user-logged-out': 'User Logged Out',
 };
 
 export const eventSchemaByKind = {

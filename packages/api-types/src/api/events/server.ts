@@ -1,5 +1,6 @@
 import { ObjectKinds } from '../../objects';
 import { z } from 'zod';
+import { sUserId } from '../../primitives';
 
 // EVENTS
 
@@ -55,9 +56,24 @@ export type ObjectDeleted = {
   };
 }[keyof ObjectKinds];
 
+export const sUserLoggedIn = z.object({
+  kind: z.literal('user-logged-in'),
+  userId: sUserId,
+});
+
+export const sUserLoggedOut = z.object({
+  kind: z.literal('user-logged-out'),
+  userId: sUserId,
+});
+
+export type UserLoggedIn = z.infer<typeof sUserLoggedIn>;
+export type UserLoggedOut = z.infer<typeof sUserLoggedOut>;
+
 export type ServerEvent =
   | ObjectCreated
   | ObjectUpdated
   | ObjectDeleted
   | AgentStarted
-  | AgentStopped;
+  | AgentStopped
+  | UserLoggedIn
+  | UserLoggedOut;
