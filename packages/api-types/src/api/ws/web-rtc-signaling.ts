@@ -122,7 +122,8 @@ export type WebRtcReleaseSessionPayload = z.infer<
 >;
 
 export const sWebRtcErrorPayload = z.object({
-  sessionId: z.string().nonempty(),
+  requesId: z.string().nonempty().optional(),
+  sessionId: z.string().nonempty().optional(),
   error: z.object({
     code: z.string().nonempty(),
     message: z.string().nonempty(),

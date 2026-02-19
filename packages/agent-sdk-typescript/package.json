@@ -1,6 +1,6 @@
 {
   "name": "@awarevue/agent-sdk",
-  "version": "2.0.45",
+  "version": "2.0.46",
   "description": "SDK for building Agent implementations that speak the agent protocol.",
   "author": "Yaser Awajan",
   "license": "MIT",
@@ -27,12 +27,12 @@
     "lint:fix": "yarn lint --fix"
   },
   "peerDependencies": {
-    "@awarevue/api-types": "2.0.45",
+    "@awarevue/api-types": "2.0.46",
     "rxjs": "^7.8.2",
     "ws": "^8"
   },
   "devDependencies": {
-    "@awarevue/api-types": "2.0.45",
+    "@awarevue/api-types": "2.0.46",
     "@types/node": "^20.12.7",
     "@types/ws": "^8.18.1",
     "@typescript-eslint/eslint-plugin": "^8.31.1",
