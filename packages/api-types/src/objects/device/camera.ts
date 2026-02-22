@@ -15,7 +15,6 @@ export const sStreamInfo = z.object({
   displayName: z.string().nonempty(),
   externalPlayerUrl: z.string().nullable(),
   rtspUrl: z.string().nonempty().nullable(),
-  mountedStreamId: z.string().nonempty().nullable(),
   recordingCapable: z.boolean(),
   lensType: z.enum(['flat', 'fisheye']),
   mountPoint: z.enum(['wall', 'ceiling', 'floor']),
