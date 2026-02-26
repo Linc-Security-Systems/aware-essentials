@@ -16,6 +16,8 @@ export const sStreamInfo = z.object({
   externalPlayerUrl: z.string().nullable(),
   rtspUrl: z.string().nonempty().nullable(),
   recordingCapable: z.boolean(),
+  width: z.number().positive().nullable(),
+  height: z.number().positive().nullable(),
   lensType: z.enum(['flat', 'fisheye']),
   mountPoint: z.enum(['wall', 'ceiling', 'floor']),
   webrtcPlaybackSource: sWebRtcPlaybackSource.nullable(),
