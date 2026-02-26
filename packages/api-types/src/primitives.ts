@@ -13,14 +13,14 @@ import {
   sPresetDto,
 } from './objects/device';
 
-export const sDeviceId = z.string().uuid().nonempty();
-export const sPresetId = z.string().uuid().nonempty();
+export const sDeviceId = z.string().nonempty();
+export const sPresetId = z.string().nonempty();
 export const sDeviceEvent = z.record(z.unknown());
-export const sPersonId = z.string().uuid().nonempty();
+export const sPersonId = z.string().nonempty();
 export const sPersonTypeId = z.string().nonempty();
-export const sZoneId = z.string().uuid().nonempty();
-export const sMacroId = z.string().uuid().nonempty();
-export const sUserId = z.string().uuid().nonempty();
+export const sZoneId = z.string().nonempty();
+export const sMacroId = z.string().nonempty();
+export const sUserId = z.string().nonempty();
 
 export const sWorldObjectId = z.string().nonempty();
 
