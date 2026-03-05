@@ -2,6 +2,7 @@ import {
   FromAgent,
   FromServer,
   Message,
+  PayloadByKind,
   RegisterRq,
 } from '@awarevue/api-types';
 import {
@@ -61,7 +62,7 @@ export interface ScenarioContext {
    */
   getReply<K extends RequestKind>(
     payload: Extract<Outbound<'server'>, { kind: K }>,
-  ): Promise<unknown>;
+  ): Promise<PayloadByKind[ResponseKind<K>]>;
 
   /**
    * Wait for the next inbound message matching a predicate.

@@ -93,6 +93,7 @@ export class RunnerService {
         );
 
         // Run with timeout
+        this.logger.log(`Running scenario '${scenario.name}'...`);
         result = await this.runWithTimeout(
           scenario.run(ctx),
           scenarioTimeout,

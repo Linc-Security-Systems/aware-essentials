@@ -14,34 +14,22 @@ const scenario: Scenario = {
     const { provider, config } = ctx;
 
     // Start the provider first
-    try {
-      await ctx.getReply({
-        kind: 'start',
-        provider,
-        config,
-        lastEventForeignRef: null,
-        lastEventTimestamp: null,
-      });
-    } catch (err) {
-      return scenarioFail(
-        `Failed to start provider: ${(err as Error).message}`,
-      );
-    }
+    
+    await ctx.getReply({
+      kind: 'start',
+      provider,
+      config,
+      lastEventForeignRef: null,
+      lastEventTimestamp: null,
+    });
 
     ctx.log('Provider started');
 
     // Request available devices
-    let devicesResponse: any;
-    try {
-      devicesResponse = await ctx.getReply({
-        kind: 'get-available-devices',
-        provider,
-      });
-    } catch (err) {
-      return scenarioFail(
-        `get-available-devices failed: ${(err as Error).message}`,
-      );
-    }
+    const devicesResponse = await ctx.getReply({
+      kind: 'get-available-devices',
+      provider,
+    });
 
     ctx.log(
       `Received device discovery response (kind: ${devicesResponse.kind})`,
