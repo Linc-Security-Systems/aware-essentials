@@ -87,8 +87,8 @@ async function bootstrap() {
   // Run scenarios and exit with appropriate code
   const runner = app.get(RunnerService);
   const exitCode = await runner.run();
-
   await app.close();
+  console.log(`Exiting with code ${exitCode}`);
   process.exit(exitCode);
 }
 

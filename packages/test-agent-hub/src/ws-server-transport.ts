@@ -68,7 +68,13 @@ export class WsServerDuplexTransport<TIn, TOut>
   close(): void {
     if (this.closed) return;
     this.closed = true;
-    this.ws.close();
+
+    // Prefer a graceful close first; terminate as fallback
+    try { this.ws.close(); } catch {}
+    setTimeout(() => {
+      try { this.ws.terminate(); } catch {}
+    }, 250).unref?.(); // unref so timer itself doesn't keep process alive
+
     this._connected$.next(false);
     this.cleanup();
   }

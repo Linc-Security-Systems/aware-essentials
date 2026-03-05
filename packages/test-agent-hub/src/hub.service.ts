@@ -1,4 +1,4 @@
-import { Injectable, Inject, OnModuleInit, Logger } from '@nestjs/common';
+import { Injectable, Inject, OnModuleInit, Logger, OnModuleDestroy } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 import { WebSocketServer, WebSocket } from 'ws';
 import {
@@ -22,7 +22,7 @@ export interface ConnectedAgent {
 }
 
 @Injectable()
-export class HubService implements OnModuleInit {
+export class HubService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(HubService.name);
   private wss!: WebSocketServer;
   private readonly hub = new InMemoryHub<
@@ -36,13 +36,14 @@ export class HubService implements OnModuleInit {
     private readonly httpAdapterHost: HttpAdapterHost,
     @Inject(CLI_OPTIONS) private readonly options: CLIOptions,
   ) {}
+  onModuleDestroy() {
+    this.close();
+  }
 
   onModuleInit(): void {
     const server = this.httpAdapterHost.httpAdapter.getHttpServer();
     this.wss = new WebSocketServer({ server });
     this.wss.on('connection', (ws: WebSocket) => {
-
-
 
       const peerId = `peer-${++this.peerCounter}`;
       this.logger.log(`WebSocket peer connected: ${peerId}`);
@@ -139,7 +140,7 @@ export class HubService implements OnModuleInit {
       requestId: registerMsg.id,
     } as FromServer);
 
-    this.logger.log(
+    this.logger.debug(
       `Agent '${agentId}' registered (peer: ${peer}, providers: ${Object.keys(registerMsg.providers).join(', ')})`,
     );
 
