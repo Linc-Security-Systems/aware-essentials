@@ -7,7 +7,7 @@ import { Scenario } from './scenario.types';
  * Each file must default-export a `Scenario` object.
  */
 export function loadScenarios(): Scenario[] {
-  const scenariosDir = __dirname; // compiled: dist/scenarios/
+  const scenariosDir = path.join(__dirname, 'scenarios'); // compiled: dist/scenarios/
   const files = fs.readdirSync(scenariosDir).filter((f) => {
     // Match *.scenario.ts or *.scenario.js (compiled output)
     return /\.scenario\.(ts|js)$/.test(f);

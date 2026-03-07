@@ -1,4 +1,4 @@
-import { Scenario, scenarioPass, scenarioFail } from './scenario.types';
+import { Scenario, scenarioPass, scenarioFail } from '../scenario.types';
 
 /**
  * Tests the agent's start/stop lifecycle:

@@ -73,6 +73,16 @@ export interface ScenarioContext {
     timeoutMs?: number,
   ): Promise<Message<FromAgent>>;
 
+  waitForSomeMessages(
+    predicate: (msg: Message<FromAgent>) => boolean,
+    timeoutMs?: number,
+  ): Promise<Message<FromAgent>[]>;
+
+  waitForAllMessages(
+    predicates: ((msg: Message<FromAgent>) => boolean)[],
+    timeoutMs?: number,
+  ): Promise<Message<FromAgent>[]>;
+
   /**
    * Wait for the next inbound message of a given kind.
    */

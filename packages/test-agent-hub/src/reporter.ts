@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { ScenarioResult } from './scenarios';
+import { ScenarioResult } from '.';
 
 /* ---------------------------------------------------------------- */
 /* Console reporter (colored)                                       */

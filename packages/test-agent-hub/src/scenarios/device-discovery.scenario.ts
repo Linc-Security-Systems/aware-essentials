@@ -1,4 +1,4 @@
-import { Scenario, scenarioPass, scenarioFail } from './scenario.types';
+import { Scenario, scenarioPass, scenarioFail } from '../scenario.types';
 
 /**
  * After starting the agent, sends `get-available-devices` and validates

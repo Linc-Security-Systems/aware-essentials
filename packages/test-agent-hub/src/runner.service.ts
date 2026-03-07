@@ -4,8 +4,8 @@ import {
   FromServer,
   Message,
 } from '@awarevue/api-types';
-import { AgentProtocol, RequestKind, Outbound } from '@awarevue/agent-sdk';
-import { filter, firstValueFrom, take, timeout, map, lastValueFrom } from 'rxjs';
+import { RequestKind, Outbound } from '@awarevue/agent-sdk';
+import { filter, firstValueFrom, take, timeout, map, lastValueFrom, scan, tap } from 'rxjs';
 import { HubService, ConnectedAgent } from './hub.service';
 import { CLI_OPTIONS, CLIOptions } from './cli-options';
 import {
@@ -14,7 +14,7 @@ import {
   ScenarioContext,
   ScenarioResult,
   scenarioFail,
-} from './scenarios';
+} from '.';
 import {
   ScenarioReport,
   printConsoleReport,
@@ -158,6 +158,58 @@ export class RunnerService {
             filter((msg: Message<FromAgent>) => predicate(msg)),
             take(1),
             timeout(customTimeout ?? timeoutMs),
+          ),
+        );
+      },
+      waitForSomeMessages: (
+        predicate: (msg: Message<FromAgent>) => boolean,
+        customTimeout?: number,
+      ): Promise<Message<FromAgent>[]> => {
+        const effectiveTimeout = customTimeout ?? timeoutMs;
+        return new Promise<Message<FromAgent>[]>((resolve, reject) => {
+          const collected: Message<FromAgent>[] = [];
+          const sub = (protocol as any).transport.messages$.pipe(
+            filter((msg: Message<FromAgent>) => predicate(msg)),
+          ).subscribe((msg: Message<FromAgent>) => {
+            collected.push(msg);
+          });
+          setTimeout(() => {
+            sub.unsubscribe();
+            if (collected.length === 0) {
+              reject(new Error(`waitForSomeMessages: no messages matched within ${effectiveTimeout}ms`));
+            } else {
+              resolve(collected);
+            }
+          }, effectiveTimeout);
+        });
+      },
+      waitForAllMessages: (
+        predicates: ((msg: Message<FromAgent>) => boolean)[],
+        customTimeout?: number,
+      ): Promise<Message<FromAgent>[]> => {
+        return firstValueFrom(
+          (protocol as any).transport.messages$.pipe(
+            scan(
+              (acc: { matched: (Message<FromAgent> | null)[] }, msg: Message<FromAgent>) => {
+                const updated = [...acc.matched];
+                // Find the first unsatisfied predicate that this message matches
+                for (let i = 0; i < predicates.length; i++) {
+                  if (updated[i] === null && predicates[i](msg)) {
+                    updated[i] = msg;
+                    break;
+                  }
+                }
+                return { matched: updated };
+              },
+              { matched: predicates.map(() => null) },
+            ),
+            tap((acc: { matched: (Message<FromAgent> | null)[] }) => {
+              this.logger.log(acc.matched.filter((m) => m !== null).length + '/' + predicates.length + ' messages matched');
+            }),
+            filter((acc: { matched: (Message<FromAgent> | null)[] }) => acc.matched.every((m) => m !== null)),
+            take(1),
+            timeout(customTimeout ?? timeoutMs),
+            map((acc: { matched: (Message<FromAgent> | null)[] }) => acc.matched as Message<FromAgent>[]),
           ),
         );
       },

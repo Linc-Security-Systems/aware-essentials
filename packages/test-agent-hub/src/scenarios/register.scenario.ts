@@ -1,4 +1,4 @@
-import { Scenario, scenarioPass, scenarioFail } from './scenario.types';
+import { Scenario, scenarioPass, scenarioFail } from '../scenario.types';
 
 /**
  * Validates that the agent sent a well-formed `register` message
