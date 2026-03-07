@@ -20,10 +20,22 @@ export interface ScenarioReport {
   logs: string[];
 }
 
-export function printConsoleReport(reports: ScenarioReport[]): void {
+export interface ReportOptions {
+  /** Suppress per-scenario details, only print the summary and errors */
+  quiet?: boolean;
+}
+
+export function printConsoleReport(
+  reports: ScenarioReport[],
+  options: ReportOptions = {},
+): void {
+  const { quiet = false } = options;
+
   console.log();
-  console.log(`${BOLD}──── Scenario Results ────${RESET}`);
-  console.log();
+  if (!quiet) {
+    console.log(`${BOLD}──── Scenario Results ────${RESET}`);
+    console.log();
+  }
 
   let passed = 0;
   let failed = 0;
@@ -34,11 +46,14 @@ export function printConsoleReport(reports: ScenarioReport[]): void {
 
     if (result.passed) {
       passed++;
-      console.log(
-        `  ${GREEN}✔${RESET} ${name} ${DIM}(${result.durationMs}ms)${RESET}`,
-      );
+      if (!quiet) {
+        console.log(
+          `  ${GREEN}✔${RESET} ${name} ${DIM}(${result.durationMs}ms)${RESET}`,
+        );
+      }
     } else {
       failed++;
+      // Always print failures, even in quiet mode
       console.log(
         `  ${RED}✘${RESET} ${name} ${DIM}(${result.durationMs}ms)${RESET}`,
       );
@@ -47,8 +62,8 @@ export function printConsoleReport(reports: ScenarioReport[]): void {
       }
     }
 
-    // Print scenario logs if any
-    if (logs.length > 0) {
+    // Print scenario logs if any (skip in quiet mode)
+    if (!quiet && logs.length > 0) {
       for (const log of logs) {
         console.log(`    ${DIM}${log}${RESET}`);
       }

@@ -96,7 +96,9 @@ export class RunnerService {
         store = built.store;
 
         // Run with timeout
-        this.logger.log(`Running scenario '${scenario.name}'...`);
+        if (!this.options.quiet) {
+          this.logger.log(`Running scenario '${scenario.name}'...`);
+        }
         result = await this.runWithTimeout(
           scenario.run(built.ctx),
           scenarioTimeout,
@@ -117,12 +119,14 @@ export class RunnerService {
     }
 
     // 5. Print console report
-    printConsoleReport(reports);
+    printConsoleReport(reports, { quiet: this.options.quiet });
 
     // 6. Write JUnit XML if requested
     if (report) {
       writeJUnitReport(reports, report);
-      this.logger.log(`JUnit report written to ${report}`);
+      if (!this.options.quiet) {
+        this.logger.log(`JUnit report written to ${report}`);
+      }
     }
 
     // 7. Cleanup

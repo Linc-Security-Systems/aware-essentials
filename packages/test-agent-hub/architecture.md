@@ -65,8 +65,37 @@ Parses command-line arguments via **yargs**:
 | `--connectionTimeout` | `30 000` | Max wait for agent to connect (ms) |
 | `--report` | — | Path for JUnit XML output |
 | `--config` | — | Path to a JSON file with provider configuration |
+| `--list` | `false` | List available scenarios and exit (no `--agentId` required) |
+| `--verbose` | `false` | Show detailed NestJS/protocol debug logs |
+| `--quiet` | `false` | Suppress all output except errors and the final summary |
+| `--version` | — | Print version and exit |
+| `--help` | — | Print usage and exit |
 
-After parsing, it creates a NestJS application with `AppModule.forRoot(options)`, starts listening, runs all scenarios through `RunnerService.run()`, and exits with the resulting code (`0` = all passed, `1` = any failure).
+After parsing, it creates a NestJS application with `AppModule.forRoot(options)`, starts listening, runs all scenarios through `RunnerService.run()`, and exits with the resulting code (`0` = all passed, `1` = any failure, `2` = invalid arguments/config).
+
+#### CLI usage
+
+```bash
+# Run all scenarios
+test-agent-hub --agentId my-agent
+
+# Run only core scenarios, write JUnit report
+test-agent-hub --agentId my-agent --tags core --report results.xml
+
+# List available scenarios
+test-agent-hub --list
+
+# CI mode: quiet, with JUnit report
+test-agent-hub --agentId my-agent --quiet --report results/junit.xml
+```
+
+#### Exit codes
+
+| Code | Meaning |
+|---|---|
+| `0` | All scenarios passed |
+| `1` | One or more scenarios failed (or connection error) |
+| `2` | Invalid arguments or configuration error |
 
 ### 2. `cli-options.ts` — Configuration Token
 
@@ -231,6 +260,59 @@ export default scenario;
 ```
 
 3. Run with `--tags custom` to execute only this scenario, or omit tags to include it in a full run.
+
+---
+
+## CI / CD Integration
+
+### Installation
+
+The package exposes a `test-agent-hub` binary via the `bin` field in `package.json`. After installing the workspace, you can run it directly:
+
+```bash
+# Via npx (from the monorepo root)
+npx test-agent-hub --agentId my-agent
+
+# Or via the bin symlink after yarn install
+./node_modules/.bin/test-agent-hub --agentId my-agent
+
+# Or in a package.json script
+"test:agent": "test-agent-hub --agentId my-agent --report results/junit.xml"
+```
+
+### GitHub Actions example
+
+```yaml
+jobs:
+  agent-conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: yarn install
+      - run: yarn build
+      - name: Start agent under test
+        run: node my-agent/dist/main.js &
+      - name: Run conformance tests
+        run: |
+          npx test-agent-hub \
+            --agentId my-agent \
+            --quiet \
+            --report results/junit.xml
+      - uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Agent Conformance
+          path: results/junit.xml
+          reporter: java-junit
+```
+
+### Exit codes
+
+| Code | Meaning |
+|---|---|
+| `0` | All scenarios passed |
+| `1` | One or more scenarios failed (or connection error) |
+| `2` | Invalid arguments or configuration error |
 
 ---
 

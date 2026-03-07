@@ -19,6 +19,12 @@ export interface CLIOptions {
 
   /** Provider config loaded from a JSON file (via --config) */
   providerConfig?: Record<string, unknown>;
+
+  /** Show detailed internal logs */
+  verbose: boolean;
+
+  /** Suppress all output except summary and errors */
+  quiet: boolean;
 }
 
 export const CLI_OPTIONS = Symbol('CLI_OPTIONS');
