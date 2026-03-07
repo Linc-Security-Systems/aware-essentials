@@ -1,12 +1,11 @@
 {
-  "name": "@awarevue/test-agent-hub",
+  "name": "@awarevue/agent-tester-cli",
   "version": "2.0.51",
   "description": "CLI tool for running Aware agent protocol conformance tests",
   "author": "",
   "license": "MIT",
-  "private": true,
   "bin": {
-    "test-agent-hub": "./bin/test-agent-hub.js"
+    "agent-tester": "./bin/agent-tester.js"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -14,6 +13,10 @@
     "dist",
     "bin"
   ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "scripts": {
     "build": "nest build",
     "start": "nest start",

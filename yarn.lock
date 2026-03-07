@@ -118,26 +118,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@awarevue/api-types@npm:2.0.51, @awarevue/api-types@workspace:packages/api-types":
+"@awarevue/agent-tester-cli@workspace:packages/test-agent-hub":
   version: 0.0.0-use.local
-  resolution: "@awarevue/api-types@workspace:packages/api-types"
-  dependencies:
-    "@types/json-schema": "npm:^7.0.15"
-    "@typescript-eslint/eslint-plugin": "npm:^8.31.1"
-    "@typescript-eslint/parser": "npm:^8.31.1"
-    eslint: "npm:^9.26.0"
-    eslint-config-prettier: "npm:^10.1.2"
-    eslint-plugin-import: "npm:^2.31.0"
-    typescript: "npm:~5.8.3"
-    zod: "npm:^3.24.2"
-  peerDependencies:
-    zod: ^3.24.2
-  languageName: unknown
-  linkType: soft
-
-"@awarevue/test-agent-hub@workspace:packages/test-agent-hub":
-  version: 0.0.0-use.local
-  resolution: "@awarevue/test-agent-hub@workspace:packages/test-agent-hub"
+  resolution: "@awarevue/agent-tester-cli@workspace:packages/test-agent-hub"
   dependencies:
     "@awarevue/agent-sdk": "npm:2.0.51"
     "@awarevue/api-types": "npm:2.0.51"
@@ -164,6 +147,25 @@ __metadata:
     uuid: "npm:^13.0.0"
     ws: "npm:^8.0.0"
     yargs: "npm:^17.7.0"
+  bin:
+    agent-tester: ./bin/agent-tester.js
+  languageName: unknown
+  linkType: soft
+
+"@awarevue/api-types@npm:2.0.51, @awarevue/api-types@workspace:packages/api-types":
+  version: 0.0.0-use.local
+  resolution: "@awarevue/api-types@workspace:packages/api-types"
+  dependencies:
+    "@types/json-schema": "npm:^7.0.15"
+    "@typescript-eslint/eslint-plugin": "npm:^8.31.1"
+    "@typescript-eslint/parser": "npm:^8.31.1"
+    eslint: "npm:^9.26.0"
+    eslint-config-prettier: "npm:^10.1.2"
+    eslint-plugin-import: "npm:^2.31.0"
+    typescript: "npm:~5.8.3"
+    zod: "npm:^3.24.2"
+  peerDependencies:
+    zod: ^3.24.2
   languageName: unknown
   linkType: soft
 

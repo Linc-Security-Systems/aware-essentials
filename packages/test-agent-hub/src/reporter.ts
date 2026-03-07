@@ -123,7 +123,7 @@ export function writeJUnitReport(
   const xml = [
     `<?xml version="1.0" encoding="UTF-8"?>`,
     `<testsuites>`,
-    `  <testsuite name="test-agent-hub" tests="${reports.length}" failures="${failures}" time="${totalTime.toFixed(3)}">`,
+    `  <testsuite name="agent-tester" tests="${reports.length}" failures="${failures}" time="${totalTime.toFixed(3)}">`,
     testcases,
     `  </testsuite>`,
     `</testsuites>`,

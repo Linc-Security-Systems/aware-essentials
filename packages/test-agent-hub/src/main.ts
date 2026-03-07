@@ -29,7 +29,7 @@ function getVersion(): string {
 
 function printBanner(version: string): void {
   console.log();
-  console.log(`${BOLD}${CYAN}  test-agent-hub${RESET} ${DIM}v${version}${RESET}`);
+  console.log(`${BOLD}${CYAN}  agent-tester${RESET} ${DIM}v${version}${RESET}`);
   console.log(`${DIM}  Aware Agent Protocol Conformance Test Runner${RESET}`);
   console.log();
 }
@@ -57,7 +57,7 @@ function printScenarioList(tags: string[]): void {
 
 async function main(): Promise<void> {
   const argv = await yargs
-    .scriptName('test-agent-hub')
+    .scriptName('agent-tester')
     .usage('$0 --agentId <id> [options]')
     .usage('')
     .usage('Run the Aware agent protocol conformance test suite against a real agent.')
@@ -134,6 +134,7 @@ async function main(): Promise<void> {
       '$0 --agentId my-agent --tags core --report results.xml',
       'Run core scenarios, write JUnit report',
     )
+    .example('$0 --agentId my-agent --quiet --report junit.xml', 'CI mode')
     .example('$0 --list', 'Print all available scenarios')
     .example('$0 --list --tags doors', 'Print scenarios tagged "doors"')
     .epilogue(

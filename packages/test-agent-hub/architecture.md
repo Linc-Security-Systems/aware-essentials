@@ -77,16 +77,16 @@ After parsing, it creates a NestJS application with `AppModule.forRoot(options)`
 
 ```bash
 # Run all scenarios
-test-agent-hub --agentId my-agent
+agent-tester --agentId my-agent
 
 # Run only core scenarios, write JUnit report
-test-agent-hub --agentId my-agent --tags core --report results.xml
+agent-tester --agentId my-agent --tags core --report results.xml
 
 # List available scenarios
-test-agent-hub --list
+agent-tester --list
 
 # CI mode: quiet, with JUnit report
-test-agent-hub --agentId my-agent --quiet --report results/junit.xml
+agent-tester --agentId my-agent --quiet --report results/junit.xml
 ```
 
 #### Exit codes
@@ -267,17 +267,17 @@ export default scenario;
 
 ### Installation
 
-The package exposes a `test-agent-hub` binary via the `bin` field in `package.json`. After installing the workspace, you can run it directly:
+The package (`@awarevue/agent-tester-cli`) exposes an `agent-tester` binary via the `bin` field in `package.json`. After installing, you can run it directly:
 
 ```bash
-# Via npx (from the monorepo root)
-npx test-agent-hub --agentId my-agent
+# Via npx
+npx @awarevue/agent-tester-cli --agentId my-agent
 
-# Or via the bin symlink after yarn install
-./node_modules/.bin/test-agent-hub --agentId my-agent
+# Or via the bin symlink after yarn/npm install
+./node_modules/.bin/agent-tester --agentId my-agent
 
 # Or in a package.json script
-"test:agent": "test-agent-hub --agentId my-agent --report results/junit.xml"
+"test:agent": "agent-tester --agentId my-agent --report results/junit.xml"
 ```
 
 ### GitHub Actions example
@@ -294,7 +294,7 @@ jobs:
         run: node my-agent/dist/main.js &
       - name: Run conformance tests
         run: |
-          npx test-agent-hub \
+          npx @awarevue/agent-tester-cli \
             --agentId my-agent \
             --quiet \
             --report results/junit.xml
