@@ -1,5 +1,4 @@
-import { FromAgent, Message } from "@awarevue/api-types";
-import { Scenario, scenarioFail, scenarioPass } from "../scenario.types";
+import { Scenario, scenarioPass } from "../scenario.types";
 
 const s: Scenario = {
   tags: ['doors'],
@@ -25,15 +24,14 @@ const s: Scenario = {
     const doors = devicesResponse.devices.filter(
       (d) => d.type === 'door',
     );
+    const doorRefs = doors.map((d) => d.foreignRef);
 
-    // wait for a state message for each door, with a connected flag
-    const predicates = doors.map((door) => (msg: Message<FromAgent>) => {
-      return (
-        msg.kind === 'state' &&
-        msg.foreignRef === door.foreignRef && 'connected' in msg.mergeProps
-      );
-    });
-    await ctx.waitForAllMessages(predicates, 30000);
+    // Wait for the agent to report initial state for each door (with a connected flag)
+    await ctx.deviceState.waitForDevices(
+      doorRefs,
+      (state) => 'connected' in state,
+      30000,
+    );
 
     // Stop the provider
     await ctx.getReply({

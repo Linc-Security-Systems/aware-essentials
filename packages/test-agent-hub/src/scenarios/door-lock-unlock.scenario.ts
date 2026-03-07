@@ -1,5 +1,4 @@
-import { FromAgent, Message } from "@awarevue/api-types";
-import { Scenario, scenarioFail, scenarioPass } from "../scenario.types";
+import { Scenario, scenarioPass } from "../scenario.types";
 
 const s: Scenario = {
   tags: ['doors'],
@@ -25,32 +24,36 @@ const s: Scenario = {
     const doors = devicesResponse.devices.filter(
       (d) => d.type === 'door',
     );
+    const doorRefs = doors.map((d) => d.foreignRef);
 
-    // wait for a state message for each door, with a connected flag
-    const predicate = (msg: Message<FromAgent>) => {
-      return (
-        msg.kind === 'state' &&
-        doors.some((door) => msg.foreignRef === door.foreignRef) &&
-        'connected' in msg.mergeProps && !!msg.mergeProps.connected
-      );
-    }
-    const matches = await ctx.waitForSomeMessages(predicate, 30000);
+    // Wait for agent to report initial state with connectivity info
+    const states = await ctx.deviceState.waitForDevices(
+      doorRefs,
+      (state) => 'connected' in state,
+      30000,
+    );
 
-    const stateMessages = matches.filter((msg) => msg.kind === 'state');
-    const connectedDoors = stateMessages.map((msg) => msg.foreignRef);
+    // Filter to doors the agent reports as connected
+    const connectedDoors = doors.filter((door) => {
+      const state = states.get(door.foreignRef);
+      return state && state.connected === true;
+    });
 
     for (const door of connectedDoors) {
-      const device = devicesResponse.devices.find((d) => d.foreignRef === door);
-      if (!device) {
-        ctx.log(`Warning: received state for unknown door with foreignRef '${door}'`);
-        continue;
-      }
+      // Send unlock command to the agent
       await ctx.getReply({
         kind: 'command',
-        device: { ...device, presets: [] },
+        device: { ...door, presets: [] },
         command: 'door.unlock',
         params: {},
       });
+
+      // Verify the agent reports the door as unlocked
+      await ctx.deviceState.assertState(
+        door.foreignRef,
+        (state) => state.locked === false,
+        'Agent should report door as unlocked after unlock command',
+      );
     }
 
     // Stop the provider

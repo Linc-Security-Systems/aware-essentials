@@ -20,6 +20,7 @@ import {
   printConsoleReport,
   writeJUnitReport,
 } from './reporter';
+import { DeviceStateStoreImpl } from './helpers/device-state-store';
 
 @Injectable()
 export class RunnerService {
@@ -81,21 +82,23 @@ export class RunnerService {
       const start = Date.now();
 
       let result: ScenarioResult;
+      let store: DeviceStateStoreImpl | undefined;
 
       try {
-        // Build the context for this scenario
-        const ctx = this.buildContext(
+        // Build the context for this scenario (fresh state store each time)
+        const built = this.buildContext(
           agent,
           provider,
           config,
           logs,
           scenarioTimeout,
         );
+        store = built.store;
 
         // Run with timeout
         this.logger.log(`Running scenario '${scenario.name}'...`);
         result = await this.runWithTimeout(
-          scenario.run(ctx),
+          scenario.run(built.ctx),
           scenarioTimeout,
           start,
         );
@@ -105,6 +108,9 @@ export class RunnerService {
           ...scenarioFail((err as Error).message),
           durationMs: elapsed,
         };
+      } finally {
+        // Dispose the store to prevent subscription leaks
+        store?.dispose();
       }
 
       reports.push({ name: scenario.name, result, logs });
@@ -133,14 +139,17 @@ export class RunnerService {
     config: Record<string, unknown>,
     logs: string[],
     timeoutMs: number,
-  ): ScenarioContext {
+  ): { ctx: ScenarioContext; store: DeviceStateStoreImpl } {
     const { protocol, registerPayload } = agent;
+    const messages$ = (protocol as any).transport.messages$;
+    const store = new DeviceStateStoreImpl(messages$, timeoutMs);
 
-    return {
+    const ctx: ScenarioContext = {
       protocol,
       registerPayload,
       provider,
       config,
+      deviceState: store,
       log: (msg: string) => logs.push(msg),
 
       getReply: <K extends RequestKind>(
@@ -231,6 +240,8 @@ export class RunnerService {
         );
       },
     };
+
+    return { ctx, store };
   }
 
   private async runWithTimeout(
