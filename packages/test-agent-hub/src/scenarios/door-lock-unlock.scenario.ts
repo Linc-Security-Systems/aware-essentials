@@ -2,8 +2,8 @@ import { Scenario, scenarioPass } from "../scenario.types";
 
 const s: Scenario = {
   tags: ['doors'],
-  name: 'Doors: Communicates initial states upon start',
-  description: 'Doors: Communicates initial states upon start',
+  name: 'Doors: Doors lock and unlock correctly',
+  description: 'Doors: Doors lock and unlock correctly',
   run: async (ctx) => {
     // Start the provider first
     await ctx.getReply({
@@ -53,6 +53,21 @@ const s: Scenario = {
         door.foreignRef,
         (state) => state.locked === false,
         'Agent should report door as unlocked after unlock command',
+      );
+
+      // Send lock command to the agent
+      await ctx.getReply({
+        kind: 'command',
+        device: { ...door, presets: [] },
+        command: 'door.lock',
+        params: {},
+      });
+
+      // Verify the agent reports the door as locked
+      await ctx.deviceState.assertState(
+        door.foreignRef,
+        (state) => state.locked === true,
+        'Agent should report door as locked after lock command',
       );
     }
 
