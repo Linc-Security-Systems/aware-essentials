@@ -1,4 +1,4 @@
-import { Scenario, scenarioPass } from "../scenario.types";
+import { Scenario, scenarioPass } from "../../scenario.types";
 
 const s: Scenario = {
   tags: ['doors'],

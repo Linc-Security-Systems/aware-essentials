@@ -1,6 +1,6 @@
 import { CreatePersonRequest } from "@awarevue/api-types";
 import { v4 } from "uuid";
-import { Scenario, scenarioFail, scenarioPass } from "../scenario.types";
+import { Scenario, scenarioFail, scenarioPass } from "../../scenario.types";
 
 export const newPerson = (): CreatePersonRequest => ({
   firstName: v4(),
