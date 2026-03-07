@@ -253,7 +253,7 @@ export class RunnerService {
     timeoutMs: number,
     startTime: number,
   ): Promise<ScenarioResult> {
-    return new Promise<ScenarioResult>((resolve, reject) => {
+    return new Promise<ScenarioResult>((resolve) => {
       const timer = setTimeout(() => {
         resolve({
           passed: false,
