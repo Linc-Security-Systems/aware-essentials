@@ -1,5 +1,6 @@
+import { v4 } from "uuid";
 import { Scenario, scenarioFail, scenarioPass } from "../../scenario.types";
-import { newPerson } from "./_utils";
+import { newPerson, newSchedule } from "./_utils";
 
 const s: Scenario = {
   tags: ['access'],
@@ -14,13 +15,13 @@ const s: Scenario = {
       lastEventTimestamp: null,
     });
 
-    const awareId = "test-person-123";
+    const awareId = v4();
     const validateResult = await ctx.getReply({
       kind: 'validate-change',
       provider: ctx.provider,
       refMap: {
         person: {
-          [awareId]: ["ffff234f"],
+          [awareId]: ["1112"],
         }
       },
       devices: {},
@@ -37,10 +38,40 @@ const s: Scenario = {
       return scenarioFail(`Expected 1 issue, got ${validateResult.issues.length}`);
     }
 
-      const issue = validateResult.issues[0];
-      if (issue.code !== 'BAD_REFERENCE') {
-        return scenarioFail(`Expected issue code 'BAD_REFERENCE', got '${issue.code}'`);
-      }
+    const issue = validateResult.issues[0];
+    if (issue.code !== 'BAD_REFERENCE') {
+      return scenarioFail(`Expected issue code 'BAD_REFERENCE', got '${issue.code}'`);
+    }
+
+    const scheduleId = v4();
+    const validateScheduleResult = await ctx.getReply({
+      kind: 'validate-change',
+      provider: ctx.provider,
+      refMap: {
+        schedule: {
+          [scheduleId]: ["313131"],
+        }
+      },
+      devices: {},
+      mutations: [{
+        kind: 'merge',
+        objectId: scheduleId,
+        objectKind: 'schedule',
+        original: null,
+        props: newSchedule(),
+      }],
+    });
+
+    if (validateScheduleResult.issues.length !== 1) {
+      return scenarioFail(`Expected 1 issue, got ${validateScheduleResult.issues.length}`);
+    }
+
+    const scheduleIssue = validateScheduleResult.issues[0];
+    if (scheduleIssue.code !== 'BAD_REFERENCE') {
+      return scenarioFail(`Expected issue code 'BAD_REFERENCE', got '${scheduleIssue.code}'`);
+    }
+
+    ctx.log(`Validation correctly identified bad references for both person and schedule`);
 
     await ctx.getReply({
       kind: 'stop',

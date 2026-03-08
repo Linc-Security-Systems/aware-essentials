@@ -156,10 +156,6 @@ const mergeZone = async (ctx: ScenarioContext) => {
   // TODO implement when we have a test provider that supports zones
 };
 
-const mergeAccessRule = async (ctx: ScenarioContext) => {
-  // TODO implement when we have a test provider that supports access rules
-};
-
 const s: Scenario = {
   tags: ['access'],
   name: 'Access Sync: Merges Access Objects it supports',
@@ -188,11 +184,6 @@ const s: Scenario = {
     if (accessObjects.includes('zone')) {
       ctx.log(`Provider supports 'zone' access object, testing merge...`);
       await mergeZone(ctx);
-    }
-
-    if (accessObjects.includes('accessRule')) {
-      ctx.log(`Provider supports 'accessRule' access object, testing merge...`);
-      await mergeAccessRule(ctx);
     }
 
     await ctx.getReply({
