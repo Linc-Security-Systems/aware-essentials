@@ -1,8 +1,10 @@
+import { v4 } from "uuid";
 import { Scenario, ScenarioContext, scenarioFail, scenarioPass } from "../../scenario.types";
 import { newPerson, newSchedule } from "./_utils";
 
 const mergePerson = async (ctx: ScenarioContext) => {
-  const awareId = "test-person-123";
+  const awareId = v4();
+  const personProps = newPerson();
   const validateResult = await ctx.getReply({
     kind: 'validate-change',
     provider: ctx.provider,
@@ -17,7 +19,7 @@ const mergePerson = async (ctx: ScenarioContext) => {
       objectId: awareId,
       objectKind: 'person',
       original: null,
-      props: newPerson(),
+      props: personProps,
     }],
   });
 
@@ -41,7 +43,7 @@ const mergePerson = async (ctx: ScenarioContext) => {
       objectId: awareId,
       objectKind: 'person',
       original: null,
-      props: newPerson(),
+      props: personProps,
     }],
   });
 
@@ -51,10 +53,33 @@ const mergePerson = async (ctx: ScenarioContext) => {
   }
 
   ctx.log(`Apply succeeded with ${references.length} reference(s) as expected`);
+
+  // delete the person to clean up after test
+  await ctx.getReply({
+    kind: 'apply-change',
+    provider: ctx.provider,
+    refMap: {
+      person: {
+        [awareId]: references,
+      }
+    },
+    devices: {},
+    mutations: [{
+      kind: 'delete',
+      objectId: awareId,
+      objectKind: 'person',
+      original: {
+        ...personProps,
+      },
+    }],
+  });
+
+  ctx.log(`Deleted person to clean up after test`);
 };
 
 const mergeSchedule = async (ctx: ScenarioContext) => {
-  const awareId = "test-schedule-123";
+  const awareId = v4();
+  const scheduleProps = newSchedule();
   const validateResult = await ctx.getReply({
     kind: 'validate-change',
     provider: ctx.provider,
@@ -69,7 +94,7 @@ const mergeSchedule = async (ctx: ScenarioContext) => {
       objectId: awareId,
       objectKind: 'schedule',
       original: null,
-      props: newSchedule(),
+      props: scheduleProps,
     }],
   });
 
@@ -93,7 +118,7 @@ const mergeSchedule = async (ctx: ScenarioContext) => {
       objectId: awareId,
       objectKind: 'schedule',
       original: null,
-      props: newSchedule(),
+      props: scheduleProps,
     }],
   });
 
@@ -103,6 +128,28 @@ const mergeSchedule = async (ctx: ScenarioContext) => {
   }
 
   ctx.log(`Apply succeeded with ${references.length} reference(s) as expected`);
+
+  // delete the schedule to clean up after test
+  await ctx.getReply({
+    kind: 'apply-change',
+    provider: ctx.provider,
+    refMap: {
+      schedule: {
+        [awareId]: references,
+      }
+    },
+    devices: {},
+    mutations: [{
+      kind: 'delete',
+      objectId: awareId,
+      objectKind: 'schedule',
+      original: {
+        ...scheduleProps,
+      },
+    }],
+  });
+
+  ctx.log(`Deleted schedule to clean up after test`);
 };
 
 const mergeZone = async (ctx: ScenarioContext) => {
