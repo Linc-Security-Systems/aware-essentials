@@ -1,18 +1,17 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import { ScenarioResult } from '.';
+import * as fs from "fs";
+import * as path from "path";
+import { ScenarioResult } from ".";
 
 /* ---------------------------------------------------------------- */
 /* Console reporter (colored)                                       */
 /* ---------------------------------------------------------------- */
 
 // ANSI color codes — works in all CI terminals, no chalk dependency
-const RESET = '\x1b[0m';
-const GREEN = '\x1b[32m';
-const RED = '\x1b[31m';
-const DIM = '\x1b[2m';
-const BOLD = '\x1b[1m';
-const YELLOW = '\x1b[33m';
+const RESET = "\x1b[0m";
+const GREEN = "\x1b[32m";
+const RED = "\x1b[31m";
+const DIM = "\x1b[2m";
+const BOLD = "\x1b[1m";
 
 export interface ScenarioReport {
   name: string;
@@ -78,7 +77,7 @@ export function printConsoleReport(
     `${DIM}(${totalDuration}ms)${RESET}`,
   ]
     .filter(Boolean)
-    .join(', ');
+    .join(", ");
 
   console.log(`  ${BOLD}Summary:${RESET} ${summary}`);
   console.log();
@@ -90,11 +89,11 @@ export function printConsoleReport(
 
 function escapeXml(str: string): string {
   return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&apos;');
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
 }
 
 export function writeJUnitReport(
@@ -111,14 +110,14 @@ export function writeJUnitReport(
       if (r.result.passed) {
         return `    <testcase name="${escapeXml(r.name)}" classname="scenarios" time="${time}" />`;
       }
-      const failureMsg = r.result.errors.map(escapeXml).join('\n');
+      const failureMsg = r.result.errors.map(escapeXml).join("\n");
       return [
         `    <testcase name="${escapeXml(r.name)}" classname="scenarios" time="${time}">`,
-        `      <failure message="${escapeXml(r.result.errors[0] ?? 'Failed')}">${failureMsg}</failure>`,
+        `      <failure message="${escapeXml(r.result.errors[0] ?? "Failed")}">${failureMsg}</failure>`,
         `    </testcase>`,
-      ].join('\n');
+      ].join("\n");
     })
-    .join('\n');
+    .join("\n");
 
   const xml = [
     `<?xml version="1.0" encoding="UTF-8"?>`,
@@ -127,7 +126,7 @@ export function writeJUnitReport(
     testcases,
     `  </testsuite>`,
     `</testsuites>`,
-  ].join('\n');
+  ].join("\n");
 
   // Ensure output directory exists
   const dir = path.dirname(filePath);
@@ -135,5 +134,5 @@ export function writeJUnitReport(
     fs.mkdirSync(dir, { recursive: true });
   }
 
-  fs.writeFileSync(filePath, xml, 'utf-8');
+  fs.writeFileSync(filePath, xml, "utf-8");
 }

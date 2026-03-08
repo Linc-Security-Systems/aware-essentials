@@ -1,4 +1,4 @@
-import { Scenario, scenarioPass, scenarioFail } from '../scenario.types';
+import { Scenario, scenarioPass, scenarioFail } from "../scenario.types";
 
 /**
  * Tests the agent's start/stop lifecycle:
@@ -6,9 +6,9 @@ import { Scenario, scenarioPass, scenarioFail } from '../scenario.types';
  * - Sends `stop`, expects `stop-rs`
  */
 const scenario: Scenario = {
-  name: 'start-stop',
-  description: 'Sends start and stop to the agent and validates responses',
-  tags: ['core', 'lifecycle'],
+  name: "start-stop",
+  description: "Sends start and stop to the agent and validates responses",
+  tags: ["core", "lifecycle"],
 
   async run(ctx) {
     const { provider, config } = ctx;
@@ -17,7 +17,7 @@ const scenario: Scenario = {
     ctx.log(`Starting provider '${provider}'...`);
     try {
       await ctx.getReply({
-        kind: 'start',
+        kind: "start",
         provider,
         config,
         lastEventForeignRef: null,
@@ -29,13 +29,13 @@ const scenario: Scenario = {
       );
     }
 
-    ctx.log('start-rs received');
+    ctx.log("start-rs received");
 
     // Send stop, expect stop-rs
     ctx.log(`Stopping provider '${provider}'...`);
     try {
       await ctx.getReply({
-        kind: 'stop',
+        kind: "stop",
         provider,
       });
     } catch (err) {
@@ -44,7 +44,7 @@ const scenario: Scenario = {
       );
     }
 
-    ctx.log('stop-rs received');
+    ctx.log("stop-rs received");
 
     return scenarioPass();
   },

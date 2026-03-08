@@ -1,22 +1,25 @@
-import { Injectable, Inject, OnModuleInit, Logger, OnModuleDestroy } from '@nestjs/common';
-import { HttpAdapterHost } from '@nestjs/core';
-import { WebSocketServer, WebSocket } from 'ws';
+import {
+  Injectable,
+  Inject,
+  OnModuleInit,
+  Logger,
+  OnModuleDestroy,
+} from "@nestjs/common";
+import { HttpAdapterHost } from "@nestjs/core";
+import { WebSocketServer, WebSocket } from "ws";
 import {
   FromAgent,
   FromServer,
   Message,
   RegisterRq,
   getAgentMessageIssues,
-} from '@awarevue/api-types';
-import {
-  InMemoryHub,
-  AgentProtocol,
-} from '@awarevue/agent-sdk';
-import { WsServerDuplexTransport } from './ws-server-transport';
-import { CLI_OPTIONS, CLIOptions } from './cli-options';
+} from "@awarevue/api-types";
+import { InMemoryHub, AgentProtocol } from "@awarevue/agent-sdk";
+import { WsServerDuplexTransport } from "./ws-server-transport";
+import { CLI_OPTIONS, CLIOptions } from "./cli-options";
 
 export interface ConnectedAgent {
-  protocol: AgentProtocol<'server'>;
+  protocol: AgentProtocol<"server">;
   registerPayload: Message<RegisterRq>;
   peerId: string;
 }
@@ -43,8 +46,7 @@ export class HubService implements OnModuleInit, OnModuleDestroy {
   onModuleInit(): void {
     const server = this.httpAdapterHost.httpAdapter.getHttpServer();
     this.wss = new WebSocketServer({ server });
-    this.wss.on('connection', (ws: WebSocket) => {
-
+    this.wss.on("connection", (ws: WebSocket) => {
       const peerId = `peer-${++this.peerCounter}`;
       this.logger.log(`WebSocket peer connected: ${peerId}`);
 
@@ -57,7 +59,7 @@ export class HubService implements OnModuleInit, OnModuleDestroy {
     });
 
     this.hub.peerEvents$.subscribe((event) => {
-      if (event.type === 'leave') {
+      if (event.type === "leave") {
         this.logger.log(`Peer disconnected: ${event.peer}`);
       }
     });
@@ -88,7 +90,7 @@ export class HubService implements OnModuleInit, OnModuleDestroy {
 
       // Listen for register messages from any peer
       const sub = this.hub.messages$.subscribe(({ peer, msg }) => {
-        if (msg.kind !== 'register') return;
+        if (msg.kind !== "register") return;
         if (msg.from !== agentId) {
           this.logger.warn(
             `Received register from '${msg.from}', expected '${agentId}' — ignoring`,
@@ -116,9 +118,7 @@ export class HubService implements OnModuleInit, OnModuleDestroy {
     // Validate the message
     const issues = getAgentMessageIssues(msg);
     if (issues.length > 0) {
-      throw new Error(
-        `Invalid register from ${peer}: ${issues.join(', ')}`,
-      );
+      throw new Error(`Invalid register from ${peer}: ${issues.join(", ")}`);
     }
 
     const registerMsg = msg as Message<RegisterRq>;
@@ -129,19 +129,19 @@ export class HubService implements OnModuleInit, OnModuleDestroy {
       throw new Error(`Peer ${peer} disconnected before registration`);
     }
 
-    const protocol = new AgentProtocol<'server'>(conn, {
-      id: 'test-hub',
+    const protocol = new AgentProtocol<"server">(conn, {
+      id: "test-hub",
       replyTimeout: this.options.timeout,
     });
 
     // Send register-rs reply
     protocol.send({
-      kind: 'register-rs',
+      kind: "register-rs",
       requestId: registerMsg.id,
     } as FromServer);
 
     this.logger.debug(
-      `Agent '${agentId}' registered (peer: ${peer}, providers: ${Object.keys(registerMsg.providers).join(', ')})`,
+      `Agent '${agentId}' registered (peer: ${peer}, providers: ${Object.keys(registerMsg.providers).join(", ")})`,
     );
 
     return {

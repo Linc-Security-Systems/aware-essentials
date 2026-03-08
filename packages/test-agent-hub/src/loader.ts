@@ -1,6 +1,6 @@
-import * as path from 'path';
-import * as fs from 'fs';
-import { Scenario } from './scenario.types';
+import * as path from "path";
+import * as fs from "fs";
+import { Scenario } from "./scenario.types";
 
 /**
  * Recursively collect all files under `dir` that match `pattern`.
@@ -23,7 +23,7 @@ function findFilesRecursive(dir: string, pattern: RegExp): string[] {
  * and its sub-folders. Each file must default-export a `Scenario` object.
  */
 export function loadScenarios(): Scenario[] {
-  const scenariosDir = path.join(__dirname, 'scenarios'); // compiled: dist/scenarios/
+  const scenariosDir = path.join(__dirname, "scenarios"); // compiled: dist/scenarios/
   const files = findFilesRecursive(scenariosDir, /\.scenario\.(ts|js)$/);
 
   const scenarios: Scenario[] = [];

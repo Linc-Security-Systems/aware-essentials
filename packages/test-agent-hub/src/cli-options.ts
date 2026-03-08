@@ -27,4 +27,4 @@ export interface CLIOptions {
   quiet: boolean;
 }
 
-export const CLI_OPTIONS = Symbol('CLI_OPTIONS');
+export const CLI_OPTIONS = Symbol("CLI_OPTIONS");

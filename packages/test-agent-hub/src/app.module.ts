@@ -1,7 +1,7 @@
-import { DynamicModule, Module } from '@nestjs/common';
-import { HubService } from './hub.service';
-import { RunnerService } from './runner.service';
-import { CLI_OPTIONS, CLIOptions } from './cli-options';
+import { DynamicModule, Module } from "@nestjs/common";
+import { HubService } from "./hub.service";
+import { RunnerService } from "./runner.service";
+import { CLI_OPTIONS, CLIOptions } from "./cli-options";
 
 @Module({})
 export class AppModule {

@@ -1,16 +1,15 @@
 import {
   FromAgent,
-  FromServer,
   Message,
   PayloadByKind,
   RegisterRq,
-} from '@awarevue/api-types';
+} from "@awarevue/api-types";
 import {
   AgentProtocol,
   RequestKind,
   Outbound,
   ResponseKind,
-} from '@awarevue/agent-sdk';
+} from "@awarevue/agent-sdk";
 
 /* ---------------------------------------------------------------- */
 /* Device state store                                               */
@@ -57,10 +56,7 @@ export interface DeviceStateStore {
    * regardless of current state. Useful after sending a command — "wait for
    * the agent to report the resulting state change."
    */
-  waitForChange(
-    foreignRef: string,
-    timeoutMs?: number,
-  ): Promise<DeviceState>;
+  waitForChange(foreignRef: string, timeoutMs?: number): Promise<DeviceState>;
 
   /**
    * Multi-device variant of `waitUntil`. Resolves when **every** listed device
@@ -99,7 +95,7 @@ export interface ScenarioResult {
 }
 
 /** Convenience: build a passing result */
-export const scenarioPass = (): Omit<ScenarioResult, 'durationMs'> => ({
+export const scenarioPass = (): Omit<ScenarioResult, "durationMs"> => ({
   passed: true,
   errors: [],
 });
@@ -107,7 +103,7 @@ export const scenarioPass = (): Omit<ScenarioResult, 'durationMs'> => ({
 /** Convenience: build a failing result */
 export const scenarioFail = (
   ...errors: string[]
-): Omit<ScenarioResult, 'durationMs'> => ({
+): Omit<ScenarioResult, "durationMs"> => ({
   passed: false,
   errors,
 });
@@ -118,7 +114,7 @@ export const scenarioFail = (
 
 export interface ScenarioContext {
   /** Protocol handle — send messages and await replies from the agent */
-  protocol: AgentProtocol<'server'>;
+  protocol: AgentProtocol<"server">;
 
   /** The register payload the agent sent on connect */
   registerPayload: Message<RegisterRq>;
@@ -144,7 +140,7 @@ export interface ScenarioContext {
    * Automatically handles timeout.
    */
   getReply<K extends RequestKind>(
-    payload: Extract<Outbound<'server'>, { kind: K }>,
+    payload: Extract<Outbound<"server">, { kind: K }>,
   ): Promise<PayloadByKind[ResponseKind<K>]>;
 
   /**
@@ -169,7 +165,7 @@ export interface ScenarioContext {
   /**
    * Wait for the next inbound message of a given kind.
    */
-  waitForKind<K extends FromAgent['kind']>(
+  waitForKind<K extends FromAgent["kind"]>(
     kind: K,
     timeoutMs?: number,
   ): Promise<Message<Extract<FromAgent, { kind: K }>>>;
@@ -193,5 +189,5 @@ export interface Scenario {
    * Run the scenario.
    * Return `scenarioPass()` / `scenarioFail(...)` or throw.
    */
-  run(ctx: ScenarioContext): Promise<Omit<ScenarioResult, 'durationMs'>>;
+  run(ctx: ScenarioContext): Promise<Omit<ScenarioResult, "durationMs">>;
 }

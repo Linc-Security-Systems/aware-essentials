@@ -1,6 +1,6 @@
-import { WebSocket } from 'ws';
-import { BehaviorSubject, Subject, Observable } from 'rxjs';
-import { DuplexTransport } from '@awarevue/agent-sdk';
+import { WebSocket } from "ws";
+import { BehaviorSubject, Subject, Observable } from "rxjs";
+import { DuplexTransport } from "@awarevue/agent-sdk";
 
 /**
  * Wraps a server-accepted WebSocket into a DuplexTransport.
@@ -26,7 +26,7 @@ export class WsServerDuplexTransport<TIn, TOut>
   };
 
   private defaultSerializer = (msg: TOut) => {
-    if (typeof msg === 'object' && 'kind' in (msg || {})) {
+    if (typeof msg === "object" && "kind" in (msg || {})) {
       const { kind, ...data } = msg as unknown as {
         kind: string;
         [key: string]: unknown;
@@ -40,7 +40,7 @@ export class WsServerDuplexTransport<TIn, TOut>
     this.connected$ = this._connected$.asObservable();
     this.messages$ = this._messages$.asObservable();
 
-    ws.on('message', (data: Buffer | string) => {
+    ws.on("message", (data: Buffer | string) => {
       try {
         const msg = this.defaultDeserializer(data.toString());
         this._messages$.next(msg);
@@ -49,12 +49,12 @@ export class WsServerDuplexTransport<TIn, TOut>
       }
     });
 
-    ws.on('close', () => {
+    ws.on("close", () => {
       this._connected$.next(false);
       this.cleanup();
     });
 
-    ws.on('error', () => {
+    ws.on("error", () => {
       this._connected$.next(false);
       this.cleanup();
     });
@@ -70,9 +70,13 @@ export class WsServerDuplexTransport<TIn, TOut>
     this.closed = true;
 
     // Prefer a graceful close first; terminate as fallback
-    try { this.ws.close(); } catch {}
+    try {
+      this.ws.close();
+    } catch {}
     setTimeout(() => {
-      try { this.ws.terminate(); } catch {}
+      try {
+        this.ws.terminate();
+      } catch {}
     }, 250).unref?.(); // unref so timer itself doesn't keep process alive
 
     this._connected$.next(false);

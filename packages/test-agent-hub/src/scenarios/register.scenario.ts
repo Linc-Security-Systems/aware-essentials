@@ -1,14 +1,14 @@
-import { Scenario, scenarioPass, scenarioFail } from '../scenario.types';
+import { Scenario, scenarioPass, scenarioFail } from "../scenario.types";
 
 /**
  * Validates that the agent sent a well-formed `register` message
  * with at least one provider and valid provider specs.
  */
 const scenario: Scenario = {
-  name: 'register',
+  name: "register",
   description:
-    'Validates that the agent sends a valid register message with at least one provider',
-  tags: ['core'],
+    "Validates that the agent sends a valid register message with at least one provider",
+  tags: ["core"],
 
   async run(ctx) {
     const { registerPayload } = ctx;
@@ -16,10 +16,10 @@ const scenario: Scenario = {
     // Check that providers exist
     const providerNames = Object.keys(registerPayload.providers);
     if (providerNames.length === 0) {
-      return scenarioFail('Agent registered with zero providers');
+      return scenarioFail("Agent registered with zero providers");
     }
 
-    ctx.log(`Providers: ${providerNames.join(', ')}`);
+    ctx.log(`Providers: ${providerNames.join(", ")}`);
 
     // Validate each provider has a title and config schema
     const errors: string[] = [];
@@ -31,7 +31,7 @@ const scenario: Scenario = {
         errors.push(`Provider '${name}' is missing a title`);
       }
 
-      if (!spec.configSchema || typeof spec.configSchema !== 'object') {
+      if (!spec.configSchema || typeof spec.configSchema !== "object") {
         errors.push(`Provider '${name}' is missing a configSchema`);
       }
     }

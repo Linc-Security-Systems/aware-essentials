@@ -1,22 +1,5 @@
-import { CreatePersonRequest } from "@awarevue/api-types";
-import { v4 } from "uuid";
 import { Scenario, scenarioFail, scenarioPass } from "../../scenario.types";
-
-export const newPerson = (): CreatePersonRequest => ({
-  firstName: v4(),
-  lastName: v4(),
-  position: null,
-  type: 'staff',
-  validFrom: null,
-  validTo: null,
-  accessSuspended: false,
-  accessRules: [],
-  credentials: [],
-  avatarId: null,
-  staffMember: false,
-  customFields: {},
-});
-
+import { newPerson } from "./_utils";
 
 const s: Scenario = {
   tags: ['access'],

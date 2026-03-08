@@ -101,7 +101,6 @@ export class RunnerService {
         }
         result = await this.runWithTimeout(
           scenario.run(built.ctx),
-          scenarioTimeout,
           start,
         );
       } catch (err) {
@@ -250,28 +249,17 @@ export class RunnerService {
 
   private async runWithTimeout(
     promise: Promise<Omit<ScenarioResult, 'durationMs'>>,
-    timeoutMs: number,
     startTime: number,
   ): Promise<ScenarioResult> {
     return new Promise<ScenarioResult>((resolve) => {
-      const timer = setTimeout(() => {
-        resolve({
-          passed: false,
-          errors: [`Scenario timed out after ${timeoutMs}ms`],
-          durationMs: Date.now() - startTime,
-        });
-      }, timeoutMs);
-
       promise
         .then((partial) => {
-          clearTimeout(timer);
           resolve({
             ...partial,
             durationMs: Date.now() - startTime,
           });
         })
         .catch((err) => {
-          clearTimeout(timer);
           resolve({
             passed: false,
             errors: [(err as Error).message],
