@@ -1,3 +1,4 @@
+import { isDeviceEvent } from "@awarevue/api-types";
 import { Scenario, scenarioPass } from "../../scenario.types";
 
 const s: Scenario = {
@@ -26,6 +27,8 @@ const s: Scenario = {
     );
     const doorRefs = doors.map((d) => d.foreignRef);
 
+    ctx.log(`Found ${doors.length} doors`);
+
     // Wait for agent to report initial state with connectivity info
     const states = await ctx.deviceState.waitForDevices(
       doorRefs,
@@ -39,37 +42,64 @@ const s: Scenario = {
       return state && state.connected === true;
     });
 
-    for (const door of connectedDoors) {
-      // Send unlock command to the agent
-      await ctx.getReply({
+    ctx.log(`Found ${connectedDoors.length} connected doors`);
+
+    if (connectedDoors.length === 0) {
+      throw new Error('No connected doors found, cannot proceed with test');
+    }
+
+    // unlock all doors in parallel
+    await Promise.all(connectedDoors.map((door) =>
+      ctx.getReply({
         kind: 'command',
         device: { ...door, presets: [] },
         command: 'door.unlock',
         params: {},
-      });
+      })
+    ));
 
-      // Verify the agent reports the door as unlocked
-      await ctx.deviceState.assertState(
-        door.foreignRef,
-        (state) => state.locked === false,
-        'Agent should report door as unlocked after unlock command',
-      );
+    ctx.log(`Sent unlock command to ${connectedDoors.length} connected doors`);
 
-      // Send lock command to the agent
-      await ctx.getReply({
+    const connectedRefs = connectedDoors.map((d) => d.foreignRef);
+    await ctx.deviceState.waitForDevices(
+      connectedRefs,
+      (state) => state.locked === false,
+      30000,
+    );
+
+    ctx.log(`All ${connectedDoors.length} doors are now unlocked`);
+
+    await ctx.waitForMessage(
+      (message) =>
+        message.kind === 'event' &&
+        isDeviceEvent(message.event) &&
+        message.event.kind === 'door-access' &&
+        connectedRefs.includes(message.foreignRef),
+      30000,
+    );
+
+    ctx.log(`Received door-access event for one of the doors`);
+
+    // lock all doors in parallel
+
+    await Promise.all(connectedDoors.map((door) =>
+      ctx.getReply({
         kind: 'command',
         device: { ...door, presets: [] },
         command: 'door.lock',
         params: {},
-      });
+      })
+    ));
 
-      // Verify the agent reports the door as locked
-      await ctx.deviceState.assertState(
-        door.foreignRef,
-        (state) => state.locked === true,
-        'Agent should report door as locked after lock command',
-      );
-    }
+    ctx.log(`Sent lock command to ${connectedDoors.length} connected doors`);
+
+    await ctx.deviceState.waitForDevices(
+      connectedRefs,
+      (state) => state.locked === true,
+      30000,
+    );
+
+    ctx.log(`All ${connectedDoors.length} doors are now locked`);
 
     // Stop the provider
     await ctx.getReply({
