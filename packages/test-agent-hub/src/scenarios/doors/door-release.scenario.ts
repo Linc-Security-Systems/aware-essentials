@@ -2,8 +2,8 @@ import { Scenario, scenarioPass } from "../../scenario.types";
 
 const s: Scenario = {
   tags: ["doors"],
-  name: "Doors: Doors lock and unlock correctly",
-  description: "Doors: Doors lock and unlock correctly",
+  name: "Doors: Doors release correctly",
+  description: "Doors: Doors release correctly",
   run: async (ctx) => {
     // Start the provider first
     await ctx.getReply({
@@ -51,13 +51,13 @@ const s: Scenario = {
         ctx.getReply({
           kind: "command",
           device: { ...door, presets: [] },
-          command: "door.unlock",
+          command: "door.release",
           params: {},
         }),
       ),
     );
 
-    ctx.log(`Sent unlock command to ${connectedDoors.length} connected doors`);
+    ctx.log(`Sent release command to ${connectedDoors.length} connected doors`);
 
     const connectedRefs = connectedDoors.map((d) => d.foreignRef);
     await ctx.deviceState.waitForDevices(
@@ -66,22 +66,9 @@ const s: Scenario = {
       30000,
     );
 
-    ctx.log(`All ${connectedDoors.length} doors are now unlocked`);
-
-    // lock all doors in parallel
-
-    await Promise.all(
-      connectedDoors.map((door) =>
-        ctx.getReply({
-          kind: "command",
-          device: { ...door, presets: [] },
-          command: "door.lock",
-          params: {},
-        }),
-      ),
+    ctx.log(
+      `All ${connectedDoors.length} doors are now unlocked, waiting for relock`,
     );
-
-    ctx.log(`Sent lock command to ${connectedDoors.length} connected doors`);
 
     await ctx.deviceState.waitForDevices(
       connectedRefs,
