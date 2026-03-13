@@ -1,5 +1,9 @@
 {
   "name": "@awarevue/agent-sdk",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Linc-Security-Systems/aware-essentials.git"
+  },
   "version": "2.0.53",
   "description": "SDK for building Agent implementations that speak the agent protocol.",
   "author": "Yaser Awajan",
