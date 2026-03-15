@@ -7,6 +7,7 @@ on:
 permissions:
   contents: write
   packages: write
+  id-token: write
 
 jobs:
   release:
@@ -18,11 +19,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      # Setup Node and npm auth
+      # Setup Node (22.14.0+ required for npm Trusted Publishing / OIDC)
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          registry-url: 'https://registry.npmjs.org'
+          node-version: 24
 
       # Enable Yarn and install deps
       - run: |
@@ -36,15 +36,11 @@ jobs:
 
       - name: Publish agent-sdk-typescript
         working-directory: packages/agent-sdk-typescript
-        run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public --provenance
 
       - name: Publish api-types
         working-directory: packages/api-types
-        run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public --provenance
 
       - name: Publish agent-tester-cli
         working-directory: packages/test-agent-hub

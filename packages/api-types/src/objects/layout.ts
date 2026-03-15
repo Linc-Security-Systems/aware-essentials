@@ -21,6 +21,7 @@ export const sLayoutDto = z.object({
   isDefault: z.boolean(),
   devices: z.array(sLayoutDeviceDto),
   colorize: z.boolean(),
+  map: z.boolean(),
   createdOn: z.string(),
   lastModifiedOn: z.string(),
 });

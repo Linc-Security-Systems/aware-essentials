@@ -8,6 +8,7 @@ export const sAddLayoutRequest = z.object({
   order: z.number().optional(),
   devices: z.array(sLayoutDeviceDto),
   colorize: z.boolean(),
+  map: z.boolean(),
 });
 
 export type AddLayoutRequest = z.infer<typeof sAddLayoutRequest>;
@@ -20,6 +21,7 @@ export const sUpdateLayoutRequest = z.object({
   isDefault: z.boolean().optional(),
   devices: z.array(sLayoutDeviceDto).optional(),
   colorize: z.boolean().optional(),
+  map: z.boolean().optional(),
 });
 
 export type UpdateLayoutRequest = { id: string } & z.infer<
