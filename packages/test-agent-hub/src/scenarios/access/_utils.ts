@@ -1,4 +1,9 @@
-import { CreatePersonRequest, CreateAccessRuleRequest, CreateScheduleRequest, CreateZoneRequest } from "@awarevue/api-types";
+import {
+  CreatePersonRequest,
+  CreateAccessRuleRequest,
+  CreateScheduleRequest,
+  CreateZoneRequest,
+} from "@awarevue/api-types";
 
 let seq = 0;
 export const uniqueName = () => `${Date.now()}-${seq++}`;
@@ -7,7 +12,7 @@ export const newPerson = (): CreatePersonRequest => ({
   firstName: uniqueName(),
   lastName: uniqueName(),
   position: null,
-  type: 'staff',
+  type: "staff",
   validFrom: null,
   validTo: null,
   accessSuspended: false,
@@ -21,14 +26,14 @@ export const newPerson = (): CreatePersonRequest => ({
 export const newSchedule = (): CreateScheduleRequest => ({
   displayName: uniqueName(),
   include: {
-    repeat: 'weekly',
+    repeat: "weekly",
     startDate: null,
     endDate: null,
     timeIntervals: [
       {
         from: 80000,
         to: 170000,
-        weekDay: 'mon',
+        weekDay: "mon",
       },
     ],
   },

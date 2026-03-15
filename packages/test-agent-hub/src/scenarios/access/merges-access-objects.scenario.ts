@@ -1,50 +1,61 @@
 import { v4 } from "uuid";
-import { Scenario, ScenarioContext, scenarioFail, scenarioPass } from "../../scenario.types";
+import {
+  Scenario,
+  ScenarioContext,
+  scenarioFail,
+  scenarioPass,
+} from "../../scenario.types";
 import { newPerson, newSchedule } from "./_utils";
 
 const mergePerson = async (ctx: ScenarioContext) => {
   const awareId = v4();
   const personProps = newPerson();
   const validateResult = await ctx.getReply({
-    kind: 'validate-change',
+    kind: "validate-change",
     provider: ctx.provider,
     refMap: {
       person: {
         [awareId]: [],
-      }
+      },
     },
     devices: {},
-    mutations: [{
-      kind: 'merge',
-      objectId: awareId,
-      objectKind: 'person',
-      original: null,
-      props: personProps,
-    }],
+    mutations: [
+      {
+        kind: "merge",
+        objectId: awareId,
+        objectKind: "person",
+        original: null,
+        props: personProps,
+      },
+    ],
   });
 
   if (validateResult.issues.length > 0) {
-    return scenarioFail(`Expected 0 issues, got ${validateResult.issues.length}`);
+    return scenarioFail(
+      `Expected 0 issues, got ${validateResult.issues.length}`,
+    );
   }
 
   ctx.log(`Validation passed with 0 issues as expected`);
 
   const applyResult = await ctx.getReply({
-    kind: 'apply-change',
+    kind: "apply-change",
     provider: ctx.provider,
     refMap: {
       person: {
         [awareId]: [],
-      }
+      },
     },
     devices: {},
-    mutations: [{
-      kind: 'merge',
-      objectId: awareId,
-      objectKind: 'person',
-      original: null,
-      props: personProps,
-    }],
+    mutations: [
+      {
+        kind: "merge",
+        objectId: awareId,
+        objectKind: "person",
+        original: null,
+        props: personProps,
+      },
+    ],
   });
 
   const references = applyResult.refs.person?.[awareId] || [];
@@ -56,22 +67,24 @@ const mergePerson = async (ctx: ScenarioContext) => {
 
   // delete the person to clean up after test
   await ctx.getReply({
-    kind: 'apply-change',
+    kind: "apply-change",
     provider: ctx.provider,
     refMap: {
       person: {
         [awareId]: references,
-      }
+      },
     },
     devices: {},
-    mutations: [{
-      kind: 'delete',
-      objectId: awareId,
-      objectKind: 'person',
-      original: {
-        ...personProps,
+    mutations: [
+      {
+        kind: "delete",
+        objectId: awareId,
+        objectKind: "person",
+        original: {
+          ...personProps,
+        },
       },
-    }],
+    ],
   });
 
   ctx.log(`Deleted person to clean up after test`);
@@ -81,45 +94,51 @@ const mergeSchedule = async (ctx: ScenarioContext) => {
   const awareId = v4();
   const scheduleProps = newSchedule();
   const validateResult = await ctx.getReply({
-    kind: 'validate-change',
+    kind: "validate-change",
     provider: ctx.provider,
     refMap: {
       schedule: {
         [awareId]: [],
-      }
+      },
     },
     devices: {},
-    mutations: [{
-      kind: 'merge',
-      objectId: awareId,
-      objectKind: 'schedule',
-      original: null,
-      props: scheduleProps,
-    }],
+    mutations: [
+      {
+        kind: "merge",
+        objectId: awareId,
+        objectKind: "schedule",
+        original: null,
+        props: scheduleProps,
+      },
+    ],
   });
 
   if (validateResult.issues.length > 0) {
-    return scenarioFail(`Expected 0 issues, got ${validateResult.issues.length}`);
+    return scenarioFail(
+      `Expected 0 issues, got ${validateResult.issues.length}`,
+    );
   }
 
   ctx.log(`Validation passed with 0 issues as expected`);
 
   const applyResult = await ctx.getReply({
-    kind: 'apply-change',
+    kind: "apply-change",
     provider: ctx.provider,
     refMap: {
       schedule: {
         [awareId]: [],
-      }
+      },
     },
     devices: {},
-    mutations: [{
-      kind: 'merge',
-      objectId: awareId,
-      objectKind: 'schedule',
-      original: null,
-      props: scheduleProps,
-    }],
+    mutations: [
+      {
+        kind: "merge",
+        objectId: awareId,
+        objectKind: "schedule",
+        original: null,
+        props: scheduleProps,
+      },
+    ],
   });
 
   const references = applyResult.refs.schedule?.[awareId] || [];
@@ -131,63 +150,67 @@ const mergeSchedule = async (ctx: ScenarioContext) => {
 
   // delete the schedule to clean up after test
   await ctx.getReply({
-    kind: 'apply-change',
+    kind: "apply-change",
     provider: ctx.provider,
     refMap: {
       schedule: {
         [awareId]: references,
-      }
+      },
     },
     devices: {},
-    mutations: [{
-      kind: 'delete',
-      objectId: awareId,
-      objectKind: 'schedule',
-      original: {
-        ...scheduleProps,
+    mutations: [
+      {
+        kind: "delete",
+        objectId: awareId,
+        objectKind: "schedule",
+        original: {
+          ...scheduleProps,
+        },
       },
-    }],
+    ],
   });
 
   ctx.log(`Deleted schedule to clean up after test`);
 };
 
-const mergeZone = async (ctx: ScenarioContext) => {
+const mergeZone = async () => {
   // TODO implement when we have a test provider that supports zones
 };
 
 const s: Scenario = {
-  tags: ['access'],
-  name: 'Access Sync: Merges Access Objects it supports',
-  description: 'Access Sync: Merges Access Objects it supports',
+  tags: ["access"],
+  name: "Access Sync: Merges Access Objects it supports",
+  description: "Access Sync: Merges Access Objects it supports",
   run: async (ctx) => {
     await ctx.getReply({
-      kind: 'start',
+      kind: "start",
       provider: ctx.provider,
       config: ctx.config,
       lastEventForeignRef: null,
       lastEventTimestamp: null,
     });
 
-    const accessObjects = ctx.registerPayload.accessControlProviders ? ctx.registerPayload.accessControlProviders[ctx.provider].accessObjects : [];
+    const accessObjects = ctx.registerPayload.accessControlProviders
+      ? ctx.registerPayload.accessControlProviders[ctx.provider].accessObjects
+      : [];
 
-    if (accessObjects.includes('person')) {
+    if (accessObjects.includes("person")) {
       ctx.log(`Provider supports 'person' access object, testing merge...`);
       await mergePerson(ctx);
     }
 
-    if (accessObjects.includes('schedule')) {
+    if (accessObjects.includes("schedule")) {
       ctx.log(`Provider supports 'schedule' access object, testing merge...`);
       await mergeSchedule(ctx);
     }
 
-    if (accessObjects.includes('zone')) {
+    if (accessObjects.includes("zone")) {
       ctx.log(`Provider supports 'zone' access object, testing merge...`);
-      await mergeZone(ctx);
+      await mergeZone();
     }
 
     await ctx.getReply({
-      kind: 'stop',
+      kind: "stop",
       provider: ctx.provider,
     });
 

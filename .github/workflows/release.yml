@@ -44,6 +44,5 @@ jobs:
 
       - name: Publish agent-tester-cli
         working-directory: packages/test-agent-hub
-        run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public --provenance
+        

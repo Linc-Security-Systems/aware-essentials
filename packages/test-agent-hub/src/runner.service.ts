@@ -1,26 +1,31 @@
-import { Injectable, Inject, Logger } from '@nestjs/common';
+import { Injectable, Inject, Logger } from "@nestjs/common";
+import { FromAgent, Message } from "@awarevue/api-types";
+import { RequestKind, Outbound } from "@awarevue/agent-sdk";
 import {
-  FromAgent,
-  FromServer,
-  Message,
-} from '@awarevue/api-types';
-import { RequestKind, Outbound } from '@awarevue/agent-sdk';
-import { filter, firstValueFrom, take, timeout, map, lastValueFrom, scan, tap } from 'rxjs';
-import { HubService, ConnectedAgent } from './hub.service';
-import { CLI_OPTIONS, CLIOptions } from './cli-options';
+  filter,
+  firstValueFrom,
+  take,
+  timeout,
+  map,
+  lastValueFrom,
+  scan,
+  tap,
+} from "rxjs";
+import { HubService, ConnectedAgent } from "./hub.service";
+import { CLI_OPTIONS, CLIOptions } from "./cli-options";
 import {
   loadScenarios,
   filterScenarios,
   ScenarioContext,
   ScenarioResult,
   scenarioFail,
-} from '.';
+} from ".";
 import {
   ScenarioReport,
   printConsoleReport,
   writeJUnitReport,
-} from './reporter';
-import { DeviceStateStoreImpl } from './helpers/device-state-store';
+} from "./reporter";
+import { DeviceStateStoreImpl } from "./helpers/device-state-store";
 
 @Injectable()
 export class RunnerService {
@@ -36,7 +41,13 @@ export class RunnerService {
    * Returns process exit code (0 = all pass, 1 = any failure).
    */
   async run(): Promise<number> {
-    const { agentId, tags, timeout: scenarioTimeout, connectionTimeout, report } = this.options;
+    const {
+      agentId,
+      tags,
+      timeout: scenarioTimeout,
+      connectionTimeout,
+      report,
+    } = this.options;
 
     // 1. Wait for agent to connect
     let agent: ConnectedAgent;
@@ -53,26 +64,27 @@ export class RunnerService {
 
     this.logger.log(
       `Agent: ${agentId} | Scenarios: ${scenarios.length}/${allScenarios.length}` +
-        (tags.length > 0 ? ` | Tags: ${tags.join(', ')}` : ' | Tags: (all)'),
+        (tags.length > 0 ? ` | Tags: ${tags.join(", ")}` : " | Tags: (all)"),
     );
 
     if (scenarios.length === 0) {
-      this.logger.warn('No scenarios matched the given tags');
+      this.logger.warn("No scenarios matched the given tags");
       return 0;
     }
 
     // 3. Pick first provider from the agent's registration
     const providers = Object.keys(agent.registerPayload.providers);
     if (providers.length === 0) {
-      this.logger.error('Agent registered with no providers');
+      this.logger.error("Agent registered with no providers");
       return 1;
     }
     const provider = providers[0];
     const providerSpecs = agent.registerPayload.providers[provider];
     // Use CLI-provided config, fall back to provider's configDefault
-    const config = this.options.providerConfig
-      ?? (providerSpecs.configDefault as Record<string, unknown>)
-      ?? {};
+    const config =
+      this.options.providerConfig ??
+      (providerSpecs.configDefault as Record<string, unknown>) ??
+      {};
 
     // 4. Run each scenario sequentially
     const reports: ScenarioReport[] = [];
@@ -99,10 +111,7 @@ export class RunnerService {
         if (!this.options.quiet) {
           this.logger.log(`Running scenario '${scenario.name}'...`);
         }
-        result = await this.runWithTimeout(
-          scenario.run(built.ctx),
-          start,
-        );
+        result = await this.runWithTimeout(scenario.run(built.ctx), start);
       } catch (err) {
         const elapsed = Date.now() - start;
         result = {
@@ -156,7 +165,7 @@ export class RunnerService {
       log: (msg: string) => logs.push(msg),
 
       getReply: <K extends RequestKind>(
-        payload: Extract<Outbound<'server'>, { kind: K }>,
+        payload: Extract<Outbound<"server">, { kind: K }>,
       ) => {
         return lastValueFrom(protocol.getReply$(payload));
       },
@@ -180,15 +189,19 @@ export class RunnerService {
         const effectiveTimeout = customTimeout ?? timeoutMs;
         return new Promise<Message<FromAgent>[]>((resolve, reject) => {
           const collected: Message<FromAgent>[] = [];
-          const sub = (protocol as any).transport.messages$.pipe(
-            filter((msg: Message<FromAgent>) => predicate(msg)),
-          ).subscribe((msg: Message<FromAgent>) => {
-            collected.push(msg);
-          });
+          const sub = (protocol as any).transport.messages$
+            .pipe(filter((msg: Message<FromAgent>) => predicate(msg)))
+            .subscribe((msg: Message<FromAgent>) => {
+              collected.push(msg);
+            });
           setTimeout(() => {
             sub.unsubscribe();
             if (collected.length === 0) {
-              reject(new Error(`waitForSomeMessages: no messages matched within ${effectiveTimeout}ms`));
+              reject(
+                new Error(
+                  `waitForSomeMessages: no messages matched within ${effectiveTimeout}ms`,
+                ),
+              );
             } else {
               resolve(collected);
             }
@@ -202,7 +215,10 @@ export class RunnerService {
         return firstValueFrom(
           (protocol as any).transport.messages$.pipe(
             scan(
-              (acc: { matched: (Message<FromAgent> | null)[] }, msg: Message<FromAgent>) => {
+              (
+                acc: { matched: (Message<FromAgent> | null)[] },
+                msg: Message<FromAgent>,
+              ) => {
                 const updated = [...acc.matched];
                 // Find the first unsatisfied predicate that this message matches
                 for (let i = 0; i < predicates.length; i++) {
@@ -216,17 +232,27 @@ export class RunnerService {
               { matched: predicates.map(() => null) },
             ),
             tap((acc: { matched: (Message<FromAgent> | null)[] }) => {
-              this.logger.log(acc.matched.filter((m) => m !== null).length + '/' + predicates.length + ' messages matched');
+              this.logger.log(
+                acc.matched.filter((m) => m !== null).length +
+                  "/" +
+                  predicates.length +
+                  " messages matched",
+              );
             }),
-            filter((acc: { matched: (Message<FromAgent> | null)[] }) => acc.matched.every((m) => m !== null)),
+            filter((acc: { matched: (Message<FromAgent> | null)[] }) =>
+              acc.matched.every((m) => m !== null),
+            ),
             take(1),
             timeout(customTimeout ?? timeoutMs),
-            map((acc: { matched: (Message<FromAgent> | null)[] }) => acc.matched as Message<FromAgent>[]),
+            map(
+              (acc: { matched: (Message<FromAgent> | null)[] }) =>
+                acc.matched as Message<FromAgent>[],
+            ),
           ),
         );
       },
 
-      waitForKind: <K extends FromAgent['kind']>(
+      waitForKind: <K extends FromAgent["kind"]>(
         kind: K,
         customTimeout?: number,
       ): Promise<Message<Extract<FromAgent, { kind: K }>>> => {
@@ -248,7 +274,7 @@ export class RunnerService {
   }
 
   private async runWithTimeout(
-    promise: Promise<Omit<ScenarioResult, 'durationMs'>>,
+    promise: Promise<Omit<ScenarioResult, "durationMs">>,
     startTime: number,
   ): Promise<ScenarioResult> {
     return new Promise<ScenarioResult>((resolve) => {
