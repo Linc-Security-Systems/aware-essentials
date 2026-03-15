@@ -1,8 +1,0 @@
-{
-    "serverUrl": "https://yachtaware.ddns.net:8443",
-    "username": "api",
-    "password": "admin",
-    "clientId": "06c22559-3114-4164-80ba-2038ec36474c",
-    "stateUpdateRetryInterval": 50000,
-    "eventPollInterval": 10000 
-  }
