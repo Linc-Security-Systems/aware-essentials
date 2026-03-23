@@ -578,6 +578,22 @@ const fromAgentSchemaByKind = {
   'error-rs': sErrorPayload,
 };
 
+export const ReplyKindByRequestKind = {
+  register: 'register-rs',
+  'validate-config': 'validate-config-rs',
+  start: 'start-rs',
+  stop: 'stop-rs',
+  command: 'command-rs',
+  query: 'query-rs',
+  state: 'state-rs',
+  event: 'event-rs',
+  'get-available-devices': 'get-available-devices-rs',
+  'validate-change': 'validate-change-rs',
+  'apply-change': 'apply-change-rs',
+} satisfies Partial<
+  Record<(FromServer | FromAgent)['kind'], (FromServer | FromAgent)['kind']>
+>;
+
 export const getAgentMessageIssues = (message: unknown): string[] => {
   const result = sMessageHeader.safeParse(message);
   if (!result.success) {

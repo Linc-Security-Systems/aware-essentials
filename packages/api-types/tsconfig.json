@@ -6,6 +6,7 @@
     "declaration": true,
     "moduleResolution": "node16",
     "strict": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "skipLibCheck": true
   }
 }

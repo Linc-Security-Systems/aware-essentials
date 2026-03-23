@@ -41,3 +41,8 @@ jobs:
       - name: Publish api-types
         working-directory: packages/api-types
         run: npm publish --access public --provenance
+
+      - name: Publish agent-tester-cli
+        working-directory: packages/test-agent-hub
+        run: npm publish --access public --provenance
+        
