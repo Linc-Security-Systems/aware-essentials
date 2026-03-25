@@ -225,6 +225,46 @@ const permissionsToArray = (permissions: typeof sPermissionId) => {
   return options.map((option) => option.value);
 };
 
+const permissionsToIndexRecord = (
+  permissions: typeof sPermissionId,
+): Record<number, PermissionId> => {
+  return permissions.options.reduce(
+    (acc: Record<number, PermissionId>, option, index) => {
+      acc[index + 1] = option.value as PermissionId;
+      return acc;
+    },
+    {} as Record<number, PermissionId>,
+  );
+};
+
+const permissionsToPermissionRecord = (
+  permissions: typeof sPermissionId,
+): Record<PermissionId, number> => {
+  return permissions.options.reduce(
+    (acc: Record<PermissionId, number>, option, index) => {
+      acc[option.value as PermissionId] = index + 1;
+      return acc;
+    },
+    {} as Record<PermissionId, number>,
+  );
+};
+
+/** djb2 hash over all permission ids and descriptions (ordered). */
+const hashPermissions = (permissions: typeof sPermissionId): string => {
+  const str = permissions.options
+    .map((o) => `${o.value}:${o.description ?? ''}`)
+    .join('|');
+  let hash = 5381;
+  for (let i = 0; i < str.length; i++) {
+    hash = ((hash << 5) + hash + str.charCodeAt(i)) & 0xffffffff;
+  }
+  return (hash >>> 0).toString(16).padStart(8, '0');
+};
+
 export const permissions = permissionsToRecord(sPermissionId);
 export const permissionsArray = permissionsToArray(sPermissionId);
 export type PermissionId = z.infer<typeof sPermissionId>;
+export const permissionsByIndex = permissionsToIndexRecord(sPermissionId);
+export const permissionsByPermission =
+  permissionsToPermissionRecord(sPermissionId);
+export const permissionsHash = hashPermissions(sPermissionId);
