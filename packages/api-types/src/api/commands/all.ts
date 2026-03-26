@@ -12,6 +12,7 @@ import {
 } from './presence-tracker';
 import { ServerCommand, serverCommands } from './server';
 import { PermissionId } from '../../permissions';
+import { NvrRecorderCommand, nvrRecorderCommandSchemas } from './nvr-recorder';
 
 export type AnyDeviceCommand =
   | ServerCommand
@@ -23,6 +24,7 @@ export type AnyDeviceCommand =
   | PbxCommand
   | PresenceTrackerCommand
   | DisplayCommand
+  | NvrRecorderCommand
   | NvrExporterCommand;
 
 export type CommandRun<TCommand extends AnyDeviceCommand = AnyDeviceCommand> = {
@@ -41,6 +43,7 @@ export const commandSchemas = {
   ...pbxCommands,
   ...presenceTrackerCommands,
   ...displayCommands,
+  ...nvrRecorderCommandSchemas,
   ...nvrExporterCommandSchemas,
   ...serverCommands,
 } as const;
@@ -161,5 +164,21 @@ export const commandDescriptions: Record<
   'nvr-exporter.delete-export': {
     description: 'NVR Exporter Delete Export',
     permission: 'camera:playback-export',
+  },
+  'nvr-recorder.start-recording': {
+    description: 'NVR Recorder Start Recording',
+    permission: 'camera:record',
+  },
+  'nvr-recorder.stop-recording': {
+    description: 'NVR Recorder Stop Recording',
+    permission: 'camera:record',
+  },
+  'nvr-recorder.mount-stream': {
+    description: 'NVR Recorder Mount Stream',
+    permission: 'camera:record',
+  },
+  'nvr-recorder.unmount-stream': {
+    description: 'NVR Recorder Unmount Stream',
+    permission: 'camera:record',
   },
 };

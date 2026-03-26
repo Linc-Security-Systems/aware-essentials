@@ -60,9 +60,10 @@ export interface WsDuplexTransportOptions {
 /* Implementation                                                   */
 /* ---------------------------------------------------------------- */
 
-export class WsDuplexTransport<TIn, TOut>
-  implements DuplexTransport<TIn, TOut>
-{
+export class WsDuplexTransport<TIn, TOut> implements DuplexTransport<
+  TIn,
+  TOut
+> {
   // ---- public observables ----
   readonly connected$: Observable<boolean>;
   readonly messages$: Observable<TIn>;

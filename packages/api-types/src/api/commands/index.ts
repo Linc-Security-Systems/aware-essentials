@@ -7,6 +7,7 @@ export * from './alarm';
 export * from './presence-tracker';
 export * from './display';
 export * from './nvr-exporter';
+export * from './nvr-recorder';
 export * from './camera-lift';
 export * from './pbx';
 export * from './all';
