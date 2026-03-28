@@ -10,6 +10,7 @@ export const QUERY_RECORDINGS_BY_TIME_RANGE = 'cctv:recordings-by-time-range';
 
 export const sRecordingsByTimeRangeArgs = z.object({
   device: sDeviceParam,
+  streamId: z.string().nonempty(),
   timeFrom: z.number(),
   timeTo: z.number(),
 });
@@ -28,6 +29,7 @@ export const QUERY_PREVIEW_IMAGE = 'cctv:preview-image';
 
 export const sPreviewImageArgs = z.object({
   device: sDeviceParam,
+  streamId: z.string().nonempty(),
   time: z.number(),
   height: z.number(),
 });
@@ -44,6 +46,7 @@ export const QUERY_CAMERA_LATEST_FRAME = 'cctv:latest-frame';
 
 export const sCameraLatestFrameArgs = z.object({
   device: sDeviceParam,
+  streamId: z.string().nonempty(),
   width: z.number(),
   height: z.number(),
 });
