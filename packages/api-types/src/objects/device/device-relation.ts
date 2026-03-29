@@ -89,3 +89,23 @@ export const inverseRelationKinds: Record<
 export type DeviceRelationDto = z.infer<typeof sDeviceRelationDto>;
 
 export type DeviceRelationSide = z.infer<typeof sDeviceRelationSide>;
+
+export const sStreamRecorderSettings = z.object({
+  streamId: z.string(),
+  retentionHours: z.number().int().positive().optional(),
+});
+
+export const sRecordingRelationData = z.object({
+  streams: z.record(z.string(), sStreamRecorderSettings),
+});
+
+export type StreamRecorderSettings = z.infer<typeof sStreamRecorderSettings>;
+
+export type RecordingRelationData = z.infer<typeof sRecordingRelationData>;
+
+export const sIoBoardRelationData = z.object({
+  slots: z.record(z.string(), z.string()),
+  invertedSlots: z.array(z.string()),
+});
+
+export type IoBoardRelationData = z.infer<typeof sIoBoardRelationData>;
