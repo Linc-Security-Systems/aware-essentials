@@ -36,6 +36,7 @@ export const sCameraSpecs = z.object({
   zoomMax: z.number().min(0).max(1),
   streams: z.array(sStreamInfo),
   defaultStreamId: z.string().nonempty(),
+  autoSwitchStreams: z.boolean(),
   streamNaming: z.enum(['cameraStreamNo', 'cameraStream', 'stream']),
 });
 

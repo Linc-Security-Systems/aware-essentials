@@ -20,6 +20,7 @@ export const sDeviceArea = z.object({
   type: z.literal('device'),
   deviceId: z.string().nonempty(),
   streamId: z.string().nonempty().optional(),
+  fullscreenStreamId: z.string().nonempty().optional(),
 });
 export type DeviceArea = z.infer<typeof sDeviceArea>;
 
@@ -32,6 +33,7 @@ export const sDeviceCarouselArea = z.object({
       z.object({
         deviceId: z.string().nonempty(),
         streamId: z.string().nonempty(),
+        fullscreenStreamId: z.string().nonempty().optional(),
       }),
     )
     .optional(),
