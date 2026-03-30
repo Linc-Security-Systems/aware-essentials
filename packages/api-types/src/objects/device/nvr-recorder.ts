@@ -14,7 +14,7 @@ export type RecorderStreamStateDto = z.infer<typeof sRecorderStreamStateDto>;
 
 export const sRecorderStateDto = z.object({
   connected: z.boolean(),
-  cameras: z.record(z.string(), sRecorderStreamStateDto),
+  cameras: z.record(z.string(), z.record(z.string(), sRecorderStreamStateDto)),
 });
 
 export type RecorderStateDto = z.infer<typeof sRecorderStateDto>;

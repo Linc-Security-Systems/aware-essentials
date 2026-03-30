@@ -85,11 +85,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@awarevue/agent-sdk@npm:2.0.62, @awarevue/agent-sdk@workspace:packages/agent-sdk-typescript":
+"@awarevue/agent-sdk@npm:2.0.63, @awarevue/agent-sdk@workspace:packages/agent-sdk-typescript":
   version: 0.0.0-use.local
   resolution: "@awarevue/agent-sdk@workspace:packages/agent-sdk-typescript"
   dependencies:
-    "@awarevue/api-types": "npm:2.0.62"
+    "@awarevue/api-types": "npm:2.0.63"
     "@types/node": "npm:^20.12.7"
     "@types/ws": "npm:^8.18.1"
     "@typescript-eslint/eslint-plugin": "npm:^8.31.1"
@@ -102,7 +102,7 @@ __metadata:
     ws: "npm:^8"
     zod: "npm:3.25.76"
   peerDependencies:
-    "@awarevue/api-types": 2.0.62
+    "@awarevue/api-types": 2.0.63
     rxjs: ^7.8.2
     ws: ^8
   languageName: unknown
@@ -112,8 +112,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@awarevue/agent-tester-cli@workspace:packages/test-agent-hub"
   dependencies:
-    "@awarevue/agent-sdk": "npm:2.0.62"
-    "@awarevue/api-types": "npm:2.0.62"
+    "@awarevue/agent-sdk": "npm:2.0.63"
+    "@awarevue/api-types": "npm:2.0.63"
     "@nestjs/cli": "npm:^11.0.0"
     "@nestjs/common": "npm:^11.0.0"
     "@nestjs/core": "npm:^11.0.0"
@@ -142,7 +142,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@awarevue/api-types@npm:2.0.62, @awarevue/api-types@workspace:packages/api-types":
+"@awarevue/api-types@npm:2.0.63, @awarevue/api-types@workspace:packages/api-types":
   version: 0.0.0-use.local
   resolution: "@awarevue/api-types@workspace:packages/api-types"
   dependencies:
