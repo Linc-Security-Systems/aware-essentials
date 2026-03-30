@@ -109,3 +109,53 @@ export const sIoBoardRelationData = z.object({
 });
 
 export type IoBoardRelationData = z.infer<typeof sIoBoardRelationData>;
+
+const sEmptyRelationData = z.object({});
+
+/** Compile-time map: relation kind → data type. */
+export interface DeviceRelationDataMap {
+  records: RecordingRelationData;
+  isRecordedBy: RecordingRelationData;
+  sendsInputTo: IoBoardRelationData;
+  receivesInputFrom: IoBoardRelationData;
+  sendsOutputTo: IoBoardRelationData;
+  receivesOutputFrom: IoBoardRelationData;
+  attachedTo: Record<string, never>;
+  parent: Record<string, never>;
+  child: Record<string, never>;
+  holds: Record<string, never>;
+  isHeldBy: Record<string, never>;
+  observes: Record<string, never>;
+  isObservedBy: Record<string, never>;
+  unlocks: Record<string, never>;
+  isUnlockedBy: Record<string, never>;
+  controls: Record<string, never>;
+  isControlledBy: Record<string, never>;
+  reads: Record<string, never>;
+  isReadBy: Record<string, never>;
+}
+
+/** Runtime map: relation kind → Zod schema for its data. */
+export const sDeviceRelationDataMap: {
+  [K in DeviceRelationKind]: z.ZodType<DeviceRelationDataMap[K]>;
+} = {
+  records: sRecordingRelationData,
+  isRecordedBy: sRecordingRelationData,
+  sendsInputTo: sIoBoardRelationData,
+  receivesInputFrom: sIoBoardRelationData,
+  sendsOutputTo: sIoBoardRelationData,
+  receivesOutputFrom: sIoBoardRelationData,
+  attachedTo: sEmptyRelationData,
+  parent: sEmptyRelationData,
+  child: sEmptyRelationData,
+  holds: sEmptyRelationData,
+  isHeldBy: sEmptyRelationData,
+  observes: sEmptyRelationData,
+  isObservedBy: sEmptyRelationData,
+  unlocks: sEmptyRelationData,
+  isUnlockedBy: sEmptyRelationData,
+  controls: sEmptyRelationData,
+  isControlledBy: sEmptyRelationData,
+  reads: sEmptyRelationData,
+  isReadBy: sEmptyRelationData,
+};

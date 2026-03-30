@@ -264,3 +264,55 @@ export type NvrExporterDto = z.infer<typeof sNvrExporterDto>;
 export type NvrAnalyticsServerDto = z.infer<typeof sNvrAnalyticsServerDto>;
 export type SystemDeviceDto = z.infer<typeof sSystemDeviceDto>;
 export type EventDescription = z.infer<typeof sEventDescription>;
+
+/**
+ * Maps each device type string to its corresponding Dto type.
+ * Use with `DeviceDtoFor<T>` to auto-infer the Dto from a device type.
+ */
+export interface DeviceTypeToDtoMap {
+  [ALARM]: AlarmDto;
+  [CAMERA]: CameraDto;
+  [DOOR]: DoorDto;
+  reader: ReaderDto;
+  [IO_BOARD]: IoBoardDto;
+  [CAMERA_LIFT]: CameraLiftDto;
+  [MOTION_SENSOR]: MotionSensorDto;
+  [PANIC_BUTTON]: PanicButtonDto;
+  [INTERCOM_OPERATOR]: IntercomOperatorDto;
+  [INTERCOM_TERMINAL]: IntercomTerminalDto;
+  [PBX]: PbxDto;
+  [SERVER]: ServerDto;
+  [DEVICE_GATEWAY]: DeviceGatewayDto;
+  [PRESENCE_TRACKER]: PresenceTrackerDto;
+  [DISPLAY]: DisplayDto;
+  [NVR_RECORDER]: RecorderDto;
+  [NVR_EXPORTER]: NvrExporterDto;
+  [NVR_ANALYTICS_SERVER]: NvrAnalyticsServerDto;
+  [SYSTEM]: SystemDeviceDto;
+}
+
+/** Given a device type, resolves to the corresponding Dto type. */
+export type DeviceDtoFor<T extends DeviceType> = DeviceTypeToDtoMap[T];
+
+/** Runtime map from device type to its Zod Dto schema. */
+export const deviceDtoSchemaMap = {
+  [ALARM]: sAlarmDto,
+  [CAMERA]: sCameraDto,
+  [DOOR]: sDoorDto,
+  reader: sReaderDto,
+  [IO_BOARD]: sIoBoardDto,
+  [CAMERA_LIFT]: sCameraLiftDto,
+  [MOTION_SENSOR]: sMotionSensorDto,
+  [PANIC_BUTTON]: sPanicButtonDto,
+  [INTERCOM_OPERATOR]: sIntercomOperatorDto,
+  [INTERCOM_TERMINAL]: sIntercomTerminalDto,
+  [PBX]: sPbxDto,
+  [SERVER]: sServerDto,
+  [DEVICE_GATEWAY]: sDeviceGatewayDto,
+  [PRESENCE_TRACKER]: sPresenceTrackerDto,
+  [DISPLAY]: sDisplayDto,
+  [NVR_RECORDER]: sRecorderDto,
+  [NVR_EXPORTER]: sNvrExporterDto,
+  [NVR_ANALYTICS_SERVER]: sNvrAnalyticsServerDto,
+  [SYSTEM]: sSystemDeviceDto,
+} as const satisfies Record<DeviceType, z.ZodType>;
