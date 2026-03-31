@@ -1,12 +1,12 @@
 import { z } from 'zod';
-import { sDeviceParam } from '../../primitives';
+import { sDeviceParam, sStreamId } from '../../primitives';
 
 // COMMANDS
 export const sMountStreamCommand = z.object({
   command: z.literal('nvr-recorder.mount-stream'),
   params: z.object({
     camera: sDeviceParam,
-    streamId: z.string().nonempty(),
+    streamId: sStreamId,
     rtspUrl: z.string().nonempty(),
     retentionHours: z.number().int().positive().optional(),
   }),
@@ -18,7 +18,7 @@ export const sUnmountStreamCommand = z.object({
   command: z.literal('nvr-recorder.unmount-stream'),
   params: z.object({
     camera: sDeviceParam,
-    streamId: z.string().nonempty(),
+    streamId: sStreamId,
   }),
 });
 
@@ -28,7 +28,7 @@ export const sStartRecordingCommand = z.object({
   command: z.literal('nvr-recorder.start-recording'),
   params: z.object({
     camera: sDeviceParam,
-    streamId: z.string().nonempty(),
+    streamId: sStreamId,
   }),
 });
 
@@ -38,7 +38,7 @@ export const sStopRecordingCommand = z.object({
   command: z.literal('nvr-recorder.stop-recording'),
   params: z.object({
     camera: sDeviceParam,
-    streamId: z.string().nonempty(),
+    streamId: sStreamId,
   }),
 });
 

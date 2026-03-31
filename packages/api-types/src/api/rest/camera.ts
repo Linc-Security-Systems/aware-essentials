@@ -38,6 +38,7 @@ export const sBindStreamRecorderRs = z.object({});
 export const sUnbindStreamRecorderRq = z.object({
   cameraId: z.string().nonempty(),
   streamId: z.string().nonempty(),
+  recorderId: z.string().nonempty(),
 });
 
 export const sUnbindStreamRecorderRs = z.object({});

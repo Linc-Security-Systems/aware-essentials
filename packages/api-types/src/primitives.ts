@@ -64,6 +64,10 @@ export const sDeviceParam = sDeviceId.or(sAgentDeviceInfo).or(sForeignDeviceId);
 
 export type DeviceParam = z.infer<typeof sDeviceParam>;
 
+export const sStreamId = z.string().nonempty();
+
+export type StreamId = z.infer<typeof sStreamId>;
+
 export const sNotificationSeverity = z.enum(['info', 'warning', 'critical']);
 
 export type NotificationSeverity = z.infer<typeof sNotificationSeverity>;
