@@ -22,6 +22,7 @@ export const sRecordingSequence = z.object({
 
 export const sGetRecordingsRequest = z.object({
   deviceId: z.string().nonempty(),
+  streamId: z.string().nonempty(),
   timeFrom: z.number().nonnegative(),
   timeTo: z.number().nonnegative(),
 });

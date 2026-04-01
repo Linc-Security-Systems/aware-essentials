@@ -1,6 +1,6 @@
 {
   "name": "@awarevue/agent-tester-cli",
-  "version": "2.0.67",
+  "version": "2.0.68",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Linc-Security-Systems/aware-essentials.git"
@@ -33,8 +33,8 @@
     "test:cov": "jest --coverage"
   },
   "dependencies": {
-    "@awarevue/agent-sdk": "2.0.67",
-    "@awarevue/api-types": "2.0.67",
+    "@awarevue/agent-sdk": "2.0.68",
+    "@awarevue/api-types": "2.0.68",
     "@nestjs/common": "^11.0.0",
     "@nestjs/core": "^11.0.0",
     "@nestjs/platform-express": "^11.0.0",
