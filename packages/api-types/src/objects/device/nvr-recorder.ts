@@ -6,7 +6,8 @@ export const sRecorderSpecs = z.object({});
 export type RecorderSpecs = z.infer<typeof sRecorderSpecs>;
 
 export const sRecorderStreamStateDto = z.object({
-  upstream: z.enum(['connecting', 'connected', 'disconnected', 'error']),
+  upstreamState: z.enum(['connecting', 'connected', 'disconnected', 'error']),
+  upstreamError: z.string().nonempty().nullable(),
   isRecording: z.boolean(),
 });
 
