@@ -19,7 +19,6 @@ export const sStreamInfo = z.object({
   height: z.number().positive().nullable(),
   lensType: z.enum(['flat', 'fisheye']),
   mountPoint: z.enum(['wall', 'ceiling', 'floor']),
-  recordingCapable: z.boolean(),
   webrtcPlaybackSource: sWebRtcPlaybackSource.nullable(),
 });
 
