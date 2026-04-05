@@ -12,6 +12,7 @@ export const sRecorderStreamStateDto = z.object({
   head: z.number().nullable(),
   tail: z.number().nullable(),
   totalSize: z.number().nullable(),
+  totalLengthMs: z.number().nullable(),
 });
 
 export type RecorderStreamStateDto = z.infer<typeof sRecorderStreamStateDto>;
