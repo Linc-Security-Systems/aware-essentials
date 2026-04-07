@@ -1,6 +1,6 @@
 {
   "name": "@awarevue/agent-tester-cli",
-  "version": "2.0.70",
+  "version": "2.0.71",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Linc-Security-Systems/aware-essentials.git"
