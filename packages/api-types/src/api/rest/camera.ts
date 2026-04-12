@@ -14,6 +14,15 @@ export const sAddCameraStreamRq = z.object({
   rtspUrl: z.string().nonempty().nullable(),
 });
 
+export const sPatchCameraStreamRq = z.object({
+  cameraId: z.string().nonempty(),
+  streamId: z.string().nonempty(),
+  displayName: z.string().nonempty().optional(),
+  rtspUrl: z.string().nonempty().optional(),
+});
+
+export const sPatchCameraStreamRs = z.object({});
+
 export const sAddCameraStreamRs = z.object({
   id: z.string().nonempty(),
   ffmpegCommandTemplate: z.string().nonempty(),
@@ -31,6 +40,7 @@ export const sBindStreamRecorderRq = z.object({
   streamId: z.string().nonempty(),
   recorderId: z.string().nonempty(),
   retentionHours: z.number().int().positive().optional(),
+  prebufferSeconds: z.number().int().nonnegative().optional(),
 });
 
 export const sBindStreamRecorderRs = z.object({});
@@ -47,6 +57,8 @@ export type AddCameraRq = z.infer<typeof sAddCameraRq>;
 export type AddCameraRs = z.infer<typeof sAddCameraRs>;
 export type AddCameraStreamRq = z.infer<typeof sAddCameraStreamRq>;
 export type AddCameraStreamRs = z.infer<typeof sAddCameraStreamRs>;
+export type PatchCameraStreamRq = z.infer<typeof sPatchCameraStreamRq>;
+export type PatchCameraStreamRs = z.infer<typeof sPatchCameraStreamRs>;
 export type DeleteCameraStreamRq = z.infer<typeof sDeleteCameraStreamRq>;
 export type DeleteCameraStreamRs = z.infer<typeof sDeleteCameraStreamRs>;
 export type BindStreamRecorderRq = z.infer<typeof sBindStreamRecorderRq>;
