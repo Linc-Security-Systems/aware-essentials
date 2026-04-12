@@ -93,6 +93,7 @@ export type DeviceRelationSide = z.infer<typeof sDeviceRelationSide>;
 export const sStreamRecorderSettings = z.object({
   streamId: z.string(),
   retentionHours: z.number().int().positive().optional(),
+  prebufferSeconds: z.number().int().nonnegative().optional(),
 });
 
 export const sRecordingRelationData = z.object({

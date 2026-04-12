@@ -9,6 +9,7 @@ export const sMountStreamCommand = z.object({
     streamId: sStreamId,
     rtspUrl: z.string().nonempty(),
     retentionHours: z.number().int().positive().optional(),
+    prebufferSeconds: z.number().int().nonnegative().optional(),
   }),
 });
 
