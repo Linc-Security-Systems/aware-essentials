@@ -9,13 +9,13 @@ export const sProgress = z.object({
 
 export type ProgressReport = z.infer<typeof sProgress>;
 
-export const sProgressUpdate = z.object({
+export const sProgressUpdatePayload = z.object({
   timestamp: z.number(),
   item: z.string(),
   progress: sProgress,
 });
 
-export type ProgressUpdatePayload = z.infer<typeof sProgressUpdate>;
+export type ProgressUpdatePayload = z.infer<typeof sProgressUpdatePayload>;
 
 export const sProgressUnavailable = z.object({
   timestamp: z.number(),
@@ -57,7 +57,7 @@ interface ProgressMessageMap {
 }
 
 const validators: { [K in keyof ProgressMessageMap]: z.ZodObject<any> } = {
-  'progress-update': sProgressUpdate,
+  'progress-update': sProgressUpdatePayload,
   'progress-unavailable': sProgressUnavailable,
   'progress-update-error': sProgressUpdateError,
   'progress-subscribe': sProgressSubscribe,

@@ -171,6 +171,20 @@ export const sQueryRs = sResponsePayload(
   }),
 ).describe('Response for a query');
 
+// PROGRESS UPDATE
+
+export const sProgressUpdate = z
+  .object({
+    kind: z.literal('progress'),
+    requestId: z.string().nonempty(),
+    message: z
+      .string()
+      .describe(
+        'Progress message, can be used to inform about the progress of long-running requests and reset timeouts',
+      ),
+  })
+  .describe('Progress message for a long-running request');
+
 // FILE PUSH INSTRUCTIONS
 
 export const sPushFile = z
@@ -477,6 +491,7 @@ export type RunCommandRq = z.infer<typeof sRunCommandRq>;
 export type RunCommandRs = z.infer<typeof sRunCommandRs>;
 export type QueryRq = z.infer<typeof sQueryRq>;
 export type QueryRs = z.infer<typeof sQueryRs>;
+export type ProgressUpdate = z.infer<typeof sProgressUpdate>;
 export type PushFile = z.infer<typeof sPushFile>;
 export type PushStateUpdateRq = z.infer<typeof sPushStateUpdateRq>;
 export type PushStateUpdateRs = z.infer<typeof sPushStateUpdateRs>;
@@ -511,6 +526,7 @@ export type PayloadByKind = {
   'command-rs': RunCommandRs;
   query: QueryRq;
   'query-rs': QueryRs;
+  progress: ProgressUpdate;
   'push-file': PushFile;
   state: PushStateUpdateRq;
   'state-rs': PushStateUpdateRs;
@@ -538,6 +554,7 @@ export type FromAgent =
   | QueryRs
   | PushStateUpdateRq
   | PushEventRq
+  | ProgressUpdate
   | GetAvailableDevicesRs
   | AccessValidateChangeRs
   | AccessApplyChangeRs
@@ -569,6 +586,7 @@ const fromAgentSchemaByKind = {
   'stop-rs': sStopServiceRs,
   'command-rs': sRunCommandRs,
   'query-rs': sQueryRs,
+  progress: sProgressUpdate,
   state: sPushStateUpdateRq,
   event: sPushEventRq,
   'get-available-devices-rs': sGetAvailableDevicesRs,

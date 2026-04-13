@@ -9,3 +9,7 @@ export class AgentError extends Error {
     this.name = 'AgentError';
   }
 }
+
+export class AgentProgressMessage {
+  constructor(public readonly message: string) {}
+}

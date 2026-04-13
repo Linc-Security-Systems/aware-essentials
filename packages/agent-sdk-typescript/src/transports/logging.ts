@@ -31,9 +31,10 @@ export interface LoggingTransportOptions {
 /* Implementation                                                   */
 /* ---------------------------------------------------------------- */
 
-export class LoggingDuplexTransport<TIn, TOut>
-  implements DuplexTransport<TIn, TOut>
-{
+export class LoggingDuplexTransport<TIn, TOut> implements DuplexTransport<
+  TIn,
+  TOut
+> {
   readonly connected$: Observable<boolean>;
   readonly messages$: Observable<TIn>;
 

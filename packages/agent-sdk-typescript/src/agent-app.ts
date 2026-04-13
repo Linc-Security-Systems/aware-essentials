@@ -31,7 +31,7 @@ import {
 import { AccessChangeContext, Agent, RunContext } from './agent';
 import { createValidator } from './default-validator';
 import { stringifyError } from './utils';
-import { AgentError } from './agent-error';
+import { AgentError, AgentProgressMessage } from './agent-error';
 import { DuplexTransport } from './transport_types';
 import { AgentProtocol } from './agent-protocol';
 
@@ -58,8 +58,20 @@ export class AgentApp {
   private sub: Subscription | null = null;
 
   private handleResponse$ =
-    (requestId: string) => (obs: Observable<FromAgent>) =>
+    <T>(requestId: string, responseBuilder?: (result: T) => FromAgent) =>
+    (obs: Observable<T>) =>
       obs.pipe(
+        mergeMap((result) =>
+          result instanceof AgentProgressMessage
+            ? of({
+                kind: 'progress' as const,
+                requestId,
+                message: result.message,
+              })
+            : responseBuilder
+              ? of(responseBuilder(result))
+              : EMPTY,
+        ),
         tap({
           error: (error) =>
             console.error(
@@ -150,12 +162,11 @@ export class AgentApp {
                     'NOT_SUPPORTED',
                   ),
               ),
-              // success
-              map(() => ({
+              this.handleResponse$(message.id, (result) => ({
                 kind: 'command-rs' as const,
                 requestId: message.id,
+                result,
               })),
-              this.handleResponse$(message.id),
             );
 
           case 'query':
@@ -166,7 +177,13 @@ export class AgentApp {
                     `Agent ${context.provider} does not support queries`,
                     'NOT_SUPPORTED',
                   ),
-              ).pipe(this.handleResponse$(message.id));
+              ).pipe(
+                this.handleResponse$(message.id, (result) => ({
+                  kind: 'query-rs' as const,
+                  requestId: message.id,
+                  result,
+                })),
+              );
             }
             return this.agent.getResult$(context, message).pipe(
               // if query observable completes without emitting, throw not supported error
@@ -178,12 +195,11 @@ export class AgentApp {
                   ),
               ),
               // success
-              map((result) => ({
+              this.handleResponse$(message.id, (result) => ({
                 kind: 'query-rs' as const,
                 requestId: message.id,
                 result,
               })),
-              this.handleResponse$(message.id),
             );
 
           case 'push-file':
@@ -205,13 +221,11 @@ export class AgentApp {
           case 'get-available-devices':
             // get available devices
             return this.agent.getDevicesAndRelations$(context).pipe(
-              // success
-              map((rs) => ({
+              this.handleResponse$(message.id, (result) => ({
+                ...result,
                 kind: 'get-available-devices-rs' as const,
-                ...rs,
                 requestId: message.id,
               })),
-              this.handleResponse$(message.id),
             );
 
           case 'validate-change':
@@ -242,12 +256,11 @@ export class AgentApp {
             }
 
             return validateOb$.pipe(
-              map((issues) => ({
+              this.handleResponse$(message.id, (result) => ({
                 kind: 'validate-change-rs' as const,
                 requestId: message.id,
-                issues,
+                issues: result,
               })),
-              this.handleResponse$(message.id),
             );
 
           case 'apply-change':
@@ -267,12 +280,11 @@ export class AgentApp {
                 )
               : this.agent.applyAccessChange$(applyContext, message);
             return applyOb$.pipe(
-              map((result) => ({
+              this.handleResponse$(message.id, (result) => ({
                 kind: 'apply-change-rs' as const,
                 requestId: message.id,
                 refs: result,
               })),
-              this.handleResponse$(message.id),
             );
 
           default:
@@ -343,13 +355,11 @@ export class AgentApp {
             config,
           })
           .pipe(
-            // success
-            map((issues) => ({
+            this.handleResponse$(message.id, (result) => ({
               kind: 'validate-config-rs' as const,
               requestId: message.id,
-              issues,
+              issues: result,
             })),
-            this.handleResponse$(message.id),
           );
       }),
     );
