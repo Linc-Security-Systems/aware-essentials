@@ -48,7 +48,7 @@ const s: Scenario = {
           kind: "merge",
           objectId: accessRuleId,
           objectKind: "accessRule",
-          original: null,
+          original: accessRuleProps,
           props: accessRuleProps,
         },
       ],

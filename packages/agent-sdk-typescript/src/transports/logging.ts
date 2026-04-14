@@ -53,7 +53,7 @@ export class LoggingDuplexTransport<TIn, TOut> implements DuplexTransport<
     this.sink =
       opts.logger ??
       ((direction, label, msg) =>
-        console.log(`[${label}] ${direction}`, JSON.stringify(msg, null, 2)));
+        console.log(`[${label}] ${direction}`, JSON.stringify(msg)));
 
     this.connected$ = inner.connected$;
 

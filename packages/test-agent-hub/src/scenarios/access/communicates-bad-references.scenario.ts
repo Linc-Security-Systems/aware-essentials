@@ -16,6 +16,7 @@ const s: Scenario = {
     });
 
     const awareId = v4();
+    const personInfo = newPerson();
     const validateResult = await ctx.getReply({
       kind: "validate-change",
       provider: ctx.provider,
@@ -30,8 +31,8 @@ const s: Scenario = {
           kind: "merge",
           objectId: awareId,
           objectKind: "person",
-          original: null,
-          props: newPerson(),
+          original: personInfo,
+          props: personInfo,
         },
       ],
     });
@@ -50,6 +51,7 @@ const s: Scenario = {
     }
 
     const scheduleId = v4();
+    const scheduleInfo = newSchedule();
     const validateScheduleResult = await ctx.getReply({
       kind: "validate-change",
       provider: ctx.provider,
@@ -64,8 +66,8 @@ const s: Scenario = {
           kind: "merge",
           objectId: scheduleId,
           objectKind: "schedule",
-          original: null,
-          props: newSchedule(),
+          original: scheduleInfo,
+          props: scheduleInfo,
         },
       ],
     });

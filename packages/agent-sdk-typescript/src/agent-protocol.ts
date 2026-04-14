@@ -69,6 +69,7 @@ export class AgentProtocol<D extends Direction> {
 
   getReply$ = <K extends RequestKind>(
     payload: Extract<Outbound<D>, { kind: K }>,
+    timeoutMs?: number,
   ) => {
     const responseKind = ReplyKindByRequestKind[
       payload.kind
@@ -76,8 +77,11 @@ export class AgentProtocol<D extends Direction> {
 
     const reply$ = (id: string) =>
       this.transport.messages$.pipe(
+        // pass through only messages with matching requestId (it could be response, error or progress update)
+        filter((message) => 'requestId' in message && message.requestId === id),
         mergeMap((message) => {
-          if (message.kind === 'error-rs' && message.requestId === id) {
+          // if the agent responded with an error message related to our request, throw an error to fail the stream
+          if (message.kind === 'error-rs') {
             const error = message.error;
             return throwError(
               () =>
@@ -88,14 +92,12 @@ export class AgentProtocol<D extends Direction> {
           }
           return of(message);
         }),
-        filter(
-          (message) =>
-            message.kind === responseKind &&
-            'requestId' in message &&
-            message.requestId === id,
-        ),
+        // enforce timeout (progress updates will reset the timer, but if no messages arrive for `timeoutMs` duration, the request is considered failed)
+        timeout(timeoutMs || this.options.replyTimeout || 10000),
+        // pass through only the final response message (filter out progress updates)
+        filter((message) => message.kind === responseKind),
+        // we only expect one response message, so complete the stream after the response arrives
         take(1),
-        timeout(this.options.replyTimeout || 10000),
       ) as Observable<Message<PayloadByKind[typeof responseKind]>>;
 
     return of(

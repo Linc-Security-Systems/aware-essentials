@@ -264,7 +264,7 @@ export const sObjectMerge = z
       kind: z.literal('merge'),
       objectId: z.string().nonempty().describe('Object ID as in backend'),
       objectKind: z.literal('accessRule'),
-      original: z.null(),
+      original: sCreateAccessRuleRequest,
       props: sCreateAccessRuleRequest,
     }),
     // accessRule update
@@ -281,7 +281,7 @@ export const sObjectMerge = z
       kind: z.literal('merge'),
       objectId: z.string().nonempty().describe('Object ID as in backend'),
       objectKind: z.literal('schedule'),
-      original: z.null(),
+      original: sCreateScheduleRequest,
       props: sCreateScheduleRequest,
     }),
     // schedule update
@@ -298,7 +298,7 @@ export const sObjectMerge = z
       kind: z.literal('merge'),
       objectId: z.string().nonempty().describe('Object ID as in backend'),
       objectKind: z.literal('person'),
-      original: z.null(),
+      original: sCreatePersonRequest,
       props: sCreatePersonRequest,
     }),
     // person update
@@ -315,7 +315,7 @@ export const sObjectMerge = z
       kind: z.literal('merge'),
       objectId: z.string().nonempty().describe('Object ID as in backend'),
       objectKind: z.literal('zone'),
-      original: z.null(),
+      original: sCreateZoneRequest,
       props: sCreateZoneRequest,
     }),
     // zone update
