@@ -34,18 +34,6 @@ export interface WsDuplexTransportOptions {
    */
   headers?: Record<string, string>;
 
-  /**
-   * Serialise an outbound message to a string or Buffer.
-   * Defaults to `JSON.stringify`.
-   */
-  serialise?: (msg: unknown) => string;
-
-  /**
-   * Deserialise an inbound raw payload to a message object.
-   * Defaults to `JSON.parse`.
-   */
-  deserialise?: (raw: string) => unknown;
-
   /** Initial reconnect delay in ms (default 1 000). */
   reconnectDelay?: number;
 
@@ -60,18 +48,15 @@ export interface WsDuplexTransportOptions {
 /* Implementation                                                   */
 /* ---------------------------------------------------------------- */
 
-export class WsDuplexTransport<TIn, TOut> implements DuplexTransport<
-  TIn,
-  TOut
-> {
+export class WsDuplexTransport implements DuplexTransport<string, string> {
   // ---- public observables ----
   readonly connected$: Observable<boolean>;
-  readonly messages$: Observable<TIn>;
+  readonly messages$: Observable<string>;
   readonly errors$: Observable<Error>;
 
   // ---- internal subjects ----
   private readonly _connected$ = new BehaviorSubject<boolean>(false);
-  private readonly _messages$ = new Subject<TIn>();
+  private readonly _messages$ = new Subject<string>();
   private readonly _errors$ = new Subject<Error>();
   private readonly outbound$ = new Subject<string>();
   private readonly destroy$ = new Subject<void>();
@@ -83,29 +68,6 @@ export class WsDuplexTransport<TIn, TOut> implements DuplexTransport<
   private readonly autoReconnect: boolean;
   private destroyed = false;
 
-  // ---- codec ----
-  private readonly serialise: (msg: TOut) => string;
-  private readonly deserialise: (raw: string) => TIn;
-
-  private defaultDeserializer = (raw: string) => {
-    const env = JSON.parse(raw) as { event: string; data: unknown };
-    return {
-      kind: env.event,
-      ...(env.data as TIn),
-    };
-  };
-
-  private defaultSerializer = (msg: TOut) => {
-    if (typeof msg === 'object' && 'kind' in (msg || {})) {
-      const { kind, ...data } = msg as unknown as {
-        kind: string;
-        [key: string]: unknown;
-      };
-      return JSON.stringify({ event: kind, data });
-    }
-    return JSON.stringify(msg);
-  };
-
   constructor(private readonly opts: WsDuplexTransportOptions) {
     this.connected$ = this._connected$.asObservable();
     this.messages$ = this._messages$.asObservable();
@@ -115,13 +77,6 @@ export class WsDuplexTransport<TIn, TOut> implements DuplexTransport<
     this.maxDelay = opts.maxReconnectDelay ?? 30_000;
     this.autoReconnect = opts.autoReconnect ?? true;
 
-    this.serialise = (opts.serialise ?? this.defaultSerializer) as (
-      msg: TOut,
-    ) => string;
-    this.deserialise = (opts.deserialise ?? this.defaultDeserializer) as (
-      raw: string,
-    ) => TIn;
-
     this.connect();
     this.setupSender();
   }
@@ -130,8 +85,8 @@ export class WsDuplexTransport<TIn, TOut> implements DuplexTransport<
   /* Public API                                                     */
   /* -------------------------------------------------------------- */
 
-  send(msg: TOut): void {
-    this.outbound$.next(this.serialise(msg));
+  send(msg: string): void {
+    this.outbound$.next(msg);
   }
 
   close(): void {
@@ -184,7 +139,7 @@ export class WsDuplexTransport<TIn, TOut> implements DuplexTransport<
 
     this.ws.on('message', (data: Buffer | string) => {
       try {
-        const msg = this.deserialise(data.toString());
+        const msg = data.toString();
         this._messages$.next(msg);
       } catch (err) {
         this._errors$.next(err instanceof Error ? err : new Error(String(err)));

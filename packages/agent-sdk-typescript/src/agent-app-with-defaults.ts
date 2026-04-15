@@ -4,6 +4,7 @@ import { AgentApp, AgentOptions } from './agent-app';
 import { LoggingDuplexTransport } from './transports/logging';
 import { WsDuplexTransport } from './transports/ws';
 import { DuplexTransport } from './transport_types';
+import { WsJsonEncoder } from './transports/ws-json-encoder';
 
 export type AgentAppWithDefaultsOptions = Omit<AgentOptions, 'transport'> & {
   url: string;
@@ -26,12 +27,14 @@ export function createAgentApp(
   const finalTransport =
     transport ??
     new LoggingDuplexTransport(
-      new WsDuplexTransport<Message<FromServer>, Message<FromAgent>>({
-        url,
-        headers: {
-          Authorization: `APIKey ${apiKey}`,
-        },
-      }),
+      new WsJsonEncoder(
+        new WsDuplexTransport({
+          url,
+          headers: {
+            Authorization: `APIKey ${apiKey}`,
+          },
+        }),
+      ) as DuplexTransport<Message<FromServer>, Message<FromAgent>>,
     );
 
   return new AgentApp(agent, { ...rest, transport: finalTransport });

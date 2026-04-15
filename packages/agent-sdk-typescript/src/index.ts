@@ -1,5 +1,6 @@
 export * from './agent-app';
 export * from './agent-app-with-defaults';
+export * from './agent-server';
 export * from './agent';
 export * from './constants';
 export * from './agent-protocol';

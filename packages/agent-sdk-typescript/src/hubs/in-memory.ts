@@ -1,5 +1,4 @@
 import { Subject, Subscription } from 'rxjs';
-import { share } from 'rxjs/operators';
 import {
   PeerId,
   HubTransport,
@@ -7,17 +6,19 @@ import {
   DuplexTransport,
 } from '../transport_types';
 
-export class InMemoryHub<TIn, TOut, TPeer extends PeerId>
-  implements HubTransport<TIn, TOut, TPeer>
-{
+export class InMemoryHub<
+  TIn,
+  TOut,
+  TPeer extends PeerId,
+> implements HubTransport<TIn, TOut, TPeer> {
   private readonly peerEventsSubject = new Subject<PeerEvent<TPeer>>();
   private readonly messagesSubject = new Subject<{ peer: TPeer; msg: TIn }>();
 
   private readonly peers = new Map<TPeer, DuplexTransport<TIn, TOut>>();
   private readonly peerSubs = new Map<TPeer, Subscription>();
 
-  readonly peerEvents$ = this.peerEventsSubject.asObservable().pipe(share());
-  readonly messages$ = this.messagesSubject.asObservable().pipe(share());
+  readonly peerEvents$ = this.peerEventsSubject.asObservable();
+  readonly messages$ = this.messagesSubject.asObservable();
 
   addPeer(peerId: TPeer, conn: DuplexTransport<TIn, TOut>) {
     // defensive: if peer already exists, clean it first
