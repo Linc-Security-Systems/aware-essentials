@@ -44,12 +44,6 @@ export interface HubTransport<TIn, TOut, TPeer> {
   /** Incoming messages with peer attribution */
   readonly messages$: Observable<{ msg: TIn; peer: TPeer }>;
 
-  /** Send to one peer */
-  sendTo(msg: TOut, peer: TPeer): void;
-
-  /** Broadcast to all currently connected peers */
-  broadcast(msg: TOut): void;
-
   /** Disconnect one peer */
   closePeer(peer: TPeer): void;
 
