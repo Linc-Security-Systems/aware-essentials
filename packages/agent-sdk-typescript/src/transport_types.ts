@@ -41,9 +41,6 @@ export interface HubTransport<TIn, TOut, TPeer> {
   /** Peer join/leave stream */
   readonly peerEvents$: Observable<PeerEvent<TPeer>>;
 
-  /** Incoming messages with peer attribution */
-  readonly messages$: Observable<{ msg: TIn; peer: TPeer }>;
-
   /** Disconnect one peer */
   closePeer(peer: TPeer): void;
 

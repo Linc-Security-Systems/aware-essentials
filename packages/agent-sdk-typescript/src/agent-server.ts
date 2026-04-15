@@ -9,7 +9,7 @@ import {
 } from '@awarevue/api-types';
 import { HubTransport, PeerId } from './transport_types';
 import { AgentProtocol } from './agent-protocol';
-import { filter, map, merge, Subject, Subscription, tap } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { AGENT_PROTOCOL_VERSION } from './constants';
 
 export interface OnUnregisteredEventArgs {
@@ -54,6 +54,7 @@ export class AgentServer<TPeer extends PeerId = string> {
   }>();
 
   private sub: Subscription | null = null;
+  private readonly _peerSubs = new Map<TPeer, Subscription>();
 
   private readonly _agentToPeer = new Map<string, TPeer>();
   private readonly _peerToAgent = new Map<TPeer, string>();
@@ -72,104 +73,113 @@ export class AgentServer<TPeer extends PeerId = string> {
       return;
     }
 
-    const processMessages$ = this.hub.messages$.pipe(
-      // validate
-      map(({ msg, peer }) => ({ msg, peer, isValid: isMessageFromAgent(msg) })),
-      tap(({ msg, peer, isValid }) => {
-        const id = msg.id ?? 'unknown';
-        if (msg.version !== AGENT_PROTOCOL_VERSION) {
-          this.notifications$.next(
-            `Agent ${msg.from} has incompatible protocol version: ${msg.version}`,
-          );
+    this.sub = this.hub.peerEvents$.subscribe((event) => {
+      if (event.type === 'join') {
+        this.onPeerJoin(event.peer);
+      } else {
+        this.onPeerLeave(event.peer, event.reason);
+      }
+    });
+  }
+
+  private onPeerJoin(peer: TPeer) {
+    const conn = this.hub.connection(peer);
+    if (!conn) return;
+
+    const sub = conn.messages$.subscribe((msg) => {
+      this.processMessage(msg, peer);
+    });
+
+    this._peerSubs.set(peer, sub);
+  }
+
+  private onPeerLeave(peer: TPeer, reason?: unknown) {
+    // tear down message subscription
+    this._peerSubs.get(peer)?.unsubscribe();
+    this._peerSubs.delete(peer);
+
+    const agentId = this._peerToAgent.get(peer);
+    this.notifications$.next(
+      `Peer ${peer}${agentId ? ` (agent: ${agentId})` : ''} left: ${reason ?? 'unknown reason'}`,
+    );
+    if (agentId) {
+      this._peerToAgent.delete(peer);
+      this._agentToPeer.delete(agentId);
+      this.options.onUnregistered?.({
+        agentId,
+        reason: reason as string,
+      });
+    }
+  }
+
+  private processMessage(msg: Message<FromAgent>, peer: TPeer) {
+    const id = msg.id ?? 'unknown';
+
+    if (msg.version !== AGENT_PROTOCOL_VERSION) {
+      this.notifications$.next(
+        `Agent ${msg.from} has incompatible protocol version: ${msg.version}`,
+      );
+      const protocol = this.getPeerSender(peer);
+      protocol?.send({
+        kind: 'error-rs',
+        requestId: id,
+        error: `Incompatible protocol version. Expected ${AGENT_PROTOCOL_VERSION} but got ${msg.version}`,
+      });
+      return;
+    }
+
+    if (!isMessageFromAgent(msg)) {
+      const issues = getAgentMessageIssues(msg).join(', ');
+      this.notifications$.next(
+        `Received invalid message from agent ${peer}: ${issues}`,
+      );
+      const sender = this.getPeerSender(peer);
+      sender?.send({
+        kind: 'error-rs',
+        requestId: id,
+        error: issues,
+      });
+      return;
+    }
+
+    const agentId = msg.from;
+
+    if (msg.kind === 'register') {
+      this._agentToPeer.set(agentId, peer);
+      this._peerToAgent.set(peer, agentId);
+
+      this.messages$.next({ msg, peer, agentId });
+
+      this.options.onRegister?.({
+        ...msg,
+        agentId,
+        reject: (reason) => {
           const protocol = this.getPeerSender(peer);
           protocol?.send({
             kind: 'error-rs',
-            requestId: id,
-            error: `Incompatible protocol version. Expected ${AGENT_PROTOCOL_VERSION} but got ${msg.version}`,
+            requestId: msg.id,
+            error: reason,
           });
-        } else if (!isValid) {
-          // log
-          const issues = getAgentMessageIssues(msg).join(', ');
-          this.notifications$.next(
-            `Received invalid message from agent ${peer}: ${issues}`,
-          );
-          const sender = this.getPeerSender(peer);
-          sender?.send({
-            kind: 'error-rs',
-            requestId: id,
-            error: issues,
-          });
-          return;
-        }
-      }),
-      // dismiss invalid protocol messages
-      filter(
-        ({ msg, isValid }) => msg.version === AGENT_PROTOCOL_VERSION && isValid,
-      ),
-      // forward valid messages to the messages$ stream
-      tap((m) => {
-        const agentId = m.msg.from;
-
-        // if this is a registration message, establish the agentId ↔ peer mapping
-        if (m.msg.kind === 'register') {
-          this._agentToPeer.set(agentId, m.peer);
-          this._peerToAgent.set(m.peer, agentId);
-
-          this.messages$.next({ ...m, agentId });
-
-          this.options.onRegister?.({
-            ...m.msg,
-            agentId,
-            reject: (reason) => {
-              const protocol = this.getPeerSender(m.peer);
-              protocol?.send({
-                kind: 'error-rs',
-                requestId: m.msg.id,
-                error: reason,
-              });
-              this._agentToPeer.delete(agentId);
-              this._peerToAgent.delete(m.peer);
-            },
-            accept: () => {
-              const protocol = this.getPeerSender(m.peer);
-              protocol?.send({
-                kind: 'register-rs',
-                requestId: m.msg.id,
-              });
-            },
-          });
-        } else {
-          this.messages$.next({ ...m, agentId });
-
-          if (m.msg.kind === 'start-rs') {
-            this.options.onStarted?.({ agentId });
-          } else if (m.msg.kind === 'stop-rs') {
-            this.options.onStopped?.({ agentId });
-          }
-        }
-      }),
-    );
-
-    const processConnections$ = this.hub.peerEvents$.pipe(
-      filter((event) => event.type === 'leave'),
-      tap(({ peer, reason }) => {
-        const agentId = this._peerToAgent.get(peer);
-        this.notifications$.next(
-          `Peer ${peer}${agentId ? ` (agent: ${agentId})` : ''} left: ${reason ?? 'unknown reason'}`,
-        );
-        // clean up maps
-        if (agentId) {
-          this._peerToAgent.delete(peer);
           this._agentToPeer.delete(agentId);
-          this.options.onUnregistered?.({
-            agentId,
-            reason: reason as string,
+          this._peerToAgent.delete(peer);
+        },
+        accept: () => {
+          const protocol = this.getPeerSender(peer);
+          protocol?.send({
+            kind: 'register-rs',
+            requestId: msg.id,
           });
-        }
-      }),
-    );
+        },
+      });
+    } else {
+      this.messages$.next({ msg, peer, agentId });
 
-    this.sub = merge(processMessages$, processConnections$).subscribe();
+      if (msg.kind === 'start-rs') {
+        this.options.onStarted?.({ agentId });
+      } else if (msg.kind === 'stop-rs') {
+        this.options.onStopped?.({ agentId });
+      }
+    }
   }
 
   startAgent({ agentId, ...rest }: StartAgentArgs) {
@@ -185,6 +195,10 @@ export class AgentServer<TPeer extends PeerId = string> {
   finalize() {
     this.sub?.unsubscribe();
     this.sub = null;
+    for (const sub of this._peerSubs.values()) {
+      sub.unsubscribe();
+    }
+    this._peerSubs.clear();
     this._agentToPeer.clear();
     this._peerToAgent.clear();
   }
