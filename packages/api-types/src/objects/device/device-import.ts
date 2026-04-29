@@ -5,7 +5,7 @@ import {
   sDeviceDto,
   sForeignDeviceInfo,
 } from './any-device';
-import { DeviceRelationDto, sDeviceRelationDto } from './device-relation';
+import { sDeviceRelationDto } from './device-relation';
 
 export const sImportedDevice = z
   .object({
@@ -26,6 +26,13 @@ export const sDeviceDiscoveryDto = z.object({
   ),
 });
 
+export const sRelationDeltaDto = z.object({
+  relation: sDeviceRelationDto,
+  action: z.enum(['added', 'updated', 'removed']),
+});
+
+export type RelationDeltaDto = z.infer<typeof sRelationDeltaDto>;
+
 export const sDeviceGetChangesDto = z.object({
   added: z.array(sImportedDevice),
   updated: z.array(
@@ -38,7 +45,7 @@ export const sDeviceGetChangesDto = z.object({
       .catchall(z.unknown()),
   ),
   removed: z.array(sDeviceDto),
-  relations: z.array(sDeviceRelationDto),
+  relations: z.array(sRelationDeltaDto),
   duplicates: z.array(sDuplicateDevice),
 });
 
@@ -54,7 +61,7 @@ export type DeviceGetChangesDto = {
     foreignRef: string;
   } & Partial<ImportedDevice>)[];
   removed: DeviceDto[];
-  relations: DeviceRelationDto[];
+  relations: RelationDeltaDto[];
   duplicates: DuplicateDevice[];
 };
 

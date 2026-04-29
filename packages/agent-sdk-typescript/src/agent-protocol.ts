@@ -40,6 +40,12 @@ export type Outbound<D extends Direction> = D extends 'server'
 export type InMsg<D extends Direction> = Message<Inbound<D>>;
 export type OutMsg<D extends Direction> = Message<Outbound<D>>;
 
+export interface GetReplyOptions {
+  /** Timeout for awaiting replies to sent messages (default 10s) */
+  timeoutMs?: number;
+  onProgress?: (progress: Message<PayloadByKind['progress']>) => void;
+}
+
 export interface AgentProtocolOptions {
   /** Timeout for awaiting replies to sent messages (default 10s) */
   replyTimeout?: number;
@@ -69,7 +75,7 @@ export class AgentProtocol<D extends Direction> {
 
   getReply$ = <K extends RequestKind>(
     payload: Extract<Outbound<D>, { kind: K }>,
-    timeoutMs?: number,
+    { timeoutMs, onProgress }: GetReplyOptions = {},
   ) => {
     const responseKind = ReplyKindByRequestKind[
       payload.kind
@@ -94,6 +100,12 @@ export class AgentProtocol<D extends Direction> {
         }),
         // enforce timeout (progress updates will reset the timer, but if no messages arrive for `timeoutMs` duration, the request is considered failed)
         timeout(timeoutMs || this.options.replyTimeout || 10000),
+        // if an onProgress callback was provided, tap into the stream to route progress updates to the callback
+        tap((message) => {
+          if (message.kind === 'progress' && onProgress) {
+            onProgress(message);
+          }
+        }),
         // pass through only the final response message (filter out progress updates)
         filter((message) => message.kind === responseKind),
         // we only expect one response message, so complete the stream after the response arrives
