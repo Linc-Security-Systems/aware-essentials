@@ -9,7 +9,7 @@ import {
 } from '@awarevue/api-types';
 import { HubTransport, PeerId } from './transport_types';
 import { AgentProtocol } from './agent-protocol';
-import { Subject, Subscription } from 'rxjs';
+import { lastValueFrom, Subject, Subscription } from 'rxjs';
 import { AGENT_PROTOCOL_VERSION } from './constants';
 
 export interface OnUnregisteredEventArgs {
@@ -187,9 +187,27 @@ export class AgentServer<TPeer extends PeerId = string> {
     protocol?.send({ kind: 'start', ...rest });
   }
 
-  stopAgent(agentId: string, provider: string) {
+  async stopAgent(agentId: string, provider: string) {
     const protocol = this.getAgentSender(agentId);
-    protocol?.send({ kind: 'stop', provider });
+    if (!protocol) {
+      this.notifications$.next(
+        `Cannot stop agent ${agentId} - no connection found`,
+      );
+      return;
+    }
+
+    await lastValueFrom(protocol.getReply$({ kind: 'stop', provider })).catch(
+      (err) => {
+        this.notifications$.next(
+          `Failed to stop agent ${agentId}: ${err.message}`,
+        );
+      },
+    );
+  }
+
+  async restartAgent({ agentId, ...rest }: StartAgentArgs) {
+    await this.stopAgent(agentId, rest.provider);
+    this.startAgent({ agentId, ...rest });
   }
 
   finalize() {
