@@ -5,7 +5,7 @@
 // ----------------------------------------------------------------
 
 import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { share, tap } from 'rxjs/operators';
 
 import { DuplexTransport } from '../transport_types';
 
@@ -60,6 +60,7 @@ export class LoggingDuplexTransport<TIn, TOut> implements DuplexTransport<
     // Tap into the incoming stream before exposing it to consumers.
     this.messages$ = inner.messages$.pipe(
       tap((msg) => this.sink('IN', this.label, msg)),
+      share(),
     );
   }
 
