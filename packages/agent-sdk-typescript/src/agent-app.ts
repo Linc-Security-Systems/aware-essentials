@@ -15,6 +15,7 @@ import {
   startWith,
   throwIfEmpty,
   delay,
+  pairwise,
 } from 'rxjs';
 import {
   AccessRefMap,
@@ -309,7 +310,16 @@ export class AgentApp {
       ),
     );
 
-    const startStop$ = this.options.transport.messages$.pipe(
+    const fakeStop$ = this.options.transport.connected$.pipe(
+      pairwise(),
+      filter(([, connected]) => !connected),
+      map(() => ({
+        kind: 'stop' as const,
+        id: 'fake-stop',
+      })),
+    );
+
+    const startStop$ = merge(this.options.transport.messages$, fakeStop$).pipe(
       filter((message) => message.kind === 'start' || message.kind === 'stop'),
       switchMap((message) =>
         message.kind === 'start'
@@ -334,6 +344,7 @@ export class AgentApp {
                 mergeMap((context) => this.runProvider$(context)),
               )
           : of(message).pipe(
+              filter((msg) => msg.id !== 'fake-stop'), // ignore fake stop signals for protocol communication
               tap(() =>
                 this.protocol.send({
                   kind: 'stop-rs' as const,
