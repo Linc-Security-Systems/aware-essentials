@@ -7,8 +7,10 @@ import {
   AccessApplyChange,
   AccessRefMap,
   AccessObjectKind,
+  ObjectKinds,
   QueryRq,
   PushFile,
+  ExternalObjectProps,
 } from '@awarevue/api-types';
 import { Observable } from 'rxjs';
 import { DeviceActivity } from './agent-app';
@@ -30,14 +32,14 @@ export type RunCommandContext = Context & {
 
 export type AccessChangeContext = Context & {
   deviceCatalog: DeviceDiscoveryDto;
-  objectsById: <T extends Record<string, unknown>>(
-    objectKind: AccessObjectKind,
+  objectsById: <K extends AccessObjectKind>(
+    objectKind: K,
     objectId: string,
-  ) => T[];
-  objectByForeignRef: <T extends Record<string, unknown>>(
-    objectKind: AccessObjectKind,
+  ) => ObjectKinds[K][];
+  objectByForeignRef: <K extends AccessObjectKind>(
+    objectKind: K,
     foreignRef: string,
-  ) => T | null;
+  ) => ObjectKinds[K] | null;
 };
 
 export interface Agent {
@@ -59,10 +61,10 @@ export interface Agent {
     context: AccessChangeContext,
     change: AccessApplyChange,
   ) => Observable<AccessRefMap>;
-  find$?: (
+  find$?: <K extends AccessObjectKind>(
     context: Context,
-    objectKind: AccessObjectKind,
+    objectKind: K,
     objectIds: string[],
-  ) => Observable<Record<string, Record<string, unknown>>>;
+  ) => Observable<Record<string, ExternalObjectProps[K]>>;
   pushFile?: (context: Context, req: PushFile) => Observable<boolean>;
 }

@@ -26,6 +26,7 @@ import {
   ProviderSpecs,
   AccessControlCapabilityReport,
   AccessValidateChangeRs,
+  DescribeObjectRs,
   FromServer,
   Message,
 } from '@awarevue/api-types';
@@ -50,6 +51,7 @@ export type AgentOptions = {
   accessControlProviders?: Record<string, AccessControlCapabilityReport>;
   agentId: string;
   replyTimeout?: number;
+  testerCliTags?: string[]; // Optional tags to include in the tester CLI for this agent, used for filtering which agents to run in tests
   transport: DuplexTransport<Message<FromServer>, Message<FromAgent>>;
 };
 
@@ -123,7 +125,6 @@ export class AgentApp {
       person: {},
       accessRule: {},
       schedule: {},
-      device: {},
       zone: {},
     };
 
@@ -288,6 +289,38 @@ export class AgentApp {
               })),
             );
 
+          case 'describe-object': {
+            if (!this.agent.find$) {
+              return throwError(
+                () =>
+                  new AgentError(
+                    `Agent ${context.provider} does not support object description`,
+                    'NOT_SUPPORTED',
+                  ),
+              ).pipe(this.handleResponse$(message.id));
+            }
+            const find$ = this.agent.find$;
+            return find$(context, message.objectKind, [
+              message.objectAssignedRef,
+            ]).pipe(
+              map((result) => {
+                const data = result[message.objectAssignedRef];
+                return data !== undefined
+                  ? {
+                      objectKind: message.objectKind,
+                      objectAssignedRef: message.objectAssignedRef,
+                      data,
+                    }
+                  : null;
+              }),
+              this.handleResponse$(message.id, (object) => ({
+                kind: 'describe-object-rs' as const,
+                requestId: message.id,
+                object: object as DescribeObjectRs['object'],
+              })),
+            );
+          }
+
           default:
             return EMPTY;
         }
@@ -304,6 +337,7 @@ export class AgentApp {
                 kind: 'register' as const,
                 providers: this.options.providers,
                 accessControlProviders: this.options.accessControlProviders,
+                testerCliTags: this.options.testerCliTags,
               })
               .pipe(retry({ delay: 3000 }))
           : EMPTY,

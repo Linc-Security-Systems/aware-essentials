@@ -43,7 +43,7 @@ export class RunnerService {
   async run(): Promise<number> {
     const {
       agentId,
-      tags,
+      tags: tagsFromOptions,
       timeout: scenarioTimeout,
       connectionTimeout,
       report,
@@ -59,6 +59,7 @@ export class RunnerService {
     }
 
     // 2. Load & filter scenarios
+    const tags = tagsFromOptions ?? agent.registerPayload.testerCliTags ?? [];
     const allScenarios = loadScenarios();
     const scenarios = filterScenarios(allScenarios, tags);
 

@@ -58,6 +58,7 @@ export const sRegisterRq = z.object({
       'Map of providers and their specs, ones that the agent can handle',
     ),
   accessControlProviders: z.record(sAccessControlCapabilityReport).optional(),
+  testerCliTags: z.array(z.string().nonempty()).optional(),
 });
 
 export const sRegisterRs = sResponsePayload(
@@ -280,6 +281,13 @@ export const sExternalAccessRuleProps = z.object({
 export const sExternalZoneProps = z.object({
   displayName: z.string().nonempty(),
   devices: z.array(z.string().nonempty()),
+});
+
+export const sExternalObjectProps = z.object({
+  person: sExternalPersonProps,
+  schedule: sExternalScheduleProps,
+  accessRule: sExternalAccessRuleProps,
+  zone: sExternalZoneProps,
 });
 
 // ————————————————————————————————————————————————————
@@ -556,6 +564,7 @@ export type ExternalPersonProps = z.infer<typeof sExternalPersonProps>;
 export type ExternalScheduleProps = z.infer<typeof sExternalScheduleProps>;
 export type ExternalAccessRuleProps = z.infer<typeof sExternalAccessRuleProps>;
 export type ExternalZoneProps = z.infer<typeof sExternalZoneProps>;
+export type ExternalObjectProps = z.infer<typeof sExternalObjectProps>;
 export type AccessMutation = z.infer<typeof sAccessMutation>;
 export type AccessValidateChangeRq = z.infer<typeof sValidateChangeRq>;
 export type AccessValidateChangeRs = z.infer<typeof sValidateChangeRs>;

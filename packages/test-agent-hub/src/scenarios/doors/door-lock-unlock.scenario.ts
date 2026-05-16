@@ -1,7 +1,7 @@
-import { Scenario, scenarioPass } from "../../scenario.types";
+import { Scenario, scenarioPass, TAG_DOORS } from "../../scenario.types";
 
 const s: Scenario = {
-  tags: ["doors"],
+  tags: [TAG_DOORS],
   name: "Doors: Doors lock and unlock correctly",
   description: "Doors: Doors lock and unlock correctly",
   run: async (ctx) => {

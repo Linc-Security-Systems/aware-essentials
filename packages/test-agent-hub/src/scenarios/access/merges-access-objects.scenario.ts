@@ -4,7 +4,8 @@ import {
   ScenarioContext,
   scenarioFail,
   scenarioPass,
-  ACCESS_PROPS_TAG,
+  TAG_ACCESS_PROPS,
+  TAG_ACCESS,
 } from "../../scenario.types";
 import { newPerson, newSchedule, personsMatch, schedulesMatch } from "./_utils";
 
@@ -66,7 +67,7 @@ const mergePerson = async (ctx: ScenarioContext) => {
 
   ctx.log(`Apply succeeded with ${references.length} reference(s) as expected`);
 
-  if (ctx.tags.includes(ACCESS_PROPS_TAG)) {
+  if (ctx.tags.includes(TAG_ACCESS_PROPS)) {
     const describeResult = await ctx.getReply({
       kind: "describe-object",
       provider: ctx.provider,
@@ -172,7 +173,7 @@ const mergeSchedule = async (ctx: ScenarioContext) => {
 
   ctx.log(`Apply succeeded with ${references.length} reference(s) as expected`);
 
-  if (ctx.tags.includes(ACCESS_PROPS_TAG)) {
+  if (ctx.tags.includes(TAG_ACCESS_PROPS)) {
     const describeResult = await ctx.getReply({
       kind: "describe-object",
       provider: ctx.provider,
@@ -225,7 +226,7 @@ const mergeZone = async () => {
 };
 
 const s: Scenario = {
-  tags: ["access"],
+  tags: [TAG_ACCESS],
   name: "Access Sync: Merges Access Objects it supports",
   description: "Access Sync: Merges Access Objects it supports",
   run: async (ctx) => {

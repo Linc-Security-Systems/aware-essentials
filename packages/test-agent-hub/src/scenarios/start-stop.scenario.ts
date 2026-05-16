@@ -1,4 +1,10 @@
-import { Scenario, scenarioPass, scenarioFail } from "../scenario.types";
+import {
+  Scenario,
+  scenarioPass,
+  scenarioFail,
+  TAG_CORE,
+  TAG_LIFECYCLE,
+} from "../scenario.types";
 
 /**
  * Tests the agent's start/stop lifecycle:
@@ -8,7 +14,7 @@ import { Scenario, scenarioPass, scenarioFail } from "../scenario.types";
 const scenario: Scenario = {
   name: "start-stop",
   description: "Sends start and stop to the agent and validates responses",
-  tags: ["core", "lifecycle"],
+  tags: [TAG_CORE, TAG_LIFECYCLE],
 
   async run(ctx) {
     const { provider, config } = ctx;

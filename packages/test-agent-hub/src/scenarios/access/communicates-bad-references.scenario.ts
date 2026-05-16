@@ -1,9 +1,14 @@
 import { v4 } from "uuid";
-import { Scenario, scenarioFail, scenarioPass } from "../../scenario.types";
+import {
+  Scenario,
+  scenarioFail,
+  scenarioPass,
+  TAG_ACCESS,
+} from "../../scenario.types";
 import { newPerson, newSchedule } from "./_utils";
 
 const s: Scenario = {
-  tags: ["access"],
+  tags: [TAG_ACCESS],
   name: "Access Sync: Communicates Bad References",
   description: "Access Sync: Communicates Bad References",
   run: async (ctx) => {

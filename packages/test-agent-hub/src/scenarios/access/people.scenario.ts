@@ -5,6 +5,7 @@ import {
   ScenarioResult,
   scenarioFail,
   scenarioPass,
+  TAG_ACCESS,
 } from "../../scenario.types";
 import { newPerson } from "./_utils";
 
@@ -176,7 +177,7 @@ const deletePeople = async (
 };
 
 const s: Scenario = {
-  tags: ["access"],
+  tags: [TAG_ACCESS],
   name: "Access Sync: Person CRUD operations work correctly",
   description: "Access Sync: Person CRUD operations work correctly",
   run: async (ctx) => {

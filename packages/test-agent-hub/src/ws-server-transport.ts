@@ -7,9 +7,10 @@ import { DuplexTransport } from "@awarevue/agent-sdk";
  * Unlike WsDuplexTransport (client-side), this has no reconnect logic —
  * the socket is already established by the server's accept.
  */
-export class WsServerDuplexTransport<TIn, TOut>
-  implements DuplexTransport<TIn, TOut>
-{
+export class WsServerDuplexTransport<TIn, TOut> implements DuplexTransport<
+  TIn,
+  TOut
+> {
   readonly connected$: Observable<boolean>;
   readonly messages$: Observable<TIn>;
 
