@@ -103,6 +103,7 @@ export class RunnerService {
           provider,
           config,
           logs,
+          tags,
           scenarioTimeout,
         );
         store = built.store;
@@ -150,6 +151,7 @@ export class RunnerService {
     provider: string,
     config: Record<string, unknown>,
     logs: string[],
+    tags: string[],
     timeoutMs: number,
   ): { ctx: ScenarioContext; store: DeviceStateStoreImpl } {
     const { protocol, registerPayload } = agent;
@@ -161,6 +163,7 @@ export class RunnerService {
       registerPayload,
       provider,
       config,
+      tags,
       deviceState: store,
       log: (msg: string) => logs.push(msg),
 

@@ -11,6 +11,9 @@ import {
   ResponseKind,
 } from "@awarevue/agent-sdk";
 
+// for agents that support describe-object, we use this tag to mark scenarios that rely on it
+export const ACCESS_PROPS_TAG = "access-props";
+
 /* ---------------------------------------------------------------- */
 /* Device state store                                               */
 /* ---------------------------------------------------------------- */
@@ -131,6 +134,8 @@ export interface ScenarioContext {
 
   /** Provider config to send with start */
   config: Record<string, unknown>;
+
+  tags: string[];
 
   /** Collect log lines that appear in the scenario report */
   log(msg: string): void;

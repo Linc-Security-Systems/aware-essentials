@@ -1,17 +1,17 @@
 import { sDeviceDiscoveryDto } from '../../objects/device/device-import';
 import { z } from 'zod';
-import {
-  sCreateAccessRuleRequest,
-  sCreatePersonRequest,
-  sCreateScheduleRequest,
-  sCreateZoneRequest,
-} from '../rest';
+import { sAssignedCredential } from '../rest';
 import { sAgentDeviceInfo } from '../../primitives';
 import {
   sProviderSpecs,
   sAccessControlCapabilityReport,
   sAccessObjectKind,
 } from '../../objects/agent-metadata';
+import {
+  sAccessRuleGroupPermissionDto,
+  sAccessRulePermissionDto,
+  sScheduleDetailsRequest,
+} from '../../objects';
 
 // PROTOCOL ENVELOPE
 
@@ -254,77 +254,73 @@ export const sGetAvailableDevicesRs = sResponsePayload(
 
 // ACCESS SYNC SECTION
 
+export const sExternalPersonProps = z.object({
+  firstName: z.string().nonempty(),
+  lastName: z.string().nonempty(),
+  validFrom: z.number().nullable(),
+  validTo: z.number().nullable(),
+  accessSuspended: z.boolean(),
+  credentials: z
+    .array(sAssignedCredential.omit({ note: true }))
+    .describe('IDs of credentials assigned to the person'),
+});
+
+export const sExternalScheduleProps = z.object({
+  displayName: z.string().nonempty(),
+  include: sScheduleDetailsRequest,
+});
+
+export const sExternalAccessRuleProps = z.object({
+  displayName: z.string().nonempty(),
+  appliedTo: z.array(z.string().nonempty()),
+  permissions: z.array(sAccessRulePermissionDto),
+  groupPermissions: z.array(sAccessRuleGroupPermissionDto),
+});
+
+export const sExternalZoneProps = z.object({
+  displayName: z.string().nonempty(),
+  devices: z.array(z.string().nonempty()),
+});
+
 // ————————————————————————————————————————————————————
 // Merge (insert vs update) variants, all listed explicitly
 // ————————————————————————————————————————————————————
 export const sObjectMerge = z
   .union([
-    // accessRule insert
-    z.object({
-      kind: z.literal('merge'),
-      objectId: z.string().nonempty().describe('Object ID as in backend'),
-      objectKind: z.literal('accessRule'),
-      original: sCreateAccessRuleRequest,
-      props: sCreateAccessRuleRequest,
-    }),
     // accessRule update
     z.object({
       kind: z.literal('merge'),
       objectId: z.string().nonempty().describe('Object ID as in backend'),
       objectKind: z.literal('accessRule'),
-      original: sCreateAccessRuleRequest,
-      props: sCreateAccessRuleRequest.partial(),
+      original: sExternalAccessRuleProps,
+      props: sExternalAccessRuleProps.partial(),
     }),
 
-    // schedule insert
-    z.object({
-      kind: z.literal('merge'),
-      objectId: z.string().nonempty().describe('Object ID as in backend'),
-      objectKind: z.literal('schedule'),
-      original: sCreateScheduleRequest,
-      props: sCreateScheduleRequest,
-    }),
     // schedule update
     z.object({
       kind: z.literal('merge'),
       objectId: z.string().nonempty().describe('Object ID as in backend'),
       objectKind: z.literal('schedule'),
-      original: sCreateScheduleRequest,
-      props: sCreateScheduleRequest.partial(),
+      original: sExternalScheduleProps,
+      props: sExternalScheduleProps.partial(),
     }),
 
-    // person insert
-    z.object({
-      kind: z.literal('merge'),
-      objectId: z.string().nonempty().describe('Object ID as in backend'),
-      objectKind: z.literal('person'),
-      original: sCreatePersonRequest,
-      props: sCreatePersonRequest,
-    }),
     // person update
     z.object({
       kind: z.literal('merge'),
       objectId: z.string().nonempty().describe('Object ID as in backend'),
       objectKind: z.literal('person'),
-      original: sCreatePersonRequest,
-      props: sCreatePersonRequest.partial(),
+      original: sExternalPersonProps,
+      props: sExternalPersonProps.partial(),
     }),
 
-    // zone insert
-    z.object({
-      kind: z.literal('merge'),
-      objectId: z.string().nonempty().describe('Object ID as in backend'),
-      objectKind: z.literal('zone'),
-      original: sCreateZoneRequest,
-      props: sCreateZoneRequest,
-    }),
     // zone update
     z.object({
       kind: z.literal('merge'),
       objectId: z.string().nonempty().describe('Object ID as in backend'),
       objectKind: z.literal('zone'),
-      original: sCreateZoneRequest,
-      props: sCreateZoneRequest.partial(),
+      original: sExternalZoneProps,
+      props: sExternalZoneProps.partial(),
     }),
   ])
   .describe('Object merge request');
@@ -338,25 +334,25 @@ export const sObjectDelete = z
       kind: z.literal('delete'),
       objectId: z.string().nonempty().describe('Object ID as in backend'),
       objectKind: z.literal('accessRule'),
-      original: sCreateAccessRuleRequest,
+      original: sExternalAccessRuleProps,
     }),
     z.object({
       kind: z.literal('delete'),
       objectId: z.string().nonempty().describe('Object ID as in backend'),
       objectKind: z.literal('schedule'),
-      original: sCreateScheduleRequest,
+      original: sExternalScheduleProps,
     }),
     z.object({
       kind: z.literal('delete'),
       objectId: z.string().nonempty().describe('Object ID as in backend'),
       objectKind: z.literal('person'),
-      original: sCreatePersonRequest,
+      original: sExternalPersonProps,
     }),
     z.object({
       kind: z.literal('delete'),
       objectId: z.string().nonempty().describe('Object ID as in backend'),
       objectKind: z.literal('zone'),
-      original: sCreateZoneRequest,
+      original: sExternalZoneProps,
     }),
   ])
   .describe('Object delete request');
@@ -469,6 +465,63 @@ export const sAbortChange = z
   })
   .describe('Request to abort access changes');
 
+// DESCRIBE
+
+export const sDescribeObjectRq = z
+  .object({
+    kind: z.literal('describe-object'),
+    provider: z.string().nonempty(),
+    objectAssignedRef: z
+      .string()
+      .nonempty()
+      .describe('Object ID as in 3rd party backend'),
+    objectKind: sAccessObjectKind,
+  })
+  .describe('Request to describe the capabilities of a provider via an agent');
+
+export const sDescribeObjectRs = sResponsePayload(
+  z.literal('describe-object-rs'),
+  z.object({
+    object: z
+      .union([
+        z.object({
+          objectKind: z.literal('accessRule'),
+          objectAssignedRef: z
+            .string()
+            .nonempty()
+            .describe('Object ID as in 3rd party backend'),
+          data: sExternalAccessRuleProps,
+        }),
+        z.object({
+          objectKind: z.literal('schedule'),
+          objectAssignedRef: z
+            .string()
+            .nonempty()
+            .describe('Object ID as in 3rd party backend'),
+          data: sExternalScheduleProps,
+        }),
+        z.object({
+          objectKind: z.literal('person'),
+          data: sExternalPersonProps,
+          objectAssignedRef: z
+            .string()
+            .nonempty()
+            .describe('Object ID as in 3rd party backend'),
+        }),
+        z.object({
+          objectKind: z.literal('zone'),
+          data: sExternalZoneProps,
+          objectAssignedRef: z
+            .string()
+            .nonempty()
+            .describe('Object ID as in 3rd party backend'),
+        }),
+      ])
+      .nullable()
+      .describe('Object data or null if the object was not found'),
+  }),
+);
+
 // TYPESCRIPT INFERRED TYPES
 
 export type MessageHeader = z.infer<typeof sMessageHeader>;
@@ -499,6 +552,10 @@ export type PushEventRq = z.infer<typeof sPushEventRq>;
 export type PushEventRs = z.infer<typeof sPushEventRs>;
 export type GetAvailableDevicesRq = z.infer<typeof sGetAvailableDevicesRq>;
 export type GetAvailableDevicesRs = z.infer<typeof sGetAvailableDevicesRs>;
+export type ExternalPersonProps = z.infer<typeof sExternalPersonProps>;
+export type ExternalScheduleProps = z.infer<typeof sExternalScheduleProps>;
+export type ExternalAccessRuleProps = z.infer<typeof sExternalAccessRuleProps>;
+export type ExternalZoneProps = z.infer<typeof sExternalZoneProps>;
 export type AccessMutation = z.infer<typeof sAccessMutation>;
 export type AccessValidateChangeRq = z.infer<typeof sValidateChangeRq>;
 export type AccessValidateChangeRs = z.infer<typeof sValidateChangeRs>;
@@ -506,6 +563,8 @@ export type AccessChangeIssue = z.infer<typeof sChangeIssue>;
 export type AccessApplyChange = z.infer<typeof sApplyChange>;
 export type AccessApplyChangeRs = z.infer<typeof sApplyChangeRs>;
 export type AccessApplyChangeProgress = z.infer<typeof sApplyChangeProgress>;
+export type DescribeObjectRq = z.infer<typeof sDescribeObjectRq>;
+export type DescribeObjectRs = z.infer<typeof sDescribeObjectRs>;
 export type AccessAbortChange = z.infer<typeof sAbortChange>;
 
 export type ConfigurationIssue = z.infer<typeof sConfigurationIssue>;
@@ -540,6 +599,8 @@ export type PayloadByKind = {
   'apply-change-rs': AccessApplyChangeRs;
   'apply-change-progress': AccessApplyChangeProgress;
   'abort-change': AccessAbortChange;
+  'describe-object': DescribeObjectRq;
+  'describe-object-rs': DescribeObjectRs;
   'error-rs': ErrorPayload;
 };
 
@@ -558,7 +619,8 @@ export type FromAgent =
   | GetAvailableDevicesRs
   | AccessValidateChangeRs
   | AccessApplyChangeRs
-  | AccessApplyChangeProgress;
+  | AccessApplyChangeProgress
+  | DescribeObjectRs;
 
 export type FromServer =
   | ErrorPayload
@@ -574,7 +636,8 @@ export type FromServer =
   | GetAvailableDevicesRq
   | AccessValidateChangeRq
   | AccessApplyChange
-  | AccessAbortChange;
+  | AccessAbortChange
+  | DescribeObjectRq;
 
 export type AnyPayload = FromAgent | FromServer;
 
@@ -593,6 +656,7 @@ const fromAgentSchemaByKind = {
   'validate-change-rs': sValidateChangeRs,
   'apply-change-rs': sApplyChangeRs,
   'apply-change-progress': sApplyChangeProgress,
+  'describe-object-rs': sDescribeObjectRs,
   'error-rs': sErrorPayload,
 };
 
@@ -608,6 +672,7 @@ export const ReplyKindByRequestKind = {
   'get-available-devices': 'get-available-devices-rs',
   'validate-change': 'validate-change-rs',
   'apply-change': 'apply-change-rs',
+  'describe-object': 'describe-object-rs',
 } satisfies Partial<
   Record<(FromServer | FromAgent)['kind'], (FromServer | FromAgent)['kind']>
 >;
