@@ -265,8 +265,8 @@ export const sGetAvailableDevicesRs = sResponsePayload(
 export const sExternalPersonProps = z.object({
   firstName: z.string().nonempty(),
   lastName: z.string().nonempty(),
-  validFrom: z.number().nullable(),
-  validTo: z.number().nullable(),
+  validFrom: z.string().nullable(),
+  validTo: z.string().nullable(),
   accessSuspended: z.boolean(),
   credentials: z
     .array(sAssignedCredential.omit({ note: true }))
