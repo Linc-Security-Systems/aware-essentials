@@ -4,7 +4,7 @@ export const sCredentialType = z.enum(['card', 'pin', 'fingerprint']);
 
 export const sCredentialValue = z.union([
   z.string().nonempty(),
-  z.record(z.unknown()),
+  z.record(z.string(), z.unknown()),
 ]);
 
 export const sAssignedCredential = z.object({

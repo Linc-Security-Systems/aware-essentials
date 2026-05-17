@@ -8,7 +8,7 @@ export const sWebRtcPlaybackSource = z
   .object({
     kind: z.string(),
   })
-  .and(z.record(z.unknown()));
+  .and(z.record(z.string(), z.unknown()));
 
 export const sStreamInfo = z.object({
   id: z.string().nonempty(),

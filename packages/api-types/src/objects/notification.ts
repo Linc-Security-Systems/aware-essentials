@@ -6,7 +6,7 @@ export const sNotificationDto = z.object({
   source: sDeviceId,
   message: z.string().nonempty(),
   severity: sNotificationSeverity,
-  metadata: z.record(z.unknown()),
+  metadata: z.record(z.string(), z.unknown()),
   notificationRef: z.string().nonempty().nullable(),
   createdOn: z.number().int().nonnegative(),
   recipientId: z.string().nonempty().nullable(),
