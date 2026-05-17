@@ -9,11 +9,11 @@ export const sIoSlot = z.object({
 
 export type IoSlot = z.infer<typeof sIoSlot>;
 
-export const sInputBindings = z.record(sIoSlot);
+export const sInputBindings = z.record(z.string(), sIoSlot);
 
 export type InputBindings = z.infer<typeof sInputBindings>;
 
-export const sOutputBindings = z.record(sIoSlot);
+export const sOutputBindings = z.record(z.string(), sIoSlot);
 
 export type OutputBindings = z.infer<typeof sOutputBindings>;
 

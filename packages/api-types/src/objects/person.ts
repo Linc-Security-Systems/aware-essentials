@@ -18,7 +18,7 @@ export const sPersonProps = z.object({
   avatarId: z.string().nullable(),
   credentials: z.array(sAssignedCredential),
   accessRules: z.array(z.string().nonempty()),
-  customFields: z.record(z.string()).nullable(),
+  customFields: z.record(z.string(), z.string()).nullable(),
   type: z.string().min(1).max(16),
 });
 
@@ -37,8 +37,8 @@ export const sPersonDto = z.object({
   avatarId: z.string().nullable(),
   credentials: z.array(sAssignedCredential),
   accessRules: z.array(sPersonAccessRule),
-  customFields: z.record(z.string()).nullable(),
-  refs: z.record(z.union([z.string(), z.array(z.string())])),
+  customFields: z.record(z.string(), z.string()).nullable(),
+  refs: z.record(z.string(), z.union([z.string(), z.array(z.string())])),
   version: z.number(),
   type: z.string().min(1).max(64),
   agreements: z.array(sPersonAgeementDto),

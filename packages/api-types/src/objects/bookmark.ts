@@ -4,7 +4,7 @@ export const sBookmarkProps = z.object({
   timestamp: z.number().min(0),
   label: z.string().nonempty(),
   deviceId: z.string().nonempty(),
-  metadata: z.record(z.unknown()),
+  metadata: z.record(z.string(), z.unknown()),
 });
 
 export const sBookmarkDto = sBookmarkProps.and(

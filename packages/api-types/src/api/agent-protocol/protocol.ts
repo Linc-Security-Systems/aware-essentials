@@ -29,12 +29,15 @@ export const sMessageWithPayload = <T extends z.ZodRawShape>(
   sPayload: z.ZodObject<T>,
 ) => sMessageHeader.and(sPayload).describe('Message with payload');
 
-export const sResponsePayload = <TKind, T extends z.ZodRawShape>(
+export const sResponsePayload = <
+  TKind extends string | number | boolean | bigint | null | undefined,
+  T extends z.ZodRawShape,
+>(
   kind: z.ZodLiteral<TKind>,
   sPayload: z.ZodObject<T>,
 ) =>
   // success branch
-  z.object({ requestId: z.string().nonempty(), kind }).and(sPayload);
+  z.object({ requestId: z.string().nonempty(), kind }).merge(sPayload);
 
 export const sAgentErrorCode = z.enum(['NOT_SUPPORTED', 'TIMEOUT']);
 
@@ -53,11 +56,13 @@ export const sErrorPayload = sResponsePayload(
 export const sRegisterRq = z.object({
   kind: z.literal('register'),
   providers: z
-    .record(sProviderSpecs)
+    .record(z.string(), sProviderSpecs)
     .describe(
       'Map of providers and their specs, ones that the agent can handle',
     ),
-  accessControlProviders: z.record(sAccessControlCapabilityReport).optional(),
+  accessControlProviders: z
+    .record(z.string(), sAccessControlCapabilityReport)
+    .optional(),
 });
 
 export const sRegisterRs = sResponsePayload(
@@ -79,7 +84,7 @@ export const sUnregister = z
 export const sValidateProviderConfigRq = z.object({
   kind: z.literal('validate-config'),
   provider: z.string().nonempty(),
-  config: z.record(z.unknown()),
+  config: z.record(z.string(), z.unknown()),
 });
 
 export const sConfigurationIssue = z
@@ -102,7 +107,7 @@ export const sStartServiceRq = z
   .object({
     kind: z.literal('start'),
     provider: z.string().nonempty(),
-    config: z.record(z.unknown()),
+    config: z.record(z.string(), z.unknown()),
     lastEventForeignRef: z
       .string()
       .nullable()
@@ -146,7 +151,7 @@ export const sRunCommandRq = z
       .string()
       .optional()
       .describe('Batch ID for the command of the command was part of a macro'),
-    params: z.record(z.unknown()).optional(),
+    params: z.record(z.string(), z.unknown()).optional(),
   })
   .describe('Request to run a device command');
 
@@ -192,7 +197,9 @@ export const sPushFile = z
     kind: z.literal('push-file'),
     query: z.string().nonempty(),
     device: sAgentDeviceInfo,
-    args: z.unknown().describe('Query arguments, depends on the query type'),
+    args: z
+      .record(z.string(), z.unknown())
+      .describe('Query arguments, depends on the query type'),
     url: z.string().nonempty().describe('URL to pull the file from'),
   })
   .describe('Instruction to push a file from an agent to file relay');
@@ -204,7 +211,7 @@ export const sPushStateUpdateRq = z
     kind: z.literal('state'),
     foreignRef: z.string().nonempty(),
     provider: z.string().nonempty(),
-    mergeProps: z.record(z.unknown()),
+    mergeProps: z.record(z.string(), z.unknown()),
     removeProps: z.array(z.string().nonempty()),
   })
   .describe('Request to push a device state update');
@@ -366,11 +373,11 @@ export const sAccessMutation = z
   .describe('Access object change description');
 
 export const sDeviceMap = z
-  .record(z.record(z.unknown()))
+  .record(z.string(), z.record(z.string(), z.unknown()))
   .describe('Map of devices (readers) and their stashed provider metadata');
 
 export const sRefMap = z
-  .record(z.record(z.array(z.string().nonempty())))
+  .record(z.string(), z.record(z.string(), z.array(z.string().nonempty())))
   .describe('Map of foreign references to object IDs');
 
 // A. VALIDATE ACCESS CHANGES
@@ -615,7 +622,7 @@ export const ReplyKindByRequestKind = {
 export const getAgentMessageIssues = (message: unknown): string[] => {
   const result = sMessageHeader.safeParse(message);
   if (!result.success) {
-    return result.error.errors.map(
+    return result.error.issues.map(
       (e) => `${e.path.map((p) => p.toString()).join('.')} - ${e.message}`,
     );
   }
@@ -627,7 +634,7 @@ export const getAgentMessageIssues = (message: unknown): string[] => {
   }
   const result2 = schema.safeParse(message);
   if (!result2.success) {
-    return result2.error.errors.map(
+    return result2.error.issues.map(
       (e) => `${e.path.map((p) => p.toString()).join('.')} - ${e.message}`,
     );
   }

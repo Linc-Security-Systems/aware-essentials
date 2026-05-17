@@ -12,7 +12,7 @@ export const sZoneDto = z.object({
   lastModifiedOn: z.string(),
   devices: z.array(z.string()),
   isGlobal: z.boolean(),
-  refs: z.record(z.union([z.string(), z.array(z.string())])),
+  refs: z.record(z.string(), z.union([z.string(), z.array(z.string())])),
   version: z.number(),
 });
 

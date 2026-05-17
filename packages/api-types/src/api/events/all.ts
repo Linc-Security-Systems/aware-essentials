@@ -25,7 +25,7 @@ export const sDeviceCommandTriggered = z.object({
   kind: z.literal('device-command'),
   userId: z.string().nonempty().optional(),
   command: z.string().nonempty(),
-  args: z.record(z.unknown()),
+  args: z.record(z.string(), z.unknown()),
 });
 
 export type DeviceCommandTriggered = z.infer<typeof sDeviceCommandTriggered>;
