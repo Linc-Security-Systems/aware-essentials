@@ -290,7 +290,7 @@ export class AgentApp {
             );
 
           case 'describe-object': {
-            if (!this.agent.find$) {
+            if (!this.agent.describeObject$) {
               return throwError(
                 () =>
                   new AgentError(
@@ -299,26 +299,29 @@ export class AgentApp {
                   ),
               ).pipe(this.handleResponse$(message.id));
             }
-            const find$ = this.agent.find$;
-            return find$(context, message.objectKind, [
-              message.objectAssignedRef,
-            ]).pipe(
-              map((result) => {
-                const data = result[message.objectAssignedRef];
-                return data !== undefined
-                  ? {
-                      objectKind: message.objectKind,
-                      objectAssignedRef: message.objectAssignedRef,
-                      data,
-                    }
-                  : null;
-              }),
-              this.handleResponse$(message.id, (object) => ({
-                kind: 'describe-object-rs' as const,
-                requestId: message.id,
-                object: object as DescribeObjectRs['object'],
-              })),
-            );
+
+            return this.agent
+              .describeObject$(
+                context,
+                message.objectKind,
+                message.objectAssignedRef,
+              )
+              .pipe(
+                map((data) => {
+                  return data !== null
+                    ? {
+                        objectKind: message.objectKind,
+                        objectAssignedRef: message.objectAssignedRef,
+                        data,
+                      }
+                    : null;
+                }),
+                this.handleResponse$(message.id, (object) => ({
+                  kind: 'describe-object-rs' as const,
+                  requestId: message.id,
+                  object: object as DescribeObjectRs['object'],
+                })),
+              );
           }
 
           default:

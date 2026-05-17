@@ -65,6 +65,11 @@ export interface Agent {
     context: Context,
     objectKind: K,
     objectIds: string[],
-  ) => Observable<Record<string, ExternalObjectProps[K]>>;
+  ) => Observable<Record<string, Record<string, unknown>>>;
+  describeObject$?: <K extends AccessObjectKind>(
+    context: Context,
+    objectKind: K,
+    objectRef: string,
+  ) => Observable<ExternalObjectProps[K] | null>;
   pushFile?: (context: Context, req: PushFile) => Observable<boolean>;
 }
