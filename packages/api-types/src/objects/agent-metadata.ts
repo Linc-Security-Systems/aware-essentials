@@ -40,7 +40,6 @@ export const sAccessObjectKind = z.enum([
   'accessRule',
   'schedule',
   'person',
-  'device',
   'zone',
 ]);
 

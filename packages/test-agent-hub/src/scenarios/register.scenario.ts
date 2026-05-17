@@ -1,4 +1,9 @@
-import { Scenario, scenarioPass, scenarioFail } from "../scenario.types";
+import {
+  Scenario,
+  scenarioPass,
+  scenarioFail,
+  TAG_CORE,
+} from "../scenario.types";
 
 /**
  * Validates that the agent sent a well-formed `register` message
@@ -8,7 +13,7 @@ const scenario: Scenario = {
   name: "register",
   description:
     "Validates that the agent sends a valid register message with at least one provider",
-  tags: ["core"],
+  tags: [TAG_CORE],
 
   async run(ctx) {
     const { registerPayload } = ctx;

@@ -43,7 +43,7 @@ export class RunnerService {
   async run(): Promise<number> {
     const {
       agentId,
-      tags,
+      tags: tagsFromOptions,
       timeout: scenarioTimeout,
       connectionTimeout,
       report,
@@ -59,6 +59,7 @@ export class RunnerService {
     }
 
     // 2. Load & filter scenarios
+    const tags = tagsFromOptions ?? agent.registerPayload.testerCliTags ?? [];
     const allScenarios = loadScenarios();
     const scenarios = filterScenarios(allScenarios, tags);
 
@@ -103,6 +104,7 @@ export class RunnerService {
           provider,
           config,
           logs,
+          tags,
           scenarioTimeout,
         );
         store = built.store;
@@ -150,6 +152,7 @@ export class RunnerService {
     provider: string,
     config: Record<string, unknown>,
     logs: string[],
+    tags: string[],
     timeoutMs: number,
   ): { ctx: ScenarioContext; store: DeviceStateStoreImpl } {
     const { protocol, registerPayload } = agent;
@@ -161,6 +164,7 @@ export class RunnerService {
       registerPayload,
       provider,
       config,
+      tags,
       deviceState: store,
       log: (msg: string) => logs.push(msg),
 

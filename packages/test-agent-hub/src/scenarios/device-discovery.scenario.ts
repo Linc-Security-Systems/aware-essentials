@@ -1,4 +1,10 @@
-import { Scenario, scenarioPass, scenarioFail } from "../scenario.types";
+import {
+  Scenario,
+  scenarioPass,
+  scenarioFail,
+  TAG_CORE,
+  TAG_DEVICES,
+} from "../scenario.types";
 
 /**
  * After starting the agent, sends `get-available-devices` and validates
@@ -8,7 +14,7 @@ const scenario: Scenario = {
   name: "device-discovery",
   description:
     "Starts the agent and requests available devices, validates the response",
-  tags: ["core", "devices"],
+  tags: [TAG_CORE, TAG_DEVICES],
 
   async run(ctx) {
     const { provider, config } = ctx;

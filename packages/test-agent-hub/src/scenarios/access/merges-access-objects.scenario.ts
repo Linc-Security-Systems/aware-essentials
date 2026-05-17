@@ -4,8 +4,10 @@ import {
   ScenarioContext,
   scenarioFail,
   scenarioPass,
+  TAG_ACCESS_PROPS,
+  TAG_ACCESS,
 } from "../../scenario.types";
-import { newPerson, newSchedule } from "./_utils";
+import { newPerson, newSchedule, personsMatch, schedulesMatch } from "./_utils";
 
 const mergePerson = async (ctx: ScenarioContext) => {
   const awareId = v4();
@@ -64,6 +66,29 @@ const mergePerson = async (ctx: ScenarioContext) => {
   }
 
   ctx.log(`Apply succeeded with ${references.length} reference(s) as expected`);
+
+  if (ctx.tags.includes(TAG_ACCESS_PROPS)) {
+    const describeResult = await ctx.getReply({
+      kind: "describe-object",
+      provider: ctx.provider,
+      objectKind: "person",
+      objectAssignedRef: references.join(","),
+    });
+
+    if (describeResult.object === null) {
+      throw new Error(
+        `describe-object returned null for person with ref(s): ${references.join(",")}`,
+      );
+    }
+
+    if (!personsMatch(describeResult.object.data as any, personProps)) {
+      throw new Error(
+        `Person props mismatch after save. Expected: ${JSON.stringify(personProps)}, Got: ${JSON.stringify(describeResult.object.data)}`,
+      );
+    }
+
+    ctx.log(`Props comparison passed: agent returned correct person props`);
+  }
 
   // delete the person to clean up after test
   await ctx.getReply({
@@ -148,6 +173,29 @@ const mergeSchedule = async (ctx: ScenarioContext) => {
 
   ctx.log(`Apply succeeded with ${references.length} reference(s) as expected`);
 
+  if (ctx.tags.includes(TAG_ACCESS_PROPS)) {
+    const describeResult = await ctx.getReply({
+      kind: "describe-object",
+      provider: ctx.provider,
+      objectKind: "schedule",
+      objectAssignedRef: references.join(","),
+    });
+
+    if (describeResult.object === null) {
+      throw new Error(
+        `describe-object returned null for schedule with ref(s): ${references.join(",")}`,
+      );
+    }
+
+    if (!schedulesMatch(describeResult.object.data as any, scheduleProps)) {
+      throw new Error(
+        `Schedule props mismatch after save. Expected: ${JSON.stringify(scheduleProps)}, Got: ${JSON.stringify(describeResult.object.data)}`,
+      );
+    }
+
+    ctx.log(`Props comparison passed: agent returned correct schedule props`);
+  }
+
   // delete the schedule to clean up after test
   await ctx.getReply({
     kind: "apply-change",
@@ -178,7 +226,7 @@ const mergeZone = async () => {
 };
 
 const s: Scenario = {
-  tags: ["access"],
+  tags: [TAG_ACCESS],
   name: "Access Sync: Merges Access Objects it supports",
   description: "Access Sync: Merges Access Objects it supports",
   run: async (ctx) => {
