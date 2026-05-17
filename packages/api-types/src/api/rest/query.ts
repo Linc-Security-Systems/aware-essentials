@@ -11,7 +11,7 @@ export interface PaginatedQueryResponse<T> {
   total: number;
 }
 
-export const sPaginatedQueryRequestOf = <T extends z.AnyZodObject>(
+export const sPaginatedQueryRequestOf = <T extends z.ZodObject<z.ZodRawShape>>(
   criteriaSchema: T,
 ) =>
   z

@@ -4,7 +4,7 @@
     "type": "git",
     "url": "git+https://github.com/Linc-Security-Systems/aware-essentials.git"
   },
-  "version": "2.0.82",
+  "version": "2.0.83",
   "description": "Common types between backend, agent(s) and frontend(s)",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -17,7 +17,7 @@
   },
   "license": "MIT",
   "peerDependencies": {
-    "zod": "^3.24.2"
+    "zod": "4.4.3"
   },
   "devDependencies": {
     "@types/json-schema": "^7.0.15",
@@ -27,7 +27,7 @@
     "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-import": "^2.31.0",
     "typescript": "~5.8.3",
-    "zod": "^3.24.2"
+    "zod": "4.4.3"
   },
   "scripts": {
     "build": "tsc && cp package.json dist/",

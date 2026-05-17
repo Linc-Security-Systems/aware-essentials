@@ -28,7 +28,7 @@ export const sProviderSpecs = z.object({
       'a valid JSON schema that describes provider config data structure',
     ), // We can use AJV to validate the definition of a JSON schema
   configDefault: z
-    .record(z.unknown())
+    .record(z.string(), z.unknown())
     .describe('Default initialized values for configuration'),
   configFormUiHints: z
     .array(sUiHint)

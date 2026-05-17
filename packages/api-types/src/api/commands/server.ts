@@ -20,7 +20,7 @@ export const sNotify = z.object({
     source: sDeviceParam,
     message: z.string().nonempty(),
     severity: sNotificationSeverity,
-    metadata: z.record(z.unknown()),
+    metadata: z.record(z.string(), z.unknown()),
     notificationRef: z.string().nonempty().nullable(),
     recipientId: z.string().nonempty().nullable(),
   }),

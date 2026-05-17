@@ -18,7 +18,7 @@ export const sNotFoundMeta = z.object({
 
 export const sInvalidMeta = z.object({
   subject: z.string(),
-  fieldErrors: z.record(z.string()), // key → human msg
+  fieldErrors: z.record(z.string(), z.string()), // key → human msg
 });
 
 export const sConflictMeta = z.object({

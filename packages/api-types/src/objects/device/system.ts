@@ -9,5 +9,5 @@ export type SystemDeviceSpecs = z.infer<typeof sSystemDeviceSpecs>;
 
 // STATE
 
-export const sSystemDeviceStateDto = z.record(z.unknown());
+export const sSystemDeviceStateDto = z.record(z.string(), z.unknown());
 export type SystemDeviceStateDto = z.infer<typeof sSystemDeviceStateDto>;

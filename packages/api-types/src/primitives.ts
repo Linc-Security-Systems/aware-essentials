@@ -15,7 +15,7 @@ import {
 
 export const sDeviceId = z.string().nonempty();
 export const sPresetId = z.string().nonempty();
-export const sDeviceEvent = z.record(z.unknown());
+export const sDeviceEvent = z.record(z.string(), z.unknown());
 export const sPersonId = z.string().nonempty();
 export const sPersonTypeId = z.string().nonempty();
 export const sZoneId = z.string().nonempty();

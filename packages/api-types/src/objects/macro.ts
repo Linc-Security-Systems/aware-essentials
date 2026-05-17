@@ -5,7 +5,7 @@ export const sMacroItemDto = z.object({
   stepId: z.string().nonempty(),
   deviceId: z.string().uuid().nonempty(),
   command: z.string().nonempty(),
-  params: z.record(z.unknown()),
+  params: z.record(z.string(), z.unknown()),
 });
 
 export const sMacroDto = z.object({
@@ -16,7 +16,7 @@ export const sMacroDto = z.object({
     .string()
     .nullable()
     .describe('The module the macro rule belongs to'),
-  metadata: z.record(z.unknown()),
+  metadata: z.record(z.string(), z.unknown()),
   createdOn: z.string(),
   lastModifiedOn: z.string(),
   createdBy: z.string().nullable(),

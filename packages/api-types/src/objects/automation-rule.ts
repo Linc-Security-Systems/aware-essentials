@@ -4,7 +4,7 @@ export const sAutomationRuleCommand = z.object({
   command: z.string().nonempty().describe('The command to be executed'),
   target: z.string().nonempty().describe('The target of the command'),
   params: z
-    .record(z.unknown())
+    .record(z.string(), z.unknown())
     .describe('The parameters of the command depending on what it is'),
 });
 
@@ -45,7 +45,7 @@ export const sAutomationRuleProps = z.object({
     .string()
     .nullable()
     .describe('The module the automation rule belongs to'),
-  metadata: z.record(z.unknown()),
+  metadata: z.record(z.string(), z.unknown()),
 });
 
 export const sAutomationRuleDto = sAutomationRuleProps.merge(
