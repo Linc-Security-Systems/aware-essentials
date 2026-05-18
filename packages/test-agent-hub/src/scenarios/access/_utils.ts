@@ -36,13 +36,43 @@ export const personsMatch = (
   );
 };
 
+const hhmmssToSeconds = (t: number): number => {
+  const ss = t % 100;
+  const mm = Math.floor(t / 100) % 100;
+  const hh = Math.floor(t / 10000);
+  return hh * 3600 + mm * 60 + ss;
+};
+
 export const schedulesMatch = (
   s1: ExternalScheduleProps,
   s2: ExternalScheduleProps,
 ) => {
-  return (
-    s1.displayName === s2.displayName &&
-    JSON.stringify(s1.include) === JSON.stringify(s2.include)
+  if (s1.displayName !== s2.displayName) return false;
+
+  const i1 = s1.include;
+  const i2 = s2.include;
+
+  if (i1.repeat !== i2.repeat) return false;
+  if (i1.startDate !== i2.startDate) return false;
+  if (i1.endDate !== i2.endDate) return false;
+
+  if (i1.timeIntervals.length !== i2.timeIntervals.length) return false;
+
+  const sort = (intervals: typeof i1.timeIntervals) =>
+    [...intervals].sort((a, b) =>
+      a.weekDay !== b.weekDay
+        ? a.weekDay.localeCompare(b.weekDay)
+        : a.from - b.from,
+    );
+
+  const sorted1 = sort(i1.timeIntervals);
+  const sorted2 = sort(i2.timeIntervals);
+
+  return sorted1.every(
+    (a, idx) =>
+      a.weekDay === sorted2[idx].weekDay &&
+      a.from === sorted2[idx].from &&
+      Math.abs(hhmmssToSeconds(a.to) - hhmmssToSeconds(sorted2[idx].to)) <= 1,
   );
 };
 
@@ -71,7 +101,16 @@ export const newPerson = (): ExternalPersonProps => ({
   validFrom: null,
   validTo: null,
   accessSuspended: false,
-  credentials: [],
+  credentials: [
+    {
+      type: "card",
+      value: "12345678",
+    },
+    {
+      type: "pin",
+      value: "1234",
+    },
+  ],
 });
 
 export const newSchedule = (): ExternalScheduleProps => ({
