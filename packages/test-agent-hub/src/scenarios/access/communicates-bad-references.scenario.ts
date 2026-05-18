@@ -21,7 +21,7 @@ const s: Scenario = {
     });
 
     const awareId = v4();
-    const personInfo = newPerson();
+    const personInfo = newPerson([]);
     const validateResult = await ctx.getReply({
       kind: "validate-change",
       provider: ctx.provider,

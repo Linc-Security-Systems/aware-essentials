@@ -25,9 +25,12 @@ import {
 //   registers its own best-effort cleanup automatically
 // ----------------------------------------------------------------
 
-const mergePerson = async (ctx: ScenarioContext) => {
+const mergePerson = async (
+  ctx: ScenarioContext,
+  credentials: ExternalPersonProps["credentials"],
+) => {
   const awareId = v4();
-  const props = newPerson();
+  const props = newPerson(credentials);
 
   const validateResult = await ctx.getReply({
     kind: "validate-change",
@@ -369,8 +372,8 @@ const mergeAccessRule = async (ctx: ScenarioContext) => {
   );
 
   // Create real prerequisite objects (each registers its own cleanup)
-  const p1 = await mergePerson(ctx);
-  const p2 = await mergePerson(ctx);
+  const p1 = await mergePerson(ctx, []);
+  const p2 = await mergePerson(ctx, []);
   const s1 = await mergeSchedule(ctx);
   const s2 = await mergeSchedule(ctx);
 
@@ -546,7 +549,16 @@ const s: Scenario = {
 
     if (accessObjects.includes("person")) {
       ctx.log(`Provider supports 'person' access object, testing merge...`);
-      const person = await mergePerson(ctx);
+      const person = await mergePerson(ctx, [
+        {
+          type: "card",
+          value: "12345678",
+        },
+        {
+          type: "pin",
+          value: "1234",
+        },
+      ]);
       await deletePerson(ctx, person.awareId, person.refs, person.props);
     }
 
@@ -570,6 +582,8 @@ const s: Scenario = {
       ctx.log(`Provider supports 'zone' access object, testing merge...`);
       await mergeZone();
     }
+
+    await ctx.runCleanups();
 
     await ctx.getReply({
       kind: "stop",

@@ -78,10 +78,10 @@ const createPerson = async (
 
 //Create 4 people and ensure they all have unique references
 const createPeople = async (ctx: ScenarioContext) => {
-  const person1 = { awareId: v4(), person: newPerson() };
-  const person2 = { awareId: v4(), person: newPerson() };
-  const person3 = { awareId: v4(), person: newPerson() };
-  const person4 = { awareId: v4(), person: newPerson() };
+  const person1 = { awareId: v4(), person: newPerson([]) };
+  const person2 = { awareId: v4(), person: newPerson([]) };
+  const person3 = { awareId: v4(), person: newPerson([]) };
+  const person4 = { awareId: v4(), person: newPerson([]) };
 
   ctx.log(`Creating four people`);
 

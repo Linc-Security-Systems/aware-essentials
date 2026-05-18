@@ -95,22 +95,15 @@ export const rulesMatch = (
   );
 };
 
-export const newPerson = (): ExternalPersonProps => ({
+export const newPerson = (
+  credentials: ExternalPersonProps["credentials"],
+): ExternalPersonProps => ({
   firstName: uniqueName(),
   lastName: uniqueName(),
   validFrom: null,
   validTo: null,
   accessSuspended: false,
-  credentials: [
-    {
-      type: "card",
-      value: "12345678",
-    },
-    {
-      type: "pin",
-      value: "1234",
-    },
-  ],
+  credentials,
 });
 
 export const newSchedule = (): ExternalScheduleProps => ({
