@@ -1,4 +1,4 @@
-import { Injectable, Inject, Logger } from "@nestjs/common";
+import { Injectable, Inject } from "@nestjs/common";
 import { FromAgent, Message } from "@awarevue/api-types";
 import { RequestKind, Outbound } from "@awarevue/agent-sdk";
 import {
@@ -27,10 +27,16 @@ import {
 } from "./reporter";
 import { DeviceStateStoreImpl } from "./helpers/device-state-store";
 
+// ANSI color codes
+const RESET = "\x1b[0m";
+const BOLD = "\x1b[1m";
+const DIM = "\x1b[2m";
+const CYAN = "\x1b[36m";
+const RED = "\x1b[31m";
+const YELLOW = "\x1b[33m";
+
 @Injectable()
 export class RunnerService {
-  private readonly logger = new Logger(RunnerService.name);
-
   constructor(
     private readonly hubService: HubService,
     @Inject(CLI_OPTIONS) private readonly options: CLIOptions,
@@ -54,29 +60,40 @@ export class RunnerService {
     try {
       agent = await this.hubService.awaitAgent(agentId, connectionTimeout);
     } catch (err) {
-      this.logger.error((err as Error).message);
+      console.error(`${RED}Error:${RESET} ${(err as Error).message}`);
       return 1;
     }
 
     // 2. Load & filter scenarios
-    const tags = tagsFromOptions ?? agent.registerPayload.testerCliTags ?? [];
+    const tags =
+      tagsFromOptions.length < 1
+        ? (agent.registerPayload.testerCliTags ?? [])
+        : tagsFromOptions;
     const allScenarios = loadScenarios();
     const scenarios = filterScenarios(allScenarios, tags);
 
-    this.logger.log(
-      `Agent: ${agentId} | Scenarios: ${scenarios.length}/${allScenarios.length}` +
-        (tags.length > 0 ? ` | Tags: ${tags.join(", ")}` : " | Tags: (all)"),
+    console.log(
+      `${DIM}  Agent:${RESET} ${BOLD}${agentId}${RESET}` +
+        `  ${DIM}Scenarios: ${scenarios.length}/${allScenarios.length}${RESET}`,
     );
+    console.log(
+      tags.length > 0
+        ? `${DIM}  Tags:${RESET} ${CYAN}${tags.join(", ")}${RESET}`
+        : `${DIM}  Tags: (all)${RESET}`,
+    );
+    console.log();
 
     if (scenarios.length === 0) {
-      this.logger.warn("No scenarios matched the given tags");
+      console.warn(
+        `${YELLOW}Warning:${RESET} No scenarios matched the given tags`,
+      );
       return 0;
     }
 
     // 3. Pick first provider from the agent's registration
     const providers = Object.keys(agent.registerPayload.providers);
     if (providers.length === 0) {
-      this.logger.error("Agent registered with no providers");
+      console.error(`${RED}Error:${RESET} Agent registered with no providers`);
       return 1;
     }
     const provider = providers[0];
@@ -111,7 +128,7 @@ export class RunnerService {
 
         // Run with timeout
         if (!this.options.quiet) {
-          this.logger.log(`Running scenario '${scenario.name}'...`);
+          console.log(`${DIM}  Running${RESET} ${scenario.name}...`);
         }
         result = await this.runWithTimeout(scenario.run(built.ctx), start);
       } catch (err) {
@@ -135,7 +152,7 @@ export class RunnerService {
     if (report) {
       writeJUnitReport(reports, report);
       if (!this.options.quiet) {
-        this.logger.log(`JUnit report written to ${report}`);
+        console.log(`${DIM}JUnit report written to ${report}${RESET}`);
       }
     }
 
@@ -154,10 +171,14 @@ export class RunnerService {
     logs: string[],
     tags: string[],
     timeoutMs: number,
-  ): { ctx: ScenarioContext; store: DeviceStateStoreImpl } {
+  ): {
+    ctx: ScenarioContext;
+    store: DeviceStateStoreImpl;
+  } {
     const { protocol, registerPayload } = agent;
     const messages$ = (protocol as any).transport.messages$;
     const store = new DeviceStateStoreImpl(messages$, timeoutMs);
+    const cleanups: { label: string; fn: () => Promise<void> }[] = [];
 
     const ctx: ScenarioContext = {
       protocol,
@@ -167,6 +188,18 @@ export class RunnerService {
       tags,
       deviceState: store,
       log: (msg: string) => logs.push(msg),
+      registerCleanup: (label: string, fn: () => Promise<void>) =>
+        cleanups.push({ label, fn }),
+      runCleanups: async () => {
+        for (const { label, fn } of [...cleanups].reverse()) {
+          try {
+            await fn();
+          } catch (err) {
+            logs.push(`[cleanup] ${label}: ${(err as Error).message}`);
+          }
+        }
+        cleanups.splice(0);
+      },
 
       getReply: <K extends RequestKind>(
         payload: Extract<Outbound<"server">, { kind: K }>,
@@ -236,11 +269,12 @@ export class RunnerService {
               { matched: predicates.map(() => null) },
             ),
             tap((acc: { matched: (Message<FromAgent> | null)[] }) => {
-              this.logger.log(
-                acc.matched.filter((m) => m !== null).length +
+              console.log(
+                `${DIM}  ` +
+                  acc.matched.filter((m) => m !== null).length +
                   "/" +
                   predicates.length +
-                  " messages matched",
+                  ` messages matched${RESET}`,
               );
             }),
             filter((acc: { matched: (Message<FromAgent> | null)[] }) =>
