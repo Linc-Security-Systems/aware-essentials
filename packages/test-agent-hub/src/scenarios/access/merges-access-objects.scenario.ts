@@ -1,8 +1,12 @@
 import { v4 } from "uuid";
 import {
+  ExternalAccessRuleProps,
+  ExternalPersonProps,
+  ExternalScheduleProps,
+} from "@awarevue/api-types";
+import {
   Scenario,
   ScenarioContext,
-  scenarioFail,
   scenarioPass,
   TAG_ACCESS_PROPS,
   TAG_ACCESS,
@@ -12,243 +16,348 @@ import {
   newRule,
   newSchedule,
   personsMatch,
+  rulesMatch,
   schedulesMatch,
 } from "./_utils";
 
+// ----------------------------------------------------------------
+// mergePerson — validate + apply + optional prop verification
+//   registers its own best-effort cleanup automatically
+// ----------------------------------------------------------------
+
 const mergePerson = async (ctx: ScenarioContext) => {
   const awareId = v4();
-  const personProps = newPerson();
+  const props = newPerson();
+
   const validateResult = await ctx.getReply({
     kind: "validate-change",
     provider: ctx.provider,
-    refMap: {
-      person: {
-        [awareId]: [],
-      },
-    },
+    refMap: { person: { [awareId]: [] } },
     devices: {},
     mutations: [
       {
         kind: "merge",
         objectId: awareId,
         objectKind: "person",
-        original: personProps,
-        props: personProps,
+        original: props,
+        props,
       },
     ],
   });
 
   if (validateResult.issues.length > 0) {
-    return scenarioFail(
-      `Expected 0 issues, got ${validateResult.issues.length}`,
+    throw new Error(
+      `mergePerson: expected 0 issues, got ${validateResult.issues.length}`,
     );
   }
-
   ctx.log(`Validation passed with 0 issues as expected`);
 
   const applyResult = await ctx.getReply({
     kind: "apply-change",
     provider: ctx.provider,
-    refMap: {
-      person: {
-        [awareId]: [],
-      },
-    },
+    refMap: { person: { [awareId]: [] } },
     devices: {},
     mutations: [
       {
         kind: "merge",
         objectId: awareId,
         objectKind: "person",
-        original: personProps,
-        props: personProps,
+        original: props,
+        props,
       },
     ],
   });
 
-  const references = applyResult.refs.person?.[awareId] || [];
-  if (references.length < 1) {
-    return scenarioFail(`Expected 1 reference, got ${references.length}`);
+  const refs = applyResult.refs.person?.[awareId] ?? [];
+  if (refs.length < 1) {
+    throw new Error(
+      `mergePerson: expected at least 1 reference, got ${refs.length}`,
+    );
   }
+  ctx.log(`Apply succeeded with ${refs.length} reference(s) as expected`);
 
-  ctx.log(`Apply succeeded with ${references.length} reference(s) as expected`);
+  ctx.registerCleanup(`person ${awareId}`, async () => {
+    await ctx.getReply({
+      kind: "apply-change",
+      provider: ctx.provider,
+      refMap: { person: { [awareId]: refs } },
+      devices: {},
+      mutations: [
+        {
+          kind: "delete",
+          objectId: awareId,
+          objectKind: "person",
+          original: props,
+        },
+      ],
+    });
+  });
 
   if (ctx.tags.includes(TAG_ACCESS_PROPS)) {
     const describeResult = await ctx.getReply({
       kind: "describe-object",
       provider: ctx.provider,
       objectKind: "person",
-      objectAssignedRef: references.join(","),
+      objectAssignedRef: refs.join(","),
     });
 
     if (describeResult.object === null) {
       throw new Error(
-        `describe-object returned null for person with ref(s): ${references.join(",")}`,
+        `describe-object returned null for person with ref(s): ${refs.join(",")}`,
       );
     }
 
-    if (!personsMatch(describeResult.object.data as any, personProps)) {
+    if (!personsMatch(describeResult.object.data as any, props)) {
       throw new Error(
-        `Person props mismatch after save. Expected: ${JSON.stringify(personProps)}, Got: ${JSON.stringify(describeResult.object.data)}`,
+        `Person props mismatch after save. Expected: ${JSON.stringify(props)}, Got: ${JSON.stringify(describeResult.object.data)}`,
       );
     }
 
     ctx.log(`Props comparison passed: agent returned correct person props`);
   }
 
-  // delete the person to clean up after test
+  return { awareId, refs, props };
+};
+
+// ----------------------------------------------------------------
+// deletePerson — test assertion: delete + verify describe returns null
+// ----------------------------------------------------------------
+
+const deletePerson = async (
+  ctx: ScenarioContext,
+  awareId: string,
+  refs: string[],
+  props: ExternalPersonProps,
+) => {
   await ctx.getReply({
     kind: "apply-change",
     provider: ctx.provider,
-    refMap: {
-      person: {
-        [awareId]: references,
-      },
-    },
+    refMap: { person: { [awareId]: refs } },
     devices: {},
     mutations: [
       {
         kind: "delete",
         objectId: awareId,
         objectKind: "person",
-        original: {
-          ...personProps,
-        },
+        original: props,
       },
     ],
   });
 
-  ctx.log(`Deleted person to clean up after test`);
+  const describeResult = await ctx.getReply({
+    kind: "describe-object",
+    provider: ctx.provider,
+    objectKind: "person",
+    objectAssignedRef: refs.join(","),
+  });
+
+  if (describeResult.object !== null) {
+    throw new Error(
+      `deletePerson: describe-object must return null after delete, got: ${JSON.stringify(describeResult.object)}`,
+    );
+  }
+
+  ctx.log(`Deleted person ${awareId} and confirmed it no longer exists`);
 };
+
+// ----------------------------------------------------------------
+// mergeSchedule — validate + apply + optional prop verification
+//   registers its own best-effort cleanup automatically
+// ----------------------------------------------------------------
 
 const mergeSchedule = async (ctx: ScenarioContext) => {
   const awareId = v4();
-  const scheduleProps = newSchedule();
+  const props = newSchedule();
+
   const validateResult = await ctx.getReply({
     kind: "validate-change",
     provider: ctx.provider,
-    refMap: {
-      schedule: {
-        [awareId]: [],
-      },
-    },
+    refMap: { schedule: { [awareId]: [] } },
     devices: {},
     mutations: [
       {
         kind: "merge",
         objectId: awareId,
         objectKind: "schedule",
-        original: scheduleProps,
-        props: scheduleProps,
+        original: props,
+        props,
       },
     ],
   });
 
   if (validateResult.issues.length > 0) {
-    return scenarioFail(
-      `Expected 0 issues, got ${validateResult.issues.length}`,
+    throw new Error(
+      `mergeSchedule: expected 0 issues, got ${validateResult.issues.length}`,
     );
   }
-
   ctx.log(`Validation passed with 0 issues as expected`);
 
   const applyResult = await ctx.getReply({
     kind: "apply-change",
     provider: ctx.provider,
-    refMap: {
-      schedule: {
-        [awareId]: [],
-      },
-    },
+    refMap: { schedule: { [awareId]: [] } },
     devices: {},
     mutations: [
       {
         kind: "merge",
         objectId: awareId,
         objectKind: "schedule",
-        original: scheduleProps,
-        props: scheduleProps,
+        original: props,
+        props,
       },
     ],
   });
 
-  const references = applyResult.refs.schedule?.[awareId] || [];
-  if (references.length < 1) {
-    return scenarioFail(`Expected 1 reference, got ${references.length}`);
+  const refs = applyResult.refs.schedule?.[awareId] ?? [];
+  if (refs.length < 1) {
+    throw new Error(
+      `mergeSchedule: expected at least 1 reference, got ${refs.length}`,
+    );
   }
+  ctx.log(`Apply succeeded with ${refs.length} reference(s) as expected`);
 
-  ctx.log(`Apply succeeded with ${references.length} reference(s) as expected`);
+  ctx.registerCleanup(`schedule ${awareId}`, async () => {
+    await ctx.getReply({
+      kind: "apply-change",
+      provider: ctx.provider,
+      refMap: { schedule: { [awareId]: refs } },
+      devices: {},
+      mutations: [
+        {
+          kind: "delete",
+          objectId: awareId,
+          objectKind: "schedule",
+          original: props,
+        },
+      ],
+    });
+  });
 
   if (ctx.tags.includes(TAG_ACCESS_PROPS)) {
     const describeResult = await ctx.getReply({
       kind: "describe-object",
       provider: ctx.provider,
       objectKind: "schedule",
-      objectAssignedRef: references.join(","),
+      objectAssignedRef: refs.join(","),
     });
 
     if (describeResult.object === null) {
       throw new Error(
-        `describe-object returned null for schedule with ref(s): ${references.join(",")}`,
+        `describe-object returned null for schedule with ref(s): ${refs.join(",")}`,
       );
     }
 
-    if (!schedulesMatch(describeResult.object.data as any, scheduleProps)) {
+    if (!schedulesMatch(describeResult.object.data as any, props)) {
       throw new Error(
-        `Schedule props mismatch after save. Expected: ${JSON.stringify(scheduleProps)}, Got: ${JSON.stringify(describeResult.object.data)}`,
+        `Schedule props mismatch after save. Expected: ${JSON.stringify(props)}, Got: ${JSON.stringify(describeResult.object.data)}`,
       );
     }
 
     ctx.log(`Props comparison passed: agent returned correct schedule props`);
   }
 
-  // delete the schedule to clean up after test
+  return { awareId, refs, props };
+};
+
+// ----------------------------------------------------------------
+// deleteSchedule — test assertion: delete + verify describe returns null
+// ----------------------------------------------------------------
+
+const deleteSchedule = async (
+  ctx: ScenarioContext,
+  awareId: string,
+  refs: string[],
+  props: ExternalScheduleProps,
+) => {
   await ctx.getReply({
     kind: "apply-change",
     provider: ctx.provider,
-    refMap: {
-      schedule: {
-        [awareId]: references,
-      },
-    },
+    refMap: { schedule: { [awareId]: refs } },
     devices: {},
     mutations: [
       {
         kind: "delete",
         objectId: awareId,
         objectKind: "schedule",
-        original: {
-          ...scheduleProps,
-        },
+        original: props,
       },
     ],
   });
 
-  ctx.log(`Deleted schedule to clean up after test`);
+  const describeResult = await ctx.getReply({
+    kind: "describe-object",
+    provider: ctx.provider,
+    objectKind: "schedule",
+    objectAssignedRef: refs.join(","),
+  });
+
+  if (describeResult.object !== null) {
+    throw new Error(
+      `deleteSchedule: describe-object must return null after delete, got: ${JSON.stringify(describeResult.object)}`,
+    );
+  }
+
+  ctx.log(`Deleted schedule ${awareId} and confirmed it no longer exists`);
 };
 
-const mergeZone = async () => {
-  // TODO implement when we have a test provider that supports zones
+// ----------------------------------------------------------------
+// deleteAccessRule — test assertion: delete + verify describe returns null
+// ----------------------------------------------------------------
+
+const deleteAccessRule = async (
+  ctx: ScenarioContext,
+  ruleId: string,
+  refs: string[],
+  props: ExternalAccessRuleProps,
+  dependentRefMap: Record<string, Record<string, string[]>>,
+  devices: Record<string, Record<string, unknown>>,
+) => {
+  await ctx.getReply({
+    kind: "apply-change",
+    provider: ctx.provider,
+    refMap: {
+      accessRule: { [ruleId]: refs },
+      ...dependentRefMap,
+    },
+    devices,
+    mutations: [
+      {
+        kind: "delete",
+        objectId: ruleId,
+        objectKind: "accessRule",
+        original: props,
+      },
+    ],
+  });
+
+  const describeResult = await ctx.getReply({
+    kind: "describe-object",
+    provider: ctx.provider,
+    objectKind: "accessRule",
+    objectAssignedRef: refs.join(","),
+  });
+
+  if (describeResult.object !== null) {
+    throw new Error(
+      `deleteAccessRule: describe-object must return null after delete, got: ${JSON.stringify(describeResult.object)}`,
+    );
+  }
+
+  ctx.log(`Deleted accessRule ${ruleId} and confirmed it no longer exists`);
 };
+
+// ----------------------------------------------------------------
+// mergeAccessRule — creates real prerequisite persons/schedules,
+//   validates + applies the rule, verifies props, then exercises
+//   all delete assertions before the runner's cleanup fires
+// ----------------------------------------------------------------
 
 const mergeAccessRule = async (ctx: ScenarioContext) => {
-  const s1 = newSchedule();
-  const s2 = newSchedule();
-  const s1Id = v4();
-  const s2Id = v4();
-
-  const p1 = newPerson();
-  const p2 = { ...newPerson(), credentials: [] };
-  const p1Id = v4();
-  const p2Id = v4();
-
-  // Request available devices
   const devicesResponse = await ctx.getReply({
     kind: "get-available-devices",
     provider: ctx.provider,
   });
 
-  // get all found readers
   const readers = devicesResponse.devices.filter((d) => d.type === "reader");
   if (readers.length < 2) {
     ctx.log(`Less than 2 readers found, skipping access rule merge test`);
@@ -259,47 +368,47 @@ const mergeAccessRule = async (ctx: ScenarioContext) => {
     `Found ${readers.length} readers, using them to test access rule merge`,
   );
 
+  // Create real prerequisite objects (each registers its own cleanup)
+  const p1 = await mergePerson(ctx);
+  const p2 = await mergePerson(ctx);
+  const s1 = await mergeSchedule(ctx);
+  const s2 = await mergeSchedule(ctx);
+
   const reader1Id = v4();
   const reader2Id = v4();
-
   const ruleId = v4();
-  const ruleProps = {
+
+  const ruleProps: ExternalAccessRuleProps = {
     ...newRule(),
-    appliedTo: [p1Id, p2Id],
+    appliedTo: [p1.awareId, p2.awareId],
     permissions: [
-      {
-        deviceId: reader1Id,
-        scheduleId: s1Id,
-      },
-      {
-        deviceId: reader2Id,
-        scheduleId: s2Id,
-      },
+      { deviceId: reader1Id, scheduleId: s1.awareId },
+      { deviceId: reader2Id, scheduleId: s2.awareId },
     ],
     groupPermissions: [],
+  };
+
+  const dependentRefMap: Record<string, Record<string, string[]>> = {
+    person: { [p1.awareId]: p1.refs, [p2.awareId]: p2.refs },
+    schedule: { [s1.awareId]: s1.refs, [s2.awareId]: s2.refs },
+    device: {
+      [reader1Id]: [reader1.foreignRef],
+      [reader2Id]: [reader2.foreignRef],
+    },
+  };
+  const devices: Record<string, Record<string, unknown>> = {
+    [reader1Id]: reader1 as Record<string, unknown>,
+    [reader2Id]: reader2 as Record<string, unknown>,
   };
 
   const validateResult = await ctx.getReply({
     kind: "validate-change",
     provider: ctx.provider,
     refMap: {
-      person: {
-        [p1Id]: [],
-        [p2Id]: [],
-      },
-      schedule: {
-        [s1Id]: [],
-        [s2Id]: [],
-      },
-      device: {
-        [reader1Id]: [reader1.foreignRef],
-        [reader2Id]: [reader2.foreignRef],
-      },
+      accessRule: { [ruleId]: [] },
+      ...dependentRefMap,
     },
-    devices: {
-      [reader1Id]: reader1,
-      [reader2Id]: reader2,
-    },
+    devices,
     mutations: [
       {
         kind: "merge",
@@ -311,7 +420,111 @@ const mergeAccessRule = async (ctx: ScenarioContext) => {
     ],
   });
 
+  if (validateResult.issues.length > 0) {
+    throw new Error(
+      `mergeAccessRule: expected 0 issues, got ${validateResult.issues.length}`,
+    );
+  }
+  ctx.log(`Validation passed with 0 issues as expected`);
 
+  const applyResult = await ctx.getReply({
+    kind: "apply-change",
+    provider: ctx.provider,
+    refMap: {
+      accessRule: { [ruleId]: [] },
+      ...dependentRefMap,
+    },
+    devices,
+    mutations: [
+      {
+        kind: "merge",
+        objectId: ruleId,
+        objectKind: "accessRule",
+        original: ruleProps,
+        props: ruleProps,
+      },
+    ],
+  });
+
+  const ruleRefs = applyResult.refs.accessRule?.[ruleId] ?? [];
+  if (ruleRefs.length < 1) {
+    throw new Error(
+      `mergeAccessRule: expected at least 1 reference, got ${ruleRefs.length}`,
+    );
+  }
+  ctx.log(`Apply succeeded with ${ruleRefs.length} reference(s) as expected`);
+
+  ctx.registerCleanup(`accessRule ${ruleId}`, async () => {
+    await ctx.getReply({
+      kind: "apply-change",
+      provider: ctx.provider,
+      refMap: {
+        accessRule: { [ruleId]: ruleRefs },
+        ...dependentRefMap,
+      },
+      devices,
+      mutations: [
+        {
+          kind: "delete",
+          objectId: ruleId,
+          objectKind: "accessRule",
+          original: ruleProps,
+        },
+      ],
+    });
+  });
+
+  if (ctx.tags.includes(TAG_ACCESS_PROPS)) {
+    const describeResult = await ctx.getReply({
+      kind: "describe-object",
+      provider: ctx.provider,
+      objectKind: "accessRule",
+      objectAssignedRef: ruleRefs.join(","),
+    });
+
+    if (describeResult.object === null) {
+      throw new Error(
+        `describe-object returned null for accessRule with ref(s): ${ruleRefs.join(",")}`,
+      );
+    }
+
+    // The third party returns its own local refs, not Aware IDs, so we normalize
+    // ruleProps to use the assigned refs before comparing.
+    const normalizedRuleProps: ExternalAccessRuleProps = {
+      ...ruleProps,
+      appliedTo: [p1.refs.join(","), p2.refs.join(",")],
+      permissions: [
+        { deviceId: reader1.foreignRef, scheduleId: s1.refs.join(",") },
+        { deviceId: reader2.foreignRef, scheduleId: s2.refs.join(",") },
+      ],
+    };
+
+    if (!rulesMatch(describeResult.object.data as any, normalizedRuleProps)) {
+      throw new Error(
+        `AccessRule props mismatch after save. Expected: ${JSON.stringify(normalizedRuleProps)}, Got: ${JSON.stringify(describeResult.object.data)}`,
+      );
+    }
+
+    ctx.log(`Props comparison passed: agent returned correct accessRule props`);
+  }
+
+  // Test assertions: verify each delete removes the object
+  await deleteAccessRule(
+    ctx,
+    ruleId,
+    ruleRefs,
+    ruleProps,
+    dependentRefMap,
+    devices,
+  );
+  await deletePerson(ctx, p1.awareId, p1.refs, p1.props);
+  await deletePerson(ctx, p2.awareId, p2.refs, p2.props);
+  await deleteSchedule(ctx, s1.awareId, s1.refs, s1.props);
+  await deleteSchedule(ctx, s2.awareId, s2.refs, s2.props);
+};
+
+const mergeZone = async () => {
+  // TODO implement when we have a test provider that supports zones
 };
 
 const s: Scenario = {
@@ -333,12 +546,19 @@ const s: Scenario = {
 
     if (accessObjects.includes("person")) {
       ctx.log(`Provider supports 'person' access object, testing merge...`);
-      await mergePerson(ctx);
+      const person = await mergePerson(ctx);
+      await deletePerson(ctx, person.awareId, person.refs, person.props);
     }
 
     if (accessObjects.includes("schedule")) {
       ctx.log(`Provider supports 'schedule' access object, testing merge...`);
-      await mergeSchedule(ctx);
+      const schedule = await mergeSchedule(ctx);
+      await deleteSchedule(
+        ctx,
+        schedule.awareId,
+        schedule.refs,
+        schedule.props,
+      );
     }
 
     if (accessObjects.includes("accessRule")) {

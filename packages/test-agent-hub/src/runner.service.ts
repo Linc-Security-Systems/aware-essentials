@@ -113,6 +113,7 @@ export class RunnerService {
 
       let result: ScenarioResult;
       let store: DeviceStateStoreImpl | undefined;
+      let cleanups: { label: string; fn: () => Promise<void> }[] = [];
 
       try {
         // Build the context for this scenario (fresh state store each time)
@@ -125,6 +126,7 @@ export class RunnerService {
           scenarioTimeout,
         );
         store = built.store;
+        cleanups = built.cleanups;
 
         // Run with timeout
         if (!this.options.quiet) {
@@ -138,6 +140,14 @@ export class RunnerService {
           durationMs: elapsed,
         };
       } finally {
+        // Run cleanups in reverse registration order (best-effort, errors logged only)
+        for (const { label, fn } of [...cleanups].reverse()) {
+          try {
+            await fn();
+          } catch (err) {
+            logs.push(`[cleanup] ${label}: ${(err as Error).message}`);
+          }
+        }
         // Dispose the store to prevent subscription leaks
         store?.dispose();
       }
@@ -171,10 +181,15 @@ export class RunnerService {
     logs: string[],
     tags: string[],
     timeoutMs: number,
-  ): { ctx: ScenarioContext; store: DeviceStateStoreImpl } {
+  ): {
+    ctx: ScenarioContext;
+    store: DeviceStateStoreImpl;
+    cleanups: { label: string; fn: () => Promise<void> }[];
+  } {
     const { protocol, registerPayload } = agent;
     const messages$ = (protocol as any).transport.messages$;
     const store = new DeviceStateStoreImpl(messages$, timeoutMs);
+    const cleanups: { label: string; fn: () => Promise<void> }[] = [];
 
     const ctx: ScenarioContext = {
       protocol,
@@ -184,6 +199,8 @@ export class RunnerService {
       tags,
       deviceState: store,
       log: (msg: string) => logs.push(msg),
+      registerCleanup: (label: string, fn: () => Promise<void>) =>
+        cleanups.push({ label, fn }),
 
       getReply: <K extends RequestKind>(
         payload: Extract<Outbound<"server">, { kind: K }>,
@@ -292,7 +309,7 @@ export class RunnerService {
       },
     };
 
-    return { ctx, store };
+    return { ctx, store, cleanups };
   }
 
   private async runWithTimeout(

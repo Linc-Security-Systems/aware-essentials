@@ -155,6 +155,13 @@ export interface ScenarioContext {
   log(msg: string): void;
 
   /**
+   * Register a best-effort cleanup callback that the runner will invoke in
+   * reverse registration order after the scenario finishes (pass or fail).
+   * Errors thrown by the callback are logged but do not affect the scenario result.
+   */
+  registerCleanup(label: string, fn: () => Promise<void>): void;
+
+  /**
    * Send a request and await the reply (promise version of protocol.getReply$).
    * Automatically handles timeout.
    */
