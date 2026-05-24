@@ -41,6 +41,7 @@ export const sAccessObjectKind = z.enum([
   'schedule',
   'person',
   'zone',
+  'device',
 ]);
 
 export const sTokenSpecs = z.object({

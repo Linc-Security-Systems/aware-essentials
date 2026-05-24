@@ -380,8 +380,17 @@ export const sDeviceMap = z
   .record(z.string(), z.record(z.string(), z.unknown()))
   .describe('Map of devices (readers) and their stashed provider metadata');
 
+const sRefMapValue = z.record(z.string(), z.array(z.string().nonempty()));
+
 export const sRefMap = z
-  .record(z.string(), z.record(z.string(), z.array(z.string().nonempty())))
+  .object({
+    accessRule: sRefMapValue,
+    schedule: sRefMapValue,
+    person: sRefMapValue,
+    zone: sRefMapValue,
+    device: sRefMapValue,
+  })
+  .partial()
   .describe('Map of foreign references to object IDs');
 
 // A. VALIDATE ACCESS CHANGES

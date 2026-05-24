@@ -39,10 +39,10 @@ export const createValidator = <T extends Agent>(agent: T) => {
       ),
     ];
     const notFoundPersonIds = personIds.filter(
-      (p) => !req.refMap['person'][p] || !req.refMap['person'][p].length,
+      (p) => !req.refMap['person']?.[p] || !req.refMap['person'][p].length,
     );
     const notFoundScheduleIds = scheduleIds.filter(
-      (s) => !req.refMap['schedule'][s] || !req.refMap['schedule'][s].length,
+      (s) => !req.refMap['schedule']?.[s] || !req.refMap['schedule'][s].length,
     );
     return [
       ...notFoundPersonIds.map(

@@ -126,6 +126,7 @@ export class AgentApp {
       accessRule: {},
       schedule: {},
       zone: {},
+      device: {},
     };
 
     return this.options.transport.messages$.pipe(

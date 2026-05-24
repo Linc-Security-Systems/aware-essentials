@@ -70,6 +70,8 @@ export interface Agent {
     context: Context,
     objectKind: K,
     objectRef: string,
-  ) => Observable<ExternalObjectProps[K] | null>;
+  ) => Observable<
+    K extends keyof ExternalObjectProps ? ExternalObjectProps[K] : null
+  >;
   pushFile?: (context: Context, req: PushFile) => Observable<boolean>;
 }
