@@ -25,8 +25,7 @@ export type PresenceZoneDto = z.infer<typeof sPresenceZoneDto>;
 export const sPersonPresenceDto = z.object({
   id: z.string(),
   person: sPresencePersonDto,
-  zone: z.union([sPresenceZoneDto, z.string()]),
-  online: z.boolean().nullable(),
+  onlineZones: z.array(sPresenceZoneDto),
   onLeave: z.boolean(),
   lastCheckInOn: z.number().nullable(),
   lastCheckOutOn: z.number().nullable(),
