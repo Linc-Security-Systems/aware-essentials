@@ -1,0 +1,53 @@
+{
+  "name": "@awarevue/agent-sdk-browser",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Linc-Security-Systems/aware-essentials.git"
+  },
+  "version": "1.0.0",
+  "description": "Browser transport adapters for the Aware agent protocol — iframe/postMessage drop-in replacement for the WebSocket transport.",
+  "author": "Yaser Awajan",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc -p tsconfig.json && cp package.json dist/",
+    "prepublishOnly": "yarn build",
+    "test": "vitest run",
+    "lint": "eslint \"src/**/*.{ts,tsx}\"",
+    "lint:fix": "yarn lint --fix"
+  },
+  "peerDependencies": {
+    "@awarevue/agent-sdk": "^2.0.89",
+    "@awarevue/api-types": "^2.0.89",
+    "rxjs": "^7.8.2"
+  },
+  "devDependencies": {
+    "@awarevue/agent-sdk": "2.0.89",
+    "@awarevue/api-types": "2.0.89",
+    "@typescript-eslint/eslint-plugin": "^8.31.1",
+    "@typescript-eslint/parser": "^8.31.1",
+    "eslint": "^9.25.1",
+    "eslint-config-prettier": "^10.1.2",
+    "eslint-plugin-import": "^2.31.0",
+    "jsdom": "^26.1.0",
+    "rxjs": "7.8.2",
+    "typescript": "^5.8.3",
+    "vitest": "^4.1.4"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
+}
