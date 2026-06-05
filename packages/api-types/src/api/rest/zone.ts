@@ -8,6 +8,7 @@ export type CreateZoneRequest = z.infer<typeof sCreateZoneRequest>;
 export const sUpdateZoneRequest = z.object({
   displayName: z.string().optional(),
   devices: z.array(z.string().nonempty()).optional(),
+  isCheckInZone: z.boolean().optional(),
 });
 
 export type UpdateZoneRequest = { id: string } & z.infer<

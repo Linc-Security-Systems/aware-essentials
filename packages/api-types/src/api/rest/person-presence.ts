@@ -12,12 +12,10 @@ export const sPersonTogglePresence = z.union([
   z.object({
     personId: z.string(),
     zoneId: z.string(),
-    credentialToken: z.undefined(),
   }),
   z.object({
     credentialToken: z.string(),
     zoneId: z.string(),
-    personId: z.undefined(),
   }),
 ]);
 
