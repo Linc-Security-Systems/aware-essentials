@@ -3,6 +3,7 @@ import { z } from 'zod';
 export const sZoneProps = z.object({
   displayName: z.string().nonempty(),
   devices: z.array(z.string().nonempty()),
+  isCheckInZone: z.boolean(),
 });
 
 export const sZoneDto = z.object({
@@ -11,7 +12,7 @@ export const sZoneDto = z.object({
   createdOn: z.string(),
   lastModifiedOn: z.string(),
   devices: z.array(z.string()),
-  isGlobal: z.boolean(),
+  isCheckInZone: z.boolean(),
   refs: z.record(z.string(), z.union([z.string(), z.array(z.string())])),
   version: z.number(),
 });

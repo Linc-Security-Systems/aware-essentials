@@ -12,7 +12,6 @@ export const sAppInfo = z.object({
   releaseDate: z.string(),
   serverDeviceId: z.string(),
   alarmDeviceId: z.string(),
-  globalZoneId: z.string(),
   presenceTrackerId: z.string(),
   passwordPolicy: sPasswordPolicy,
   mapTileServerUrl: z.string(),

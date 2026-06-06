@@ -85,46 +85,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@asamuzakjp/css-color@npm:^3.2.0":
-  version: 3.2.0
-  resolution: "@asamuzakjp/css-color@npm:3.2.0"
-  dependencies:
-    "@csstools/css-calc": "npm:^2.1.3"
-    "@csstools/css-color-parser": "npm:^3.0.9"
-    "@csstools/css-parser-algorithms": "npm:^3.0.4"
-    "@csstools/css-tokenizer": "npm:^3.0.3"
-    lru-cache: "npm:^10.4.3"
-  checksum: 10c0/a4bf1c831751b1fae46b437e37e8a38c0b5bd58d23230157ae210bd1e905fe509b89b7c243e63d1522d852668a6292ed730a160e21342772b4e5b7b8ea14c092
-  languageName: node
-  linkType: hard
-
-"@awarevue/agent-sdk-browser@workspace:packages/agent-sdk-browser":
-  version: 0.0.0-use.local
-  resolution: "@awarevue/agent-sdk-browser@workspace:packages/agent-sdk-browser"
-  dependencies:
-    "@awarevue/agent-sdk": "npm:2.0.89"
-    "@awarevue/api-types": "npm:2.0.89"
-    "@typescript-eslint/eslint-plugin": "npm:^8.31.1"
-    "@typescript-eslint/parser": "npm:^8.31.1"
-    eslint: "npm:^9.25.1"
-    eslint-config-prettier: "npm:^10.1.2"
-    eslint-plugin-import: "npm:^2.31.0"
-    jsdom: "npm:^26.1.0"
-    rxjs: "npm:7.8.2"
-    typescript: "npm:^5.8.3"
-    vitest: "npm:^4.1.4"
-  peerDependencies:
-    "@awarevue/agent-sdk": ^2.0.89
-    "@awarevue/api-types": ^2.0.89
-    rxjs: ^7.8.2
-  languageName: unknown
-  linkType: soft
-
-"@awarevue/agent-sdk@npm:2.0.89, @awarevue/agent-sdk@workspace:packages/agent-sdk-typescript":
+"@awarevue/agent-sdk@npm:2.0.90, @awarevue/agent-sdk@workspace:packages/agent-sdk-typescript":
   version: 0.0.0-use.local
   resolution: "@awarevue/agent-sdk@workspace:packages/agent-sdk-typescript"
   dependencies:
-    "@awarevue/api-types": "npm:2.0.89"
+    "@awarevue/api-types": "npm:2.0.90"
     "@types/node": "npm:^20.12.7"
     "@types/ws": "npm:^8.18.1"
     "@typescript-eslint/eslint-plugin": "npm:^8.31.1"
@@ -138,7 +103,7 @@ __metadata:
     ws: "npm:^8"
     zod: "npm:4.4.3"
   peerDependencies:
-    "@awarevue/api-types": 2.0.89
+    "@awarevue/api-types": 2.0.90
     rxjs: ^7.8.2
     ws: ^8
     zod: 4.4.3
@@ -149,8 +114,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@awarevue/agent-tester-cli@workspace:packages/test-agent-hub"
   dependencies:
-    "@awarevue/agent-sdk": "npm:2.0.89"
-    "@awarevue/api-types": "npm:2.0.89"
+    "@awarevue/agent-sdk": "npm:2.0.90"
+    "@awarevue/api-types": "npm:2.0.90"
     "@nestjs/cli": "npm:^11.0.0"
     "@nestjs/common": "npm:^11.0.0"
     "@nestjs/core": "npm:^11.0.0"
@@ -180,7 +145,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@awarevue/api-types@npm:2.0.89, @awarevue/api-types@workspace:packages/api-types":
+"@awarevue/api-types@npm:2.0.90, @awarevue/api-types@workspace:packages/api-types":
   version: 0.0.0-use.local
   resolution: "@awarevue/api-types@workspace:packages/api-types"
   dependencies:
