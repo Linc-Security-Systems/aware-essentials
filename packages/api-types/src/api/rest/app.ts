@@ -15,6 +15,7 @@ export const sAppInfo = z.object({
   presenceTrackerId: z.string(),
   passwordPolicy: sPasswordPolicy,
   mapTileServerUrl: z.string(),
+  userAgentExtensions: z.array(z.string()),
 });
 
 export type AppInfo = z.infer<typeof sAppInfo>;
