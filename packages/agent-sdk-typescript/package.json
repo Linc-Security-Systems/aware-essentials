@@ -15,14 +15,13 @@
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
+      "browser": "./dist/index.browser.js",
       "import": "./dist/index.js",
       "require": "./dist/index.js",
       "types": "./dist/index.d.ts"
     }
   },
-  "engines": {
-    "node": ">=18.0.0"
-  },
+  "sideEffects": false,
   "scripts": {
     "build": "tsc -p tsconfig.json  && cp package.json dist/",
     "prepublishOnly": "yarn build",
@@ -35,6 +34,11 @@
     "rxjs": "^7.8.2",
     "ws": "^8",
     "zod": "4.4.3"
+  },
+  "peerDependenciesMeta": {
+    "ws": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@awarevue/api-types": "2.0.90",

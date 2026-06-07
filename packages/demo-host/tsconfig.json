@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "module": "ESNext",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "strict": true,
+    "paths": {
+      "@awarevue/agent-sdk": ["../agent-sdk-typescript/src/index.browser.ts"],
+      "@awarevue/agent-sdk-browser": ["../agent-sdk-browser/src/index.ts"],
+      "@awarevue/api-types": ["../api-types/src/index.ts"]
+    }
+  },
+  "include": ["src"]
+}
