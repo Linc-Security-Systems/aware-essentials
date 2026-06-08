@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Lock Controller — Agent Plugin</title>
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        font-family: system-ui, sans-serif;
+        background: #0f172a;
+        color: #e2e8f0;
+        padding: 20px;
+        min-height: 100vh;
+      }
+
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 24px;
+      }
+
+      h1 { font-size: .9rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: #94a3b8; }
+
+      /* Connection badge */
+      #conn-badge {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: .75rem;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 20px;
+        background: #1e293b;
+        border: 1px solid #334155;
+      }
+      #conn-dot {
+        width: 8px; height: 8px; border-radius: 50%; background: #475569;
+        transition: background .3s;
+      }
+      #conn-dot.connecting { background: #f59e0b; }
+      #conn-dot.connected  { background: #22c55e; }
+      #conn-dot.running    { background: #38bdf8; }
+
+      /* Doors */
+      #doors { display: flex; flex-direction: column; gap: 12px; }
+
+      .door-card {
+        background: #1e293b;
+        border: 1px solid #334155;
+        border-radius: 10px;
+        padding: 14px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .door-name { font-size: .875rem; font-weight: 600; }
+      .door-ref  { font-size: .7rem; color: #64748b; margin-top: 2px; }
+
+      .lock-badge {
+        font-size: .75rem;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 20px;
+        transition: background .3s, color .3s;
+      }
+      .lock-badge.locked   { background: #1d4ed8; color: #bfdbfe; }
+      .lock-badge.unlocked { background: #15803d; color: #bbf7d0; }
+
+      /* Log */
+      #log-section { margin-top: 24px; }
+      #log-title { font-size: .7rem; font-weight: 600; color: #475569; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; }
+      #log {
+        background: #020617;
+        border-radius: 6px;
+        padding: 10px;
+        font-size: .7rem;
+        font-family: 'Menlo', monospace;
+        color: #64748b;
+        max-height: 140px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Smart Lock Controller</h1>
+      <div id="conn-badge">
+        <div id="conn-dot"></div>
+        <span id="conn-label">OFFLINE</span>
+      </div>
+    </header>
+
+    <div id="doors">
+      <div class="door-card" id="door-door-front">
+        <div>
+          <div class="door-name">Front Door</div>
+          <div class="door-ref">door-front</div>
+        </div>
+        <div class="lock-badge locked" id="badge-door-front">LOCKED</div>
+      </div>
+      <div class="door-card" id="door-door-back">
+        <div>
+          <div class="door-name">Back Door</div>
+          <div class="door-ref">door-back</div>
+        </div>
+        <div class="lock-badge unlocked" id="badge-door-back">UNLOCKED</div>
+      </div>
+      <div class="door-card" id="door-door-garage">
+        <div>
+          <div class="door-name">Garage</div>
+          <div class="door-ref">door-garage</div>
+        </div>
+        <div class="lock-badge locked" id="badge-door-garage">LOCKED</div>
+      </div>
+    </div>
+
+    <div id="log-section">
+      <div id="log-title">Activity Log</div>
+      <div id="log"></div>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

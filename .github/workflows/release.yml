@@ -45,4 +45,8 @@ jobs:
       - name: Publish agent-tester-cli
         working-directory: packages/test-agent-hub
         run: npm publish --access public --provenance
+
+      - name: Publish agent-sdk-browser
+        working-directory: packages/agent-sdk-browser
+        run: npm publish --access public --provenance
         

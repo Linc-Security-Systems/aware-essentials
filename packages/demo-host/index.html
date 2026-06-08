@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aware Security Console — Demo Host</title>
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        font-family: system-ui, sans-serif;
+        background: #0f172a;
+        color: #e2e8f0;
+        height: 100vh;
+        display: flex;
+        overflow: hidden;
+      }
+
+      /* ---- Left panel ---- */
+      #panel {
+        width: 340px;
+        min-width: 340px;
+        background: #1e293b;
+        display: flex;
+        flex-direction: column;
+        padding: 24px 20px;
+        gap: 20px;
+        border-right: 1px solid #334155;
+      }
+
+      h1 { font-size: 1rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: .08em; }
+
+      /* Status */
+      #status-row { display: flex; align-items: center; gap: 10px; }
+      #status-dot {
+        width: 10px; height: 10px; border-radius: 50%;
+        background: #475569; flex-shrink: 0;
+        transition: background .3s;
+      }
+      #status-dot.offline  { background: #475569; }
+      #status-dot.registered { background: #f59e0b; }
+      #status-dot.running  { background: #22c55e; }
+      #status-dot.stopped  { background: #ef4444; }
+      #status-label { font-size: .875rem; font-weight: 500; }
+
+      /* Agent ID */
+      #agent-id-row { font-size: .8rem; color: #64748b; }
+
+      /* Buttons */
+      .btn-row { display: flex; gap: 8px; }
+      button {
+        flex: 1;
+        padding: 8px 12px;
+        border: none;
+        border-radius: 6px;
+        font-size: .875rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: opacity .15s;
+      }
+      button:disabled { opacity: .35; cursor: not-allowed; }
+      #btn-start { background: #22c55e; color: #052e16; }
+      #btn-stop  { background: #ef4444; color: #fff; }
+
+      /* Notifications log */
+      #log-header { font-size: .75rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: .06em; }
+      #log {
+        flex: 1;
+        overflow-y: auto;
+        background: #0f172a;
+        border-radius: 6px;
+        padding: 10px;
+        font-size: .75rem;
+        font-family: 'Menlo', 'Courier New', monospace;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .log-entry { color: #94a3b8; line-height: 1.4; }
+      .log-entry.info  { color: #38bdf8; }
+      .log-entry.ok    { color: #4ade80; }
+      .log-entry.warn  { color: #fb923c; }
+
+      /* ---- Right panel (iframe) ---- */
+      #iframe-wrap {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+      #iframe-bar {
+        height: 36px;
+        background: #1e293b;
+        border-bottom: 1px solid #334155;
+        display: flex;
+        align-items: center;
+        padding: 0 16px;
+        font-size: .75rem;
+        color: #64748b;
+        gap: 8px;
+      }
+      #iframe-bar span { color: #38bdf8; }
+      iframe {
+        flex: 1;
+        border: none;
+        background: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="panel">
+      <h1>Security Console</h1>
+
+      <div id="status-row">
+        <div id="status-dot" class="offline"></div>
+        <span id="status-label">OFFLINE</span>
+      </div>
+      <div id="agent-id-row">Agent: —</div>
+
+      <div class="btn-row">
+        <button id="btn-start" disabled>Start Agent</button>
+        <button id="btn-stop"  disabled>Stop Agent</button>
+      </div>
+
+      <div id="log-header">Notifications</div>
+      <div id="log"></div>
+    </div>
+
+    <div id="iframe-wrap">
+      <div id="iframe-bar">
+        Plugin iframe &nbsp;→&nbsp; <span>http://localhost:5174</span>
+      </div>
+      <iframe id="plugin-frame" src="http://localhost:5174" title="Smart Lock Agent Plugin"></iframe>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
