@@ -7,6 +7,11 @@ export const sPasswordPolicy = z.object({
   minDigits: z.number().min(0).default(0),
 });
 
+export const sUaExtensionInfo = z.object({
+  name: z.string().nonempty(),
+  url: z.string().nonempty(),
+});
+
 export const sAppInfo = z.object({
   version: z.string(),
   releaseDate: z.string(),
@@ -15,7 +20,7 @@ export const sAppInfo = z.object({
   presenceTrackerId: z.string(),
   passwordPolicy: sPasswordPolicy,
   mapTileServerUrl: z.string(),
-  userAgentExtensions: z.array(z.string()),
+  userAgentExtensions: z.array(sUaExtensionInfo),
 });
 
 export type AppInfo = z.infer<typeof sAppInfo>;
