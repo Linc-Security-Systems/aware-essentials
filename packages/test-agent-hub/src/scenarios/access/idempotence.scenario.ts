@@ -155,7 +155,7 @@ const testPersonIdempotence = async (ctx: ScenarioContext) => {
         `PATCH clobbered lastName: expected "${props.lastName}", got "${got.lastName}"`,
       );
     }
-    if (!personsMatch(got, updatedProps)) {
+    if (!personsMatch({ provider: got, aware: updatedProps })) {
       throw new Error(
         `Person PATCH mismatch. Expected: ${JSON.stringify(updatedProps)}, Got: ${JSON.stringify(got)}`,
       );

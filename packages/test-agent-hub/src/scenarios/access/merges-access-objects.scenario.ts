@@ -110,7 +110,12 @@ const mergePerson = async (
       );
     }
 
-    if (!personsMatch(describeResult.object.data as any, props)) {
+    if (
+      !personsMatch({
+        provider: describeResult.object.data as any,
+        aware: props,
+      })
+    ) {
       throw new Error(
         `Person props mismatch after save. Expected: ${JSON.stringify(props)}, Got: ${JSON.stringify(describeResult.object.data)}`,
       );
@@ -147,20 +152,26 @@ const deletePerson = async (
     ],
   });
 
-  const describeResult = await ctx.getReply({
-    kind: "describe-object",
-    provider: ctx.provider,
-    objectKind: "person",
-    objectAssignedRef: refs.join(","),
-  });
+  if (ctx.tags.includes(TAG_ACCESS_PROPS)) {
+    const describeResult = await ctx.getReply({
+      kind: "describe-object",
+      provider: ctx.provider,
+      objectKind: "person",
+      objectAssignedRef: refs.join(","),
+    });
 
-  if (describeResult.object !== null) {
-    throw new Error(
-      `deletePerson: describe-object must return null after delete, got: ${JSON.stringify(describeResult.object)}`,
+    if (describeResult.object !== null) {
+      throw new Error(
+        `deletePerson: describe-object must return null after delete, got: ${JSON.stringify(describeResult.object)}`,
+      );
+    }
+
+    ctx.log(`Deleted person ${awareId} and confirmed it no longer exists`);
+  } else {
+    ctx.log(
+      `Deleted person ${awareId}. Skipping describe verification since ${TAG_ACCESS_PROPS} tag is not present.`,
     );
   }
-
-  ctx.log(`Deleted person ${awareId} and confirmed it no longer exists`);
 };
 
 // ----------------------------------------------------------------
@@ -287,20 +298,26 @@ const deleteSchedule = async (
     ],
   });
 
-  const describeResult = await ctx.getReply({
-    kind: "describe-object",
-    provider: ctx.provider,
-    objectKind: "schedule",
-    objectAssignedRef: refs.join(","),
-  });
+  if (ctx.tags.includes(TAG_ACCESS_PROPS)) {
+    const describeResult = await ctx.getReply({
+      kind: "describe-object",
+      provider: ctx.provider,
+      objectKind: "schedule",
+      objectAssignedRef: refs.join(","),
+    });
 
-  if (describeResult.object !== null) {
-    throw new Error(
-      `deleteSchedule: describe-object must return null after delete, got: ${JSON.stringify(describeResult.object)}`,
+    if (describeResult.object !== null) {
+      throw new Error(
+        `deleteSchedule: describe-object must return null after delete, got: ${JSON.stringify(describeResult.object)}`,
+      );
+    }
+
+    ctx.log(`Deleted schedule ${awareId} and confirmed it no longer exists`);
+  } else {
+    ctx.log(
+      `Deleted schedule ${awareId}. Skipping describe verification since ${TAG_ACCESS_PROPS} tag is not present.`,
     );
   }
-
-  ctx.log(`Deleted schedule ${awareId} and confirmed it no longer exists`);
 };
 
 // ----------------------------------------------------------------
@@ -333,20 +350,26 @@ const deleteAccessRule = async (
     ],
   });
 
-  const describeResult = await ctx.getReply({
-    kind: "describe-object",
-    provider: ctx.provider,
-    objectKind: "accessRule",
-    objectAssignedRef: refs.join(","),
-  });
+  if (ctx.tags.includes(TAG_ACCESS_PROPS)) {
+    const describeResult = await ctx.getReply({
+      kind: "describe-object",
+      provider: ctx.provider,
+      objectKind: "accessRule",
+      objectAssignedRef: refs.join(","),
+    });
 
-  if (describeResult.object !== null) {
-    throw new Error(
-      `deleteAccessRule: describe-object must return null after delete, got: ${JSON.stringify(describeResult.object)}`,
+    if (describeResult.object !== null) {
+      throw new Error(
+        `deleteAccessRule: describe-object must return null after delete, got: ${JSON.stringify(describeResult.object)}`,
+      );
+    }
+
+    ctx.log(`Deleted accessRule ${ruleId} and confirmed it no longer exists`);
+  } else {
+    ctx.log(
+      `Deleted accessRule ${ruleId}. Skipping describe verification since ${TAG_ACCESS_PROPS} tag is not present.`,
     );
   }
-
-  ctx.log(`Deleted accessRule ${ruleId} and confirmed it no longer exists`);
 };
 
 // ----------------------------------------------------------------
