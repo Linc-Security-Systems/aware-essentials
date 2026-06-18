@@ -1,6 +1,5 @@
 import z from 'zod';
-
-export const sCredentialType = z.enum(['card', 'pin', 'fingerprint']);
+import { sCredentialType } from '../primitives';
 
 export const sCredentialValue = z.union([
   z.string().nonempty(),
@@ -12,8 +11,6 @@ export const sAssignedCredential = z.object({
   value: sCredentialValue,
   note: z.string().nullable(),
 });
-
-export type CredentialType = z.infer<typeof sCredentialType>;
 
 export type CredentialValue = z.infer<typeof sCredentialValue>;
 

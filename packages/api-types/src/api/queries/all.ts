@@ -23,6 +23,12 @@ import {
   NvrRecorderQueryRequestMap,
   NvrRecorderQueryResponseMap,
 } from './nvr-recorder';
+import {
+  ReaderQueryRequestMap,
+  ReaderQueryResponseMap,
+  readerRequestSchemas,
+  readerResponseSchemas,
+} from './reader';
 
 // queries that apply to all devices
 export const sEventCapsQueryArgs = z.object({});
@@ -41,6 +47,7 @@ export const requestSchemasByType = {
   ...nvrExporterRequestSchemas,
   ...nvrAnalyticsRequestSchemas,
   ...cameraRequestSchemas,
+  ...readerRequestSchemas,
   [QUERY_EVENT_CAPS]: sEventCapsQueryArgs,
 } as const;
 
@@ -50,6 +57,7 @@ export const responseSchemasByType = {
   ...nvrExporterResponseSchemas,
   ...nvrAnalyticsResponseSchemas,
   ...cameraResponseSchemas,
+  ...readerResponseSchemas,
   [QUERY_EVENT_CAPS]: sEventCapsQueryResponse,
 } as const;
 
@@ -57,6 +65,7 @@ export const responseSchemasByType = {
 export type QueryRequestMap = NvrAnalyticsQueryRequestMap &
   NvrRecorderQueryRequestMap &
   CameraQueryRequestMap &
+  ReaderQueryRequestMap &
   NvrExporterQueryRequestMap & {
     [QUERY_EVENT_CAPS]: EventCapsQueryArgs;
   };
@@ -64,6 +73,7 @@ export type QueryRequestMap = NvrAnalyticsQueryRequestMap &
 export type QueryResponseMap = NvrAnalyticsQueryResponseMap &
   NvrRecorderQueryResponseMap &
   CameraQueryResponseMap &
+  ReaderQueryResponseMap &
   NvrExporterQueryResponseMap & {
     [QUERY_EVENT_CAPS]: EventCapsQueryResponse;
   };

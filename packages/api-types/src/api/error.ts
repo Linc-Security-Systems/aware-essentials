@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { sCredentialType } from '../objects/credential';
+import { sCredentialType } from '../primitives';
 
 // METADATA
 
