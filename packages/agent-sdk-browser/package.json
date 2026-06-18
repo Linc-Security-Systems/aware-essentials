@@ -4,7 +4,7 @@
     "type": "git",
     "url": "git+https://github.com/Linc-Security-Systems/aware-essentials.git"
   },
-  "version": "2.0.95",
+  "version": "2.0.96",
   "description": "Browser transport adapters for the Aware agent protocol — iframe/postMessage drop-in replacement for the WebSocket transport.",
   "author": "Yaser Awajan",
   "license": "MIT",
@@ -29,13 +29,13 @@
     "lint:fix": "yarn lint --fix"
   },
   "peerDependencies": {
-    "@awarevue/agent-sdk": "2.0.95",
-    "@awarevue/api-types": "2.0.95",
+    "@awarevue/agent-sdk": "2.0.96",
+    "@awarevue/api-types": "2.0.96",
     "rxjs": "^7.8.2"
   },
   "devDependencies": {
-    "@awarevue/agent-sdk": "2.0.95",
-    "@awarevue/api-types": "2.0.95",
+    "@awarevue/agent-sdk": "2.0.96",
+    "@awarevue/api-types": "2.0.96",
     "@typescript-eslint/eslint-plugin": "^8.31.1",
     "@typescript-eslint/parser": "^8.31.1",
     "eslint": "^9.25.1",

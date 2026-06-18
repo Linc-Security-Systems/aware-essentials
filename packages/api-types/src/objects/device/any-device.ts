@@ -21,6 +21,7 @@ import {
   sAnalyticsServerSpecs,
 } from './nvr-analytics-server';
 import { SYSTEM, sSystemDeviceSpecs } from './system';
+import { sReaderSpecs } from './reader';
 
 export const DEVICE_TYPES = [
   ALARM,
@@ -46,31 +47,25 @@ export const DEVICE_TYPES = [
 
 export const sDeviceType = z.enum(DEVICE_TYPES);
 
-const sAlarmSpecsWithType = sAlarmSpecs.merge(
-  z.object({ type: z.literal(ALARM) }),
-);
-const sCameraSpecsWithType = sCameraSpecs.merge(
-  z.object({ type: z.literal(CAMERA) }),
-);
-const sDoorSpecsWithType = sDoorSpecs.merge(
-  z.object({ type: z.literal(DOOR) }),
-);
-const sIoBoardSpecsWithType = sIoBoardSpecs.merge(
-  z.object({ type: z.literal(IO_BOARD) }),
-);
-const sCameraLiftSpecsWithType = sCameraLiftSpecs.merge(
-  z.object({ type: z.literal(CAMERA_LIFT) }),
-);
-const sMotionSensorSpecsWithType = sMotionSensorSpecs.merge(
-  z.object({ type: z.literal(MOTION_SENSOR) }),
-);
-const sPanicButtonSpecsWithType = sPanicButtonSpecs.merge(
-  z.object({ type: z.literal(PANIC_BUTTON) }),
-);
-const sIntercomTerminalSpecsWithType = sIntercomTerminalSpecs.merge(
-  z.object({ type: z.literal(INTERCOM_TERMINAL) }),
-);
-const sPbxSpecsWithType = sPbxSpecs.merge(z.object({ type: z.literal(PBX) }));
+const sAlarmSpecsWithType = sAlarmSpecs.extend({ type: z.literal(ALARM) });
+const sCameraSpecsWithType = sCameraSpecs.extend({ type: z.literal(CAMERA) });
+const sDoorSpecsWithType = sDoorSpecs.extend({ type: z.literal(DOOR) });
+const sIoBoardSpecsWithType = sIoBoardSpecs.extend({
+  type: z.literal(IO_BOARD),
+});
+const sCameraLiftSpecsWithType = sCameraLiftSpecs.extend({
+  type: z.literal(CAMERA_LIFT),
+});
+const sMotionSensorSpecsWithType = sMotionSensorSpecs.extend({
+  type: z.literal(MOTION_SENSOR),
+});
+const sPanicButtonSpecsWithType = sPanicButtonSpecs.extend({
+  type: z.literal(PANIC_BUTTON),
+});
+const sIntercomTerminalSpecsWithType = sIntercomTerminalSpecs.extend({
+  type: z.literal(INTERCOM_TERMINAL),
+});
+const sPbxSpecsWithType = sPbxSpecs.extend({ type: z.literal(PBX) });
 const sServerSpecsWithType = z.object({ type: z.literal(SERVER) });
 const sIntercomOperatorSpecsWithType = z.object({
   type: z.literal(INTERCOM_OPERATOR),
@@ -81,29 +76,27 @@ const sDeviceGatewaySpecsWithType = z.object({
 const sPresenceTrackerSpecsWithType = z.object({
   type: z.literal(PRESENCE_TRACKER),
 });
-const sReaderSpecsWithType = z.object({ type: z.literal('reader') });
+const sReaderSpecsWithType = sReaderSpecs.extend({
+  type: z.literal('reader'),
+});
 
 export const sDisplaySpecsWithType = z.object({ type: z.literal(DISPLAY) });
 
-export const sRecorderSpecsWithType = sRecorderSpecs.merge(
-  z.object({ type: z.literal(NVR_RECORDER) }),
-);
+export const sRecorderSpecsWithType = sRecorderSpecs.extend({
+  type: z.literal(NVR_RECORDER),
+});
 
-export const sNvrExporterSpecsWithType = sExporterSpecs.merge(
-  z.object({
-    type: z.literal(NVR_EXPORTER),
-  }),
-);
+export const sNvrExporterSpecsWithType = sExporterSpecs.extend({
+  type: z.literal(NVR_EXPORTER),
+});
 
-export const sNvrAnalyticsServerSpecsWithType = sAnalyticsServerSpecs.merge(
-  z.object({
-    type: z.literal(NVR_ANALYTICS_SERVER),
-  }),
-);
+export const sNvrAnalyticsServerSpecsWithType = sAnalyticsServerSpecs.extend({
+  type: z.literal(NVR_ANALYTICS_SERVER),
+});
 
-export const sSystemDeviceSpecsWithType = z
-  .object({ type: z.literal(SYSTEM) })
-  .merge(sSystemDeviceSpecs);
+export const sSystemDeviceSpecsWithType = sSystemDeviceSpecs.extend({
+  type: z.literal(SYSTEM),
+});
 
 export const sAnyDeviceSpecs = z.discriminatedUnion('type', [
   sAlarmSpecsWithType,
