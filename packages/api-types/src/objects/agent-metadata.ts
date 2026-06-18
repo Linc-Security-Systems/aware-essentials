@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { sCredentialType } from './credential';
+import { sCredentialType } from '../primitives';
 
 export const sUiOrderHint = z.object({
   kind: z.literal('order'),

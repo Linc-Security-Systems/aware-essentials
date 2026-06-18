@@ -1,6 +1,5 @@
-import { sCredentialType } from '../../objects/credential';
 import { z } from 'zod';
-import { sPersonId } from '../../primitives';
+import { sCredentialType, sPersonId } from '../../primitives';
 
 // EVENTS
 

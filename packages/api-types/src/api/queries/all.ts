@@ -23,29 +23,23 @@ import {
   NvrRecorderQueryRequestMap,
   NvrRecorderQueryResponseMap,
 } from './nvr-recorder';
+import {
+  ReaderQueryRequestMap,
+  ReaderQueryResponseMap,
+  readerRequestSchemas,
+  readerResponseSchemas,
+} from './reader';
 
 // queries that apply to all devices
 export const sEventCapsQueryArgs = z.object({});
 
-export const sCaptureQueryArgs = z.object({
-  type: z.string(),
-  metadata: z.record(z.string(), z.any()).optional(),
-});
-
 export type EventCapsQueryArgs = z.infer<typeof sEventCapsQueryArgs>;
-
-export type CaptureQueryArgs = z.infer<typeof sCaptureQueryArgs>;
 
 export const QUERY_EVENT_CAPS = 'device:event-caps';
 
-export const QUERY_CAPTURE = 'device:capture';
-
 export const sEventCapsQueryResponse = z.array(z.string());
 
-export const sCaptureQueryResponse = z.record(z.string(), z.any());
-
 export type EventCapsQueryResponse = z.infer<typeof sEventCapsQueryResponse>;
-export type CaptureQueryResponse = z.infer<typeof sCaptureQueryResponse>;
 
 // Dictionary of request schemas by query type
 export const requestSchemasByType = {
@@ -53,8 +47,8 @@ export const requestSchemasByType = {
   ...nvrExporterRequestSchemas,
   ...nvrAnalyticsRequestSchemas,
   ...cameraRequestSchemas,
+  ...readerRequestSchemas,
   [QUERY_EVENT_CAPS]: sEventCapsQueryArgs,
-  [QUERY_CAPTURE]: sCaptureQueryArgs,
 } as const;
 
 // Dictionary of response schemas by query type
@@ -63,25 +57,25 @@ export const responseSchemasByType = {
   ...nvrExporterResponseSchemas,
   ...nvrAnalyticsResponseSchemas,
   ...cameraResponseSchemas,
+  ...readerResponseSchemas,
   [QUERY_EVENT_CAPS]: sEventCapsQueryResponse,
-  [QUERY_CAPTURE]: sCaptureQueryResponse,
 } as const;
 
 // TypeScript mapping types for requests and responses
 export type QueryRequestMap = NvrAnalyticsQueryRequestMap &
   NvrRecorderQueryRequestMap &
   CameraQueryRequestMap &
+  ReaderQueryRequestMap &
   NvrExporterQueryRequestMap & {
     [QUERY_EVENT_CAPS]: EventCapsQueryArgs;
-    [QUERY_CAPTURE]: CaptureQueryArgs;
   };
 
 export type QueryResponseMap = NvrAnalyticsQueryResponseMap &
   NvrRecorderQueryResponseMap &
   CameraQueryResponseMap &
+  ReaderQueryResponseMap &
   NvrExporterQueryResponseMap & {
     [QUERY_EVENT_CAPS]: EventCapsQueryResponse;
-    [QUERY_CAPTURE]: CaptureQueryResponse;
   };
 
 // Helper types for type inference
