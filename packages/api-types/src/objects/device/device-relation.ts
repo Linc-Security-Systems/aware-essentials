@@ -176,6 +176,15 @@ export const sAiStreamConfiguration = z.object({
   semanticSearch: sAiSemanticSearchConfiguration.optional(),
 });
 
+export const sAiCapability = z.enum([
+  'motionDetection',
+  'labelDetection',
+  'faceRecognition',
+  'semanticSearch',
+]);
+
+export type AiCapability = z.infer<typeof sAiCapability>;
+
 export type AiStreamConfiguration = z.infer<typeof sAiStreamConfiguration>;
 
 // all together now: AI inference relation data

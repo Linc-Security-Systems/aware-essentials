@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { sCredentialType } from '../../primitives/credential-type';
+import { sCredentialType } from '../../primitives';
 
 export const READER = 'reader' as const;
 
