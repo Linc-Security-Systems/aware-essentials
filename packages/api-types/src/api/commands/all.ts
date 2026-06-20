@@ -13,6 +13,10 @@ import {
 import { ServerCommand, serverCommands } from './server';
 import { PermissionId } from '../../permissions';
 import { NvrRecorderCommand, nvrRecorderCommandSchemas } from './nvr-recorder';
+import {
+  NvrAnalyticsServerCommand,
+  nvrAnalyticsServerCommandSchemas,
+} from './nvr-analytics-server';
 
 export type AnyDeviceCommand =
   | ServerCommand
@@ -25,7 +29,8 @@ export type AnyDeviceCommand =
   | PresenceTrackerCommand
   | DisplayCommand
   | NvrRecorderCommand
-  | NvrExporterCommand;
+  | NvrExporterCommand
+  | NvrAnalyticsServerCommand;
 
 export type CommandRun<TCommand extends AnyDeviceCommand = AnyDeviceCommand> = {
   timestamp: number;
@@ -45,6 +50,7 @@ export const commandSchemas = {
   ...displayCommands,
   ...nvrRecorderCommandSchemas,
   ...nvrExporterCommandSchemas,
+  ...nvrAnalyticsServerCommandSchemas,
   ...serverCommands,
 } as const;
 
@@ -180,5 +186,9 @@ export const commandDescriptions: Record<
   'nvr-recorder.unmount-stream': {
     description: 'NVR Recorder Unmount Stream',
     permission: 'camera:record',
+  },
+  'nvr-analytics-server.set-stream-analytics': {
+    description: 'Configure Stream Analytics',
+    permission: 'camera:detection',
   },
 };

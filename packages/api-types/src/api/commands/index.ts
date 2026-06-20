@@ -10,4 +10,5 @@ export * from './nvr-exporter';
 export * from './nvr-recorder';
 export * from './camera-lift';
 export * from './pbx';
+export * from './nvr-analytics-server';
 export * from './all';
