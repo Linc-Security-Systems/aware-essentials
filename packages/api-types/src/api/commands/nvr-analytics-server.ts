@@ -10,6 +10,7 @@ export const sSetStreamAnalyticsCommand = z.object({
     .object({
       device: sDeviceParam,
       streamId: sStreamId,
+      rtspUrl: z.string().nonempty(),
     })
     .extend(sAiStreamConfiguration.shape),
 });
