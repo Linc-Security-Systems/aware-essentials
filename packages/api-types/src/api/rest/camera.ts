@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { sAiStreamConfiguration } from '../../objects/device/device-relation';
 
 export const sAddCameraRq = z.object({
   displayName: z.string().nonempty(),
@@ -53,6 +54,24 @@ export const sUnbindStreamRecorderRq = z.object({
 
 export const sUnbindStreamRecorderRs = z.object({});
 
+export const sBindStreamAnalyticsRq = z
+  .object({
+    analyticsServerId: z.string().nonempty(),
+    cameraId: z.string().nonempty(),
+    streamId: z.string().nonempty(),
+  })
+  .extend(sAiStreamConfiguration.shape);
+
+export const sBindStreamAnalyticsRs = z.object({});
+
+export const sUnbindStreamAnalyticsRq = z.object({
+  analyticsServerId: z.string().nonempty(),
+  cameraId: z.string().nonempty(),
+  streamId: z.string().nonempty(),
+});
+
+export const sUnbindStreamAnalyticsRs = z.object({});
+
 export type AddCameraRq = z.infer<typeof sAddCameraRq>;
 export type AddCameraRs = z.infer<typeof sAddCameraRs>;
 export type AddCameraStreamRq = z.infer<typeof sAddCameraStreamRq>;
@@ -65,3 +84,7 @@ export type BindStreamRecorderRq = z.infer<typeof sBindStreamRecorderRq>;
 export type BindStreamRecorderRs = z.infer<typeof sBindStreamRecorderRs>;
 export type UnbindStreamRecorderRq = z.infer<typeof sUnbindStreamRecorderRq>;
 export type UnbindStreamRecorderRs = z.infer<typeof sUnbindStreamRecorderRs>;
+export type BindStreamAnalyticsRq = z.infer<typeof sBindStreamAnalyticsRq>;
+export type BindStreamAnalyticsRs = z.infer<typeof sBindStreamAnalyticsRs>;
+export type UnbindStreamAnalyticsRq = z.infer<typeof sUnbindStreamAnalyticsRq>;
+export type UnbindStreamAnalyticsRs = z.infer<typeof sUnbindStreamAnalyticsRs>;

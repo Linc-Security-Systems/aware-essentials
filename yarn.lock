@@ -70,8 +70,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@awarevue/agent-sdk-browser@workspace:packages/agent-sdk-browser"
   dependencies:
-    "@awarevue/agent-sdk": "npm:2.0.101"
-    "@awarevue/api-types": "npm:2.0.101"
+    "@awarevue/agent-sdk": "npm:2.0.102"
+    "@awarevue/api-types": "npm:2.0.102"
     "@typescript-eslint/eslint-plugin": "npm:^8.31.1"
     "@typescript-eslint/parser": "npm:^8.31.1"
     eslint: "npm:^9.25.1"
@@ -82,17 +82,17 @@ __metadata:
     typescript: "npm:^5.8.3"
     vitest: "npm:^4.1.4"
   peerDependencies:
-    "@awarevue/agent-sdk": 2.0.101
-    "@awarevue/api-types": 2.0.101
+    "@awarevue/agent-sdk": 2.0.102
+    "@awarevue/api-types": 2.0.102
     rxjs: ^7.8.2
   languageName: unknown
   linkType: soft
 
-"@awarevue/agent-sdk@npm:2.0.101, @awarevue/agent-sdk@workspace:*, @awarevue/agent-sdk@workspace:packages/agent-sdk-typescript":
+"@awarevue/agent-sdk@npm:2.0.102, @awarevue/agent-sdk@workspace:*, @awarevue/agent-sdk@workspace:packages/agent-sdk-typescript":
   version: 0.0.0-use.local
   resolution: "@awarevue/agent-sdk@workspace:packages/agent-sdk-typescript"
   dependencies:
-    "@awarevue/api-types": "npm:2.0.101"
+    "@awarevue/api-types": "npm:2.0.102"
     "@types/node": "npm:^20.12.7"
     "@types/ws": "npm:^8.18.1"
     "@typescript-eslint/eslint-plugin": "npm:^8.31.1"
@@ -106,7 +106,7 @@ __metadata:
     ws: "npm:^8"
     zod: "npm:4.4.3"
   peerDependencies:
-    "@awarevue/api-types": 2.0.101
+    "@awarevue/api-types": 2.0.102
     rxjs: ^7.8.2
     ws: ^8
     zod: 4.4.3
@@ -120,8 +120,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@awarevue/agent-tester-cli@workspace:packages/test-agent-hub"
   dependencies:
-    "@awarevue/agent-sdk": "npm:2.0.101"
-    "@awarevue/api-types": "npm:2.0.101"
+    "@awarevue/agent-sdk": "npm:2.0.102"
+    "@awarevue/api-types": "npm:2.0.102"
     "@nestjs/cli": "npm:^11.0.0"
     "@nestjs/common": "npm:^11.0.0"
     "@nestjs/core": "npm:^11.0.0"
@@ -151,7 +151,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@awarevue/api-types@npm:2.0.101, @awarevue/api-types@workspace:*, @awarevue/api-types@workspace:packages/api-types":
+"@awarevue/api-types@npm:2.0.102, @awarevue/api-types@workspace:*, @awarevue/api-types@workspace:packages/api-types":
   version: 0.0.0-use.local
   resolution: "@awarevue/api-types@workspace:packages/api-types"
   dependencies:
