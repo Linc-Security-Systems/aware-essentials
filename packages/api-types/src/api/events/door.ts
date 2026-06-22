@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { sCredentialType, sPersonId } from '../../primitives';
+import { sCredentialType } from '../../primitives/credential-type';
+import { sPersonId } from '../../primitives';
 
 // EVENTS
 

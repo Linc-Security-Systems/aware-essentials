@@ -1,5 +1,5 @@
 import z from 'zod';
-import { sCredentialType } from '../primitives';
+import { sCredentialType } from '../primitives/credential-type';
 
 export const sCredentialValue = z.union([
   z.string().nonempty(),
