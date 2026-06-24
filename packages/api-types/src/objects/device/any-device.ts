@@ -22,7 +22,7 @@ import {
 } from './nvr-analytics-server';
 import { SYSTEM, sSystemDeviceSpecs } from './system';
 import { sReaderSpecs } from './reader';
-import { GENERIC_SENSOR, sGenericSensorSpecs } from '../..';
+import { GENERIC_SENSOR, sGenericSensorSpecs } from './generic-sensor';
 
 export const DEVICE_TYPES = [
   ALARM,
