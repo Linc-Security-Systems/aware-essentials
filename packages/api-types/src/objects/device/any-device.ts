@@ -22,6 +22,7 @@ import {
 } from './nvr-analytics-server';
 import { SYSTEM, sSystemDeviceSpecs } from './system';
 import { sReaderSpecs } from './reader';
+import { GENERIC_SENSOR, sGenericSensorSpecs } from '../..';
 
 export const DEVICE_TYPES = [
   ALARM,
@@ -32,6 +33,7 @@ export const DEVICE_TYPES = [
   IO_BOARD,
   CAMERA_LIFT,
   MOTION_SENSOR,
+  GENERIC_SENSOR,
   PANIC_BUTTON,
   INTERCOM_OPERATOR,
   INTERCOM_TERMINAL,
@@ -58,6 +60,9 @@ const sCameraLiftSpecsWithType = sCameraLiftSpecs.extend({
 });
 const sMotionSensorSpecsWithType = sMotionSensorSpecs.extend({
   type: z.literal(MOTION_SENSOR),
+});
+const sGenericSensorSpecsWithType = sGenericSensorSpecs.extend({
+  type: z.literal(GENERIC_SENSOR),
 });
 const sPanicButtonSpecsWithType = sPanicButtonSpecs.extend({
   type: z.literal(PANIC_BUTTON),
@@ -105,6 +110,7 @@ export const sAnyDeviceSpecs = z.discriminatedUnion('type', [
   sIoBoardSpecsWithType,
   sCameraLiftSpecsWithType,
   sMotionSensorSpecsWithType,
+  sGenericSensorSpecsWithType,
   sPanicButtonSpecsWithType,
   sIntercomTerminalSpecsWithType,
   sPbxSpecsWithType,
@@ -172,6 +178,9 @@ export const sCameraLiftDto = sCameraLiftSpecsWithType
   .and(sDeviceMgmtInfo)
   .and(sForeignDeviceInfo);
 export const sMotionSensorDto = sMotionSensorSpecsWithType
+  .and(sDeviceMgmtInfo)
+  .and(sForeignDeviceInfo);
+export const sGenericSensorDto = sGenericSensorSpecsWithType
   .and(sDeviceMgmtInfo)
   .and(sForeignDeviceInfo);
 export const sPanicButtonDto = sPanicButtonSpecsWithType
@@ -243,6 +252,7 @@ export type ReaderDto = z.infer<typeof sReaderDto>;
 export type IoBoardDto = z.infer<typeof sIoBoardDto>;
 export type CameraLiftDto = z.infer<typeof sCameraLiftDto>;
 export type MotionSensorDto = z.infer<typeof sMotionSensorDto>;
+export type GenericSensorDto = z.infer<typeof sGenericSensorDto>;
 export type PanicButtonDto = z.infer<typeof sPanicButtonDto>;
 export type IntercomTerminalDto = z.infer<typeof sIntercomTerminalDto>;
 export type PbxDto = z.infer<typeof sPbxDto>;
@@ -282,6 +292,7 @@ export interface DeviceTypeToDtoMap {
   [NVR_EXPORTER]: NvrExporterDto;
   [NVR_ANALYTICS_SERVER]: NvrAnalyticsServerDto;
   [SYSTEM]: SystemDeviceDto;
+  [GENERIC_SENSOR]: GenericSensorDto;
 }
 
 /** Given a device type, resolves to the corresponding Dto type. */
@@ -296,6 +307,7 @@ export const deviceDtoSchemaMap = {
   [IO_BOARD]: sIoBoardDto,
   [CAMERA_LIFT]: sCameraLiftDto,
   [MOTION_SENSOR]: sMotionSensorDto,
+  [GENERIC_SENSOR]: sGenericSensorDto,
   [PANIC_BUTTON]: sPanicButtonDto,
   [INTERCOM_OPERATOR]: sIntercomOperatorDto,
   [INTERCOM_TERMINAL]: sIntercomTerminalDto,

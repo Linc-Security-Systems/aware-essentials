@@ -7,6 +7,7 @@ export * from './reader';
 export * from './io-board';
 export * from './camera-lift';
 export * from './motion-sensor';
+export * from './generic-sensor';
 export * from './intercom-operator';
 export * from './intercom-terminal';
 export * from './panic-button';

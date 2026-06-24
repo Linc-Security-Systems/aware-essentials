@@ -36,6 +36,12 @@ export const sMotionDetected = z.object({
 
 export type MotionDetectedEvent = z.infer<typeof sMotionDetected>;
 
+export const sSensorActivated = z.object({
+  kind: z.literal('sensor-activated'),
+});
+
+export type SensorActivatedEvent = z.infer<typeof sSensorActivated>;
+
 export const sDeviceConnectedEvent = z.object({
   kind: z.literal('device-connected'),
   clientId: z.number().int().positive().optional(),
@@ -83,7 +89,8 @@ export type AnyDeviceEvent =
   | ServerEvent
   | PresenceTrackerEvent
   | IoBoardEvent
-  | NvrExporterEvent;
+  | NvrExporterEvent
+  | SensorActivatedEvent;
 
 export const sEventHeader = z.object({
   id: z.string().nonempty(),
@@ -146,6 +153,7 @@ export const eventKindLabels: Record<DeviceEvent['kind'], string> = {
   'notification-acknowledged': 'Notification Acknowledged',
   'user-logged-in': 'User Logged In',
   'user-logged-out': 'User Logged Out',
+  'sensor-activated': 'Sensor Activated',
 };
 
 export const eventSchemaByKind = {
@@ -162,6 +170,7 @@ export const eventSchemaByKind = {
   'device-command': sDeviceCommandTriggered,
   'device-connected': sDeviceConnectedEvent,
   'device-disconnected': sDeviceDisconnectedEvent,
+  'sensor-activated': sSensorActivated,
 };
 
 export const eventsByDeviceType: Partial<
@@ -181,6 +190,7 @@ export const eventsByDeviceType: Partial<
   ) as DeviceEvent['kind'][],
   reader: Object.keys(readerEventSchemaByKind) as DeviceEvent['kind'][],
   'motion-sensor': ['motion-detected' as const],
+  'generic-sensor': ['sensor-activated' as const],
   'nvr-exporter': Object.keys(
     nvrExporterEventSchemasByKind,
   ) as DeviceEvent['kind'][],

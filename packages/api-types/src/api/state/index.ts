@@ -1,3 +1,4 @@
+import { GenericSensorStateDto } from '../../objects/device/generic-sensor';
 import { AlarmStateDto } from '../../objects/device/alarm';
 import { CameraStateDto } from '../../objects/device/camera';
 import { CameraLiftStateDto } from '../../objects/device/camera-lift';
@@ -15,6 +16,7 @@ export type DeviceStateDto =
   | IoBoardStateDto
   | CameraLiftStateDto
   | MotionSensorStateDto
+  | GenericSensorStateDto
   | PanicButtonStateDto
   | IntercomTerminalStateDto
   | IntercomOperatorStateDto;
