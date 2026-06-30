@@ -492,8 +492,8 @@ const testAccessRuleIdempotence = async (ctx: ScenarioContext) => {
     },
   };
   const devices: Record<string, Record<string, unknown>> = {
-    [reader1Id]: reader1 as Record<string, unknown>,
-    [reader2Id]: reader2 as Record<string, unknown>,
+    [reader1Id]: { ...reader1.providerMetadata } as Record<string, unknown>,
+    [reader2Id]: { ...reader2.providerMetadata } as Record<string, unknown>,
   };
 
   // --- create access rule ---
