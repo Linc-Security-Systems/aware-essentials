@@ -106,6 +106,8 @@ export type DeviceEvent<TEvent extends AnyDeviceEvent = AnyDeviceEvent> =
 
 export const eventKindLabels: Record<DeviceEvent['kind'], string> = {
   'door-access': 'Door Access',
+  'door-unlocked': 'Door Unlocked',
+  'door-locked': 'Door Locked',
   'door-force': 'Force-Opened',
   'door-tamper': 'Tampered',
   'door-left-open': 'Left Open',

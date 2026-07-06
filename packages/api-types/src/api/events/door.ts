@@ -22,6 +22,14 @@ export const sDoorClosed = z.object({
   kind: z.literal('door-closed'),
 });
 
+export const sDoorUnlocked = z.object({
+  kind: z.literal('door-unlocked'),
+});
+
+export const sDoorLocked = z.object({
+  kind: z.literal('door-locked'),
+});
+
 export const sDoorForceEvent = z.object({
   kind: z.literal('door-force'),
 });
@@ -54,6 +62,8 @@ export const doorEventSchemaByKind = {
   'door-access': sDoorAccessEvent,
   'door-opened': sDoorOpened,
   'door-closed': sDoorClosed,
+  'door-unlocked': sDoorUnlocked,
+  'door-locked': sDoorLocked,
   'door-force': sDoorForceEvent,
   'door-tamper': sDoorTamperEvent,
   'door-left-open': sDoorLeftOpenEvent,
@@ -70,6 +80,10 @@ export type DoorAccessEvent = z.infer<typeof sDoorAccessEvent>;
 export type DoorOpenedEvent = z.infer<typeof sDoorOpened>;
 
 export type DoorClosedEvent = z.infer<typeof sDoorClosed>;
+
+export type DoorUnlockedEvent = z.infer<typeof sDoorUnlocked>;
+
+export type DoorLockedEvent = z.infer<typeof sDoorLocked>;
 
 export type DoorForceEvent = z.infer<typeof sDoorForceEvent>;
 
@@ -95,6 +109,8 @@ export type DoorEvent =
   | DoorAccessEvent
   | DoorOpenedEvent
   | DoorClosedEvent
+  | DoorUnlockedEvent
+  | DoorLockedEvent
   | DoorForceEvent
   | DoorTamperEvent
   | DoorLeftOpenEvent
