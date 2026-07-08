@@ -144,6 +144,7 @@ export const sDeviceMgmtInfo = z.object({
   providerAssignedName: z.string().nonempty(),
   notes: z.string().nullable(),
   tags: z.array(z.string()),
+  displaySettings: z.record(z.string(), z.unknown()),
   relations: z.array(sDeviceRelationSide),
   groups: z.array(z.string()),
   enabled: z.boolean(),
