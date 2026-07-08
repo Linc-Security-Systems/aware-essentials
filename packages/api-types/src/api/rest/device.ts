@@ -19,6 +19,7 @@ export const sAddDeviceRequest = z.object({
   relations: z.array(sDeviceRelationSide),
   type: sDeviceType,
   specs: z.object({}).catchall(z.unknown()).optional(),
+  displaySettings: z.record(z.string(), z.unknown()).optional(),
 });
 
 export const sUpdateDeviceRequest = z.object({
@@ -26,6 +27,7 @@ export const sUpdateDeviceRequest = z.object({
   name: z.string().optional(),
   notes: z.string().nullable().optional(),
   providerMetadata: z.object({}).catchall(z.unknown()).optional(),
+  displaySettings: z.record(z.string(), z.unknown()).optional(),
   specs: z.object({}).catchall(z.unknown()).optional(),
   tags: z.array(z.string()).optional(),
   relations: z.array(sDeviceRelationSide).optional(),
