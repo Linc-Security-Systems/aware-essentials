@@ -48,6 +48,7 @@ export type CameraSpecs = z.infer<typeof sCameraSpecs>;
 export const sMotionDetectionConfiguration = z.object({
   threshold: z.number().min(0).max(1).optional(),
   fps: z.number().int().positive().optional(),
+  enabled: z.boolean(),
 });
 
 export type MotionDetectionConfiguration = z.infer<
@@ -58,6 +59,7 @@ export type MotionDetectionConfiguration = z.infer<
 
 export const sAiLabelConfiguration = z.object({
   threshold: z.number().min(0).max(1).optional(),
+  enabled: z.boolean(),
 });
 
 export type AiLabelConfiguration = z.infer<typeof sAiLabelConfiguration>;
@@ -76,6 +78,7 @@ export type AiDetectionConfiguration = z.infer<
 export const sAiFaceRecognitionConfiguration = z.object({
   threshold: z.number().min(0).max(1).optional(),
   fps: z.number().int().positive().optional(),
+  enabled: z.boolean(),
 });
 
 export type AiFaceRecognitionConfiguration = z.infer<
@@ -86,6 +89,7 @@ export type AiFaceRecognitionConfiguration = z.infer<
 
 export const sAiSemanticSearchConfiguration = z.object({
   fps: z.number().int().positive().optional(),
+  enabled: z.boolean(),
 });
 
 export type AiSemanticSearchConfiguration = z.infer<
