@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { sAiStreamConfiguration } from '../../objects/device/device-relation';
+import { sAiStreamConfiguration } from '../../objects';
 
 export const sAddCameraRq = z.object({
   displayName: z.string().nonempty(),

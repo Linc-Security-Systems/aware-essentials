@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { sAiCapability } from './device-relation';
+import { sAiCapability } from './camera';
 
 export const NVR_ANALYTICS_SERVER = 'nvr-analytics-server';
 

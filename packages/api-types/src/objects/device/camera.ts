@@ -45,11 +45,89 @@ export type CameraSpecs = z.infer<typeof sCameraSpecs>;
 
 // STATE
 
-export interface CameraStateDto {
-  pan: number;
-  tilt: number;
-  zoom: number;
-  enabled: boolean;
-  objectDetectionEnabled: boolean;
-  connected: boolean;
-}
+export const sMotionDetectionConfiguration = z.object({
+  threshold: z.number().min(0).max(1).optional(),
+  fps: z.number().int().positive().optional(),
+});
+
+export type MotionDetectionConfiguration = z.infer<
+  typeof sMotionDetectionConfiguration
+>;
+
+// --- label detection module ---
+
+export const sAiLabelConfiguration = z.object({
+  threshold: z.number().min(0).max(1).optional(),
+});
+
+export type AiLabelConfiguration = z.infer<typeof sAiLabelConfiguration>;
+
+export const sAiDetectionConfiguration = z.object({
+  labels: z.record(z.string(), sAiLabelConfiguration),
+  fps: z.number().int().positive().optional(),
+});
+
+export type AiDetectionConfiguration = z.infer<
+  typeof sAiDetectionConfiguration
+>;
+
+// --- face recognition module ---
+
+export const sAiFaceRecognitionConfiguration = z.object({
+  threshold: z.number().min(0).max(1).optional(),
+  fps: z.number().int().positive().optional(),
+});
+
+export type AiFaceRecognitionConfiguration = z.infer<
+  typeof sAiFaceRecognitionConfiguration
+>;
+
+// --- semantic search module ---
+
+export const sAiSemanticSearchConfiguration = z.object({
+  fps: z.number().int().positive().optional(),
+});
+
+export type AiSemanticSearchConfiguration = z.infer<
+  typeof sAiSemanticSearchConfiguration
+>;
+
+// --- stream configuration ---
+
+export const sAiStreamConfiguration = z.object({
+  motionDetection: sMotionDetectionConfiguration.optional(),
+  labelDetection: sAiDetectionConfiguration.optional(),
+  faceRecognition: sAiFaceRecognitionConfiguration.optional(),
+  semanticSearch: sAiSemanticSearchConfiguration.optional(),
+});
+
+export const sAiCapability = z.enum([
+  'motionDetection',
+  'labelDetection',
+  'faceRecognition',
+  'semanticSearch',
+]);
+
+export type AiCapability = z.infer<typeof sAiCapability>;
+
+export type AiStreamConfiguration = z.infer<typeof sAiStreamConfiguration>;
+
+// all together now: AI inference relation data
+
+export const sAnalyticsConfigData = z.object({
+  streams: z.record(z.string(), sAiStreamConfiguration),
+});
+
+export const sCameraState = z.object({
+  pan: z.number().min(-1).max(1),
+  tilt: z.number().min(-1).max(1),
+  zoom: z.number().min(0).max(1),
+  enabled: z.boolean(),
+  connected: z.boolean(),
+  analytics: sAnalyticsConfigData,
+  // TODO recording: ...
+});
+
+export type CameraStateDto = z.infer<typeof sCameraState>;
+
+export type AnalyticsConfigData = z.infer<typeof sAnalyticsConfigData>;

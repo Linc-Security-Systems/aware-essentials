@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { sDeviceParam, sStreamId } from '../../primitives';
-import { sAiStreamConfiguration } from '../../objects/device/device-relation';
+import { sAiStreamConfiguration } from '../../objects';
 
 // COMMANDS
 
