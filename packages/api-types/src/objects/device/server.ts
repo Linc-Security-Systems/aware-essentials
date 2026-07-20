@@ -13,7 +13,7 @@ export type AccessControlProviderState = AccessControlCapabilityReport & {
 };
 
 export type ServerState = {
-  runningAgents: Record<string, string[]>;
+  activeProviders: string[];
   configMetadata: ModuleConfigMetadata;
   config: ModuleConfig;
   runnableProviders: string[];
