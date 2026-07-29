@@ -11,7 +11,8 @@ export const sGetExportLinkArgs = z.object({
 });
 
 export const sGetExportLinkResponse = z.object({
-  exportLink: z.string().url(),
+  exportLink: z.url(),
+  extraHeaders: z.record(z.string(), z.string()).optional(),
 });
 
 export type GetExportLinkArgs = z.infer<typeof sGetExportLinkArgs>;
