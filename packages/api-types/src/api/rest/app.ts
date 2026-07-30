@@ -21,6 +21,14 @@ export const sAppInfo = z.object({
   passwordPolicy: sPasswordPolicy,
   mapTileServerUrl: z.string(),
   userAgentExtensions: z.array(sUaExtensionInfo),
+  licenseInfo: z
+    .object({
+      careStart: z.string().optional(),
+      careEnd: z.string().optional(),
+      licensedAssetCount: z.record(z.string(), z.number().int().nonnegative()),
+      actualAssetCount: z.record(z.string(), z.number().int().nonnegative()),
+    })
+    .optional(),
 });
 
 export type AppInfo = z.infer<typeof sAppInfo>;
