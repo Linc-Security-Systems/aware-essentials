@@ -10,6 +10,7 @@ import { INTERCOM_TERMINAL, sIntercomTerminalSpecs } from './intercom-terminal';
 import { PBX, sPbxSpecs } from './pbx';
 import { SERVER } from './server';
 import { ALARM, sAlarmSpecs } from './alarm';
+import { POSITION_TRACKER, sPositionTrackerSpecs } from './position-tracker';
 import { sDeviceRelationSide } from './device-relation';
 import { DEVICE_GATEWAY } from './device-gateway';
 import { PRESENCE_TRACKER } from './presence-tracker';
@@ -44,11 +45,15 @@ export const DEVICE_TYPES = [
   NVR_RECORDER,
   NVR_EXPORTER,
   NVR_ANALYTICS_SERVER,
+  POSITION_TRACKER,
   SYSTEM,
 ] as const;
 
 export const sDeviceType = z.enum(DEVICE_TYPES);
 
+const sPositionTrackerSpecsWithType = sPositionTrackerSpecs.extend({
+  type: z.literal(POSITION_TRACKER),
+});
 const sAlarmSpecsWithType = sAlarmSpecs.extend({ type: z.literal(ALARM) });
 const sCameraSpecsWithType = sCameraSpecs.extend({ type: z.literal(CAMERA) });
 const sDoorSpecsWithType = sDoorSpecs.extend({ type: z.literal(DOOR) });
@@ -124,6 +129,7 @@ export const sAnyDeviceSpecs = z.discriminatedUnion('type', [
   sNvrExporterSpecsWithType,
   sNvrAnalyticsServerSpecsWithType,
   sSystemDeviceSpecsWithType,
+  sPositionTrackerSpecsWithType,
 ]);
 
 export const sProviderMetadata = z.object({}).catchall(z.unknown());
@@ -227,6 +233,10 @@ export const sSystemDeviceDto = sSystemDeviceSpecsWithType
   .and(sDeviceMgmtInfo)
   .and(sForeignDeviceInfo);
 
+export const sPositionTrackerDto = sPositionTrackerSpecsWithType
+  .and(sDeviceMgmtInfo)
+  .and(sForeignDeviceInfo);
+
 export const sEventVariantDescription = z.object({
   name: z.string().describe('The name of the variant'),
   label: z.string().describe('A human-readable label for the variant'),
@@ -242,6 +252,8 @@ export const sEventDescription = z.object({
 });
 
 export type DeviceType = z.infer<typeof sDeviceType>;
+
+export type PositionTrackerDto = z.infer<typeof sPositionTrackerDto>;
 
 export type PresetDto = z.infer<typeof sPresetDto>;
 
@@ -294,6 +306,7 @@ export interface DeviceTypeToDtoMap {
   [NVR_ANALYTICS_SERVER]: NvrAnalyticsServerDto;
   [SYSTEM]: SystemDeviceDto;
   [GENERIC_SENSOR]: GenericSensorDto;
+  [POSITION_TRACKER]: PositionTrackerDto;
 }
 
 /** Given a device type, resolves to the corresponding Dto type. */
@@ -321,4 +334,5 @@ export const deviceDtoSchemaMap = {
   [NVR_EXPORTER]: sNvrExporterDto,
   [NVR_ANALYTICS_SERVER]: sNvrAnalyticsServerDto,
   [SYSTEM]: sSystemDeviceDto,
+  [POSITION_TRACKER]: sPositionTrackerDto,
 } as const satisfies Record<DeviceType, z.ZodType>;

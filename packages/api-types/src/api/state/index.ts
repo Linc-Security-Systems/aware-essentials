@@ -8,7 +8,7 @@ import { IntercomTerminalStateDto } from '../../objects/device/intercom-terminal
 import { IoBoardStateDto } from '../../objects/device/io-board';
 import { MotionSensorStateDto } from '../../objects/device/motion-sensor';
 import { PanicButtonStateDto } from '../../objects/device/panic-button';
-
+import { PositionTrackerStateDto } from '../../objects/device/position-tracker';
 export type DeviceStateDto =
   | CameraStateDto
   | DoorStateDto
@@ -19,4 +19,5 @@ export type DeviceStateDto =
   | GenericSensorStateDto
   | PanicButtonStateDto
   | IntercomTerminalStateDto
-  | IntercomOperatorStateDto;
+  | IntercomOperatorStateDto
+  | PositionTrackerStateDto;
