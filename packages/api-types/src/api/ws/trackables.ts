@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { sWorldObjectId } from '../../primitives';
 import { WebSocketMessage } from './web-socket';
 
-export const sTrackableUpdatePayload = z.object({
+export const sTrackableUpdate = z.object({
   timestamp: z.number(),
   objectId: z.string().nonempty(),
   objectName: z.string().nonempty(),
@@ -13,6 +13,12 @@ export const sTrackableUpdatePayload = z.object({
   altitude: z.number().optional(),
   speed: z.number().optional(),
   heading: z.number().optional(),
+});
+
+export type TrackableUpdate = z.infer<typeof sTrackableUpdate>;
+
+export const sTrackableUpdatePayload = z.object({
+  updates: z.record(z.string(), sTrackableUpdate),
 });
 
 export type TrackableUpdatePayload = z.infer<typeof sTrackableUpdatePayload>;
