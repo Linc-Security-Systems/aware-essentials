@@ -4,8 +4,8 @@ import { WebSocketMessage } from './web-socket';
 
 export const sTrackableUpdatePayload = z.object({
   timestamp: z.number(),
-  id: z.string().nonempty(),
-  label: z.string().nonempty(),
+  objectId: z.string().nonempty(),
+  objectName: z.string().nonempty(),
   objectKind: sWorldObjectId.nullable(),
   metadata: z.record(z.string(), z.unknown()),
   longitude: z.number().min(-180).max(180),

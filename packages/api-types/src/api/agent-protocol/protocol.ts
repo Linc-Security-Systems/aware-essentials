@@ -12,6 +12,7 @@ import {
   sAccessRulePermissionDto,
   sScheduleDetailsRequest,
 } from '../../objects';
+import { sTrackableUpdatePayload } from '../ws/trackables';
 
 // PROTOCOL ENVELOPE
 
@@ -204,6 +205,17 @@ export const sPushFile = z
     url: z.string().nonempty().describe('URL to pull the file from'),
   })
   .describe('Instruction to push a file from an agent to file relay');
+
+export const sPushTrackableUpdate = sTrackableUpdatePayload
+  .extend({
+    kind: z.literal('trackable-update'),
+    provider: z.string().nonempty().describe('Provider that sent the update'),
+    foreignRef: z
+      .string()
+      .nonempty()
+      .describe('Foreign reference of the trackable in the source provider'),
+  })
+  .describe('Instruction to push a trackable update from an agent to server');
 
 // PUSH DEVICE STATE UPDATE
 
@@ -570,6 +582,7 @@ export type QueryRq = z.infer<typeof sQueryRq>;
 export type QueryRs = z.infer<typeof sQueryRs>;
 export type ProgressUpdate = z.infer<typeof sProgressUpdate>;
 export type PushFile = z.infer<typeof sPushFile>;
+export type PushTrackableUpdate = z.infer<typeof sPushTrackableUpdate>;
 export type PushStateUpdateRq = z.infer<typeof sPushStateUpdateRq>;
 export type PushStateUpdateRs = z.infer<typeof sPushStateUpdateRs>;
 export type PushEventRq = z.infer<typeof sPushEventRq>;
@@ -627,6 +640,7 @@ export type PayloadByKind = {
   'describe-object': DescribeObjectRq;
   'describe-object-rs': DescribeObjectRs;
   'error-rs': ErrorPayload;
+  'trackable-update': PushTrackableUpdate;
 };
 
 export type FromAgent =
@@ -639,6 +653,7 @@ export type FromAgent =
   | RunCommandRs
   | QueryRs
   | PushStateUpdateRq
+  | PushTrackableUpdate
   | PushEventRq
   | ProgressUpdate
   | GetAvailableDevicesRs
@@ -676,6 +691,7 @@ const fromAgentSchemaByKind = {
   'query-rs': sQueryRs,
   progress: sProgressUpdate,
   state: sPushStateUpdateRq,
+  'trackable-update': sPushTrackableUpdate,
   event: sPushEventRq,
   'get-available-devices-rs': sGetAvailableDevicesRs,
   'validate-change-rs': sValidateChangeRs,

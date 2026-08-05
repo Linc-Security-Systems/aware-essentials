@@ -29,6 +29,7 @@ import {
   DescribeObjectRs,
   FromServer,
   Message,
+  PushTrackableUpdate,
 } from '@awarevue/api-types';
 import { AccessChangeContext, Agent, RunContext } from './agent';
 import { createValidator } from './default-validator';
@@ -44,7 +45,9 @@ type ObjectCache = Record<
 
 export type DeviceActivity =
   | Omit<PushStateUpdateRq, 'provider'>
-  | Omit<PushEventRq, 'provider'>;
+  | Omit<PushEventRq, 'provider'>
+  // ???
+  | Omit<PushTrackableUpdate, 'provider'>;
 
 export type AgentOptions = {
   providers: Record<string, ProviderSpecs>;
