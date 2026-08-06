@@ -88,3 +88,10 @@ export const sCallState = z.enum([
 ]);
 
 export const sCallDirection = z.enum(['incoming', 'outgoing']);
+
+export const sSpeed = z.object({
+  value: z.number().min(0),
+  unit: z.enum(['m/s', 'km/h', 'mph', 'knots']),
+});
+
+export type Speed = z.infer<typeof sSpeed>;
