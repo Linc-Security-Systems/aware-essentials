@@ -23,11 +23,27 @@ export const sTrackableUpdatePayload = z.object({
 
 export type TrackableUpdatePayload = z.infer<typeof sTrackableUpdatePayload>;
 
+export const sSubscribeTrackablePayload = z.object({});
+
+export type SubscribeTrackablePayload = z.infer<
+  typeof sSubscribeTrackablePayload
+>;
+
+export const sUnsubscribeTrackablePayload = z.object({});
+
+export type UnsubscribeTrackablePayload = z.infer<
+  typeof sUnsubscribeTrackablePayload
+>;
+
 interface TrackableMessageMap {
+  subscribe: SubscribeTrackablePayload;
+  unsubscribe: UnsubscribeTrackablePayload;
   update: TrackableUpdatePayload;
 }
 
 const validators: { [K in keyof TrackableMessageMap]: z.ZodObject<any> } = {
+  subscribe: sSubscribeTrackablePayload,
+  unsubscribe: sUnsubscribeTrackablePayload,
   update: sTrackableUpdatePayload,
 };
 
