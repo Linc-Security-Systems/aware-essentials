@@ -7,33 +7,13 @@ export const sWorldObject = z.object({
 
 export type WorldObject = z.infer<typeof sWorldObject>;
 
-export const worldObjects: WorldObject[] = [
-  {
-    id: 'person',
-    label: 'Person',
-  },
-  {
-    id: 'backpack',
-    label: 'Backpack',
-  },
-  {
-    id: 'cell-phone',
-    label: 'Cell Phone',
-  },
-  {
-    id: 'handbag',
-    label: 'Handbag',
-  },
-  {
-    id: 'laptop',
-    label: 'Laptop',
-  },
-  {
-    id: 'bicycle',
-    label: 'Bicycle',
-  },
-  {
-    id: 'car',
-    label: 'Car',
-  },
-];
+export const sWorldObjectDto = sWorldObject.extend({
+  createdOn: z
+    .string()
+    .describe('The date and time when the world object was created'),
+  lastModifiedOn: z
+    .string()
+    .describe('The date and time when the world object was last modified'),
+});
+
+export type WorldObjectDto = z.infer<typeof sWorldObjectDto>;

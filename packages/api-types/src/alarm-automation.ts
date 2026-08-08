@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { DeviceEvent } from './api/events';
 import { DeviceType } from './objects/device';
-import { worldObjects } from './objects/world-object';
+import { WorldObject } from './objects/world-object';
 import { AutomationRuleBody } from './objects/automation-rule';
 
 export const sAlarmBehavior = z.enum([
@@ -189,6 +189,37 @@ export type DeviceEventVariant = {
 const sorted = (specs: DeviceEventVariant[]) => {
   return specs.sort((a, b) => a.label.localeCompare(b.label));
 };
+
+const worldObjects: WorldObject[] = [
+  {
+    id: 'person',
+    label: 'Person',
+  },
+  {
+    id: 'backpack',
+    label: 'Backpack',
+  },
+  {
+    id: 'cell-phone',
+    label: 'Cell Phone',
+  },
+  {
+    id: 'handbag',
+    label: 'Handbag',
+  },
+  {
+    id: 'laptop',
+    label: 'Laptop',
+  },
+  {
+    id: 'bicycle',
+    label: 'Bicycle',
+  },
+  {
+    id: 'car',
+    label: 'Car',
+  },
+];
 
 export const alarmEventVariants = {
   'door-access': sorted([
