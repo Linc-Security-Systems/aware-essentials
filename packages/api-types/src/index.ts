@@ -5,3 +5,4 @@ export * from './objects';
 export * from './primitives';
 export * from './primitives/credential-type';
 export * from './_legacy';
+export * from './motion';

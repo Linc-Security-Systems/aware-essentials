@@ -1,6 +1,7 @@
 import { sDeviceParam, sFileResponse } from '../../primitives';
 import { z } from 'zod';
 import { sRecordingSequence } from '../rest/media';
+import { sStreamMotionStats } from '../../motion';
 
 // QUERIES
 
@@ -22,6 +23,26 @@ export type RecordingsByTimeRangeArgs = z.infer<
 >;
 
 export type RecordingsResponse = z.infer<typeof sRecordingsResponse>;
+
+// -- Motion Stats by Time Range
+
+export const QUERY_MOTION_STATS_BY_TIME_RANGE =
+  'cctv:motion-stats-by-time-range';
+
+export const sMotionStatsByTimeRangeArgs = z.object({
+  device: sDeviceParam,
+  streamId: z.string().nonempty(),
+  timeFrom: z.number(),
+  timeTo: z.number(),
+});
+
+export const sMotionStatsResponse = sStreamMotionStats;
+
+export type MotionStatsByTimeRangeArgs = z.infer<
+  typeof sMotionStatsByTimeRangeArgs
+>;
+
+export type MotionStatsResponse = z.infer<typeof sMotionStatsResponse>;
 
 // -- Preview Image
 
@@ -61,6 +82,7 @@ export type CameraLatestFrameResponse = z.infer<
 
 export const nvrRecorderRequestSchemas = {
   [QUERY_RECORDINGS_BY_TIME_RANGE]: sRecordingsByTimeRangeArgs,
+  [QUERY_MOTION_STATS_BY_TIME_RANGE]: sMotionStatsByTimeRangeArgs,
   [QUERY_PREVIEW_IMAGE]: sPreviewImageArgs,
   [QUERY_CAMERA_LATEST_FRAME]: sCameraLatestFrameArgs,
 } as const;
@@ -68,6 +90,7 @@ export const nvrRecorderRequestSchemas = {
 // Dictionary of response schemas by query type
 export const nvrRecorderResponseSchemas = {
   [QUERY_RECORDINGS_BY_TIME_RANGE]: sRecordingsResponse,
+  [QUERY_MOTION_STATS_BY_TIME_RANGE]: sMotionStatsResponse,
   [QUERY_PREVIEW_IMAGE]: sPreviewImageResponse,
   [QUERY_CAMERA_LATEST_FRAME]: sCameraLatestFrameResponse,
 } as const;
@@ -75,12 +98,14 @@ export const nvrRecorderResponseSchemas = {
 // TypeScript mapping types for requests and responses
 export type NvrRecorderQueryRequestMap = {
   [QUERY_RECORDINGS_BY_TIME_RANGE]: RecordingsByTimeRangeArgs;
+  [QUERY_MOTION_STATS_BY_TIME_RANGE]: MotionStatsByTimeRangeArgs;
   [QUERY_PREVIEW_IMAGE]: PreviewImageArgs;
   [QUERY_CAMERA_LATEST_FRAME]: CameraLatestFrameArgs;
 };
 
 export type NvrRecorderQueryResponseMap = {
   [QUERY_RECORDINGS_BY_TIME_RANGE]: RecordingsResponse;
+  [QUERY_MOTION_STATS_BY_TIME_RANGE]: MotionStatsResponse;
   [QUERY_PREVIEW_IMAGE]: PreviewImageResponse;
   [QUERY_CAMERA_LATEST_FRAME]: CameraLatestFrameResponse;
 };

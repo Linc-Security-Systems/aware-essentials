@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { sPaginatedQueryResponseOf } from './query';
+import { sStreamMotionStats } from '../../motion';
 
 export const sCreateExportRequest = z.object({
   name: z.string().nonempty(),
@@ -29,6 +30,15 @@ export const sGetRecordingsRequest = z.object({
 
 export const sGetRecordingsResponse =
   sPaginatedQueryResponseOf(sRecordingSequence);
+
+export const sGetMotionStatsRequest = z.object({
+  deviceId: z.string().nonempty(),
+  streamId: z.string().nonempty(),
+  timeFrom: z.number().nonnegative(),
+  timeTo: z.number().nonnegative(),
+});
+
+export const sGetMotionStatsResponse = sStreamMotionStats;
 
 export const sGetPreviewImageRequest = z.object({
   deviceId: z.string().nonempty(),
