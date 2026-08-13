@@ -5,12 +5,12 @@ export const sCreateApiKeyRequest = z.object({
 });
 
 export const sCreateApiKeyResponse = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   apiKey: z.string().min(32).max(1024),
 });
 
 export const sRevokeApiKeyRequest = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
 });
 
 export type CreateApiKeyRequest = z.infer<typeof sCreateApiKeyRequest>;

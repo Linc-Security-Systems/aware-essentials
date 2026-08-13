@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const sSecurityLevelDto = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   order: z.number().int().min(0),
   name: z.string().max(64),
   active: z.boolean(),

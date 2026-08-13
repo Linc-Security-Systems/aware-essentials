@@ -2,7 +2,7 @@ import { sPermissionId } from '../permissions';
 import { z } from 'zod';
 
 export const sRoleDto = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   displayName: z.string().nonempty().max(100),
   systemName: z
     .string()

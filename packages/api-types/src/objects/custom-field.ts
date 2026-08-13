@@ -10,7 +10,7 @@ export const CustomFieldTypeEnum = z.enum([
 export const CustomFieldExtendsTypeEnum = z.enum(['person']);
 
 export const sCustomFieldDto = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   name: z.string().min(1).max(64),
   type: CustomFieldTypeEnum,
   extendsType: CustomFieldExtendsTypeEnum,

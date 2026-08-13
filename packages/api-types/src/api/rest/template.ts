@@ -4,13 +4,13 @@ import { z } from 'zod';
 export const sNewTemplateRequest = z.object({
   name: z.string().min(1).max(64),
   type: sTemplateTypeEnum,
-  templateHtmlId: z.string().uuid(),
+  templateHtmlId: z.uuid(),
 });
 
 export const sUpdateTemplateRequest = z.object({
   name: z.string().min(1).max(64).optional(),
   type: sTemplateTypeEnum.optional(),
-  templateHtmlId: z.string().uuid().optional(),
+  templateHtmlId: z.uuid().optional(),
 });
 
 export type NewTemplateRequest = z.infer<typeof sNewTemplateRequest>;

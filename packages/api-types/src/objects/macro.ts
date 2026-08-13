@@ -3,7 +3,7 @@ import { z } from 'zod';
 export const sMacroItemDto = z.object({
   id: z.string().nullable(),
   stepId: z.string().nonempty(),
-  deviceId: z.string().uuid().nonempty(),
+  deviceId: z.uuid().nonempty(),
   command: z.string().nonempty(),
   params: z.record(z.string(), z.unknown()),
 });
