@@ -178,10 +178,7 @@ export const eventSchemaByKind = {
 export const eventsByDeviceType: Partial<
   Record<DeviceType, DeviceEvent['kind'][]>
 > = {
-  camera: [
-    ...(Object.keys(cameraEventSchemasByKind) as DeviceEvent['kind'][]),
-    'motion-detected' as const,
-  ],
+  camera: [...(Object.keys(cameraEventSchemasByKind) as DeviceEvent['kind'][])],
   door: Object.keys(doorEventSchemaByKind) as DeviceEvent['kind'][],
   'io-board': Object.keys(ioBoardEventSchemaByKind) as DeviceEvent['kind'][],
   'panic-button': Object.keys(
