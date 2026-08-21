@@ -69,6 +69,21 @@ export const sUserLoggedOut = z.object({
 export type UserLoggedIn = z.infer<typeof sUserLoggedIn>;
 export type UserLoggedOut = z.infer<typeof sUserLoggedOut>;
 
+export const sMacroActivated = z.object({
+  kind: z.literal('macro-activated'),
+  macroId: z.string(),
+  displayName: z.string(),
+});
+
+export const sAccessPathActivated = z.object({
+  kind: z.literal('access-path-activated'),
+  macroId: z.string(),
+  displayName: z.string(),
+});
+
+export type MacroActivated = z.infer<typeof sMacroActivated>;
+export type AccessPathActivated = z.infer<typeof sAccessPathActivated>;
+
 export type ServerEvent =
   | ObjectCreated
   | ObjectUpdated
@@ -76,4 +91,6 @@ export type ServerEvent =
   | AgentStarted
   | AgentStopped
   | UserLoggedIn
-  | UserLoggedOut;
+  | UserLoggedOut
+  | MacroActivated
+  | AccessPathActivated;

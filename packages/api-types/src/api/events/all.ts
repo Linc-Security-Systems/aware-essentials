@@ -156,6 +156,8 @@ export const eventKindLabels: Record<DeviceEvent['kind'], string> = {
   'user-logged-in': 'User Logged In',
   'user-logged-out': 'User Logged Out',
   'sensor-activated': 'Sensor Activated',
+  'macro-activated': 'Macro Activated',
+  'access-path-activated': 'Access Path Activated',
 };
 
 export const eventSchemaByKind = {
