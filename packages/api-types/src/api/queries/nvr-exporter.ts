@@ -31,6 +31,7 @@ export const sExportItem = z.object({
   startTime: z.number().int().nonnegative(),
   id: z.string().nonempty(),
   status: z.string().nonempty(),
+  progress: z.number().optional(),
   size: z.string().nonempty().optional(),
   expires: z.number().int().nonnegative().optional(),
 });
