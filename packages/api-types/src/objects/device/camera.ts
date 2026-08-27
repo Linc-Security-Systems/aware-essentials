@@ -122,6 +122,21 @@ export const sAnalyticsConfigData = z.object({
   streams: z.record(z.string(), sAiStreamConfiguration),
 });
 
+// RECORDING
+export const sRecorderStreamStateDto = z.object({
+  upstreamState: z.enum(['connecting', 'connected', 'disconnected', 'error']),
+  upstreamError: z.string().nonempty().nullable(),
+  isRecording: z.boolean(),
+  head: z.number().nullable(),
+  tail: z.number().nullable(),
+  totalSize: z.number().nullable(),
+  totalLengthMs: z.number().nullable(),
+});
+
+export type RecorderStreamStateDto = z.infer<typeof sRecorderStreamStateDto>;
+
+export const sRecordingState = z.record(z.string(), sRecorderStreamStateDto);
+
 export const sCameraState = z.object({
   pan: z.number().min(-1).max(1),
   tilt: z.number().min(-1).max(1),
@@ -129,7 +144,7 @@ export const sCameraState = z.object({
   enabled: z.boolean(),
   connected: z.boolean(),
   analytics: sAnalyticsConfigData,
-  // TODO recording: ...
+  recording: sRecordingState,
 });
 
 export type CameraStateDto = z.infer<typeof sCameraState>;
