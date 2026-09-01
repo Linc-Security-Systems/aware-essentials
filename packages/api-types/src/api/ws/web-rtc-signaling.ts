@@ -27,7 +27,8 @@ export type WebRtcPlaybackParams = z.infer<typeof sWebRtcPlaybackParams>;
 
 export const sWebRtcPlaybackTrackParams = z.object({
   controllerId: z.string().nonempty(),
-  trackId: z.string().nonempty(),
+  cameraId: z.string().nonempty(),
+  streamId: z.string().nonempty(),
 });
 
 export type WebRtcPlaybackTrackParams = z.infer<

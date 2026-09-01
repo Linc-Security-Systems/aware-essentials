@@ -7,6 +7,7 @@ export type RecorderSpecs = z.infer<typeof sRecorderSpecs>;
 
 export const sRecorderStateDto = z.object({
   connected: z.boolean(),
+  usedDiskSpace: z.number().nullable(),
   availableDiskSpace: z.number().nullable(),
   totalDiskSpace: z.number().nullable(),
   highWatermark: z.number().nullable(),
