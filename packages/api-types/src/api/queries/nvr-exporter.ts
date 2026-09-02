@@ -25,12 +25,23 @@ export const QUERY_GET_EXPORTS = 'cctv:get-exports';
 
 export const sGetExportsArgs = z.object({});
 
+export const sExportStatus = z.literal([
+  'in-progress',
+  'ready',
+  'cancelled',
+  'error',
+  'other',
+]);
+
+export type ExportStatus = z.infer<typeof sExportStatus>;
+
 export const sExportItem = z.object({
   name: z.string().nonempty(),
   endTime: z.number().int().nonnegative(),
   startTime: z.number().int().nonnegative(),
   id: z.string().nonempty(),
-  status: z.string().nonempty(),
+  status: sExportStatus,
+  statusRaw: z.string().optional(),
   progress: z.number().optional(),
   size: z.string().nonempty().optional(),
   expires: z.number().int().nonnegative().optional(),
