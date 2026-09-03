@@ -39,6 +39,7 @@ export const sExportItem = z.object({
   name: z.string().nonempty(),
   endTime: z.number().int().nonnegative(),
   startTime: z.number().int().nonnegative(),
+  created: z.number().int().nonnegative(),
   id: z.string().nonempty(),
   status: sExportStatus,
   statusRaw: z.string().optional(),
