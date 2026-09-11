@@ -34,3 +34,4 @@ export * from './webrtc-playback';
 export * from './io-device';
 export * from './device';
 export * from './camera';
+export * from './trackables';

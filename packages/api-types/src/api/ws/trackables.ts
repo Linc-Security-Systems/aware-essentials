@@ -13,6 +13,16 @@ export const sTrackableUpdate = z.object({
   altitude: z.number().optional(),
   speed: sSpeed.optional(),
   heading: z.number().optional(),
+  history: z
+    .array(
+      z.object({
+        timestamp: z.number(),
+        longitude: z.number().min(-180).max(180).optional(),
+        latitude: z.number().min(-90).max(90).optional(),
+        altitude: z.number().optional(),
+      }),
+    )
+    .optional(),
 });
 
 export type TrackableUpdate = z.infer<typeof sTrackableUpdate>;
