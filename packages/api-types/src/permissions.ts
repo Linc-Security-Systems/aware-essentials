@@ -167,6 +167,17 @@ export const sPermissionId = z.union([
     .describe('View access control authorities'),
   z.literal('access-authority:sync').describe('Perform access sync'),
   z.literal('access-authority:delete').describe('Remove an access authority'),
+  //Trackables
+  z.literal('trackable:read').describe('View trackables'),
+  z.literal('trackable:image-upload').describe('Upload trackable images'),
+  z
+    .literal('trackable:user-favorite')
+    .describe('Mangage own trackable favourites'),
+  z
+    .literal('trackable:global-favorite')
+    .describe('Manage global trackable favourites'),
+  z.literal('trackable:manage').describe('Manage trackables'),
+  z.literal('trackable:image-manage').describe('Manage trackable images'),
 ]);
 
 export type PermissionArea =
@@ -204,7 +215,8 @@ export type PermissionArea =
   | 'agreement'
   | 'api-key'
   | 'access-authority'
-  | 'notification';
+  | 'notification'
+  | 'trackable';
 
 const permissionsToRecord = (
   permissions: typeof sPermissionId,
