@@ -1,4 +1,5 @@
-import { AccessControlCapabilityReport } from '../../objects';
+import { ConfigState } from '../../objects/device/changeset';
+import { AccessControlCapabilityReport } from '../agent-metadata';
 import { ModuleConfig, ModuleConfigMetadata } from '../module-config';
 export const SERVER = 'server';
 
@@ -19,4 +20,5 @@ export type ServerState = {
   runnableProviders: string[];
   accessControlProviders: Record<string, AccessControlProviderState>;
   citadelMode: boolean;
+  deviceChanges: ConfigState;
 };

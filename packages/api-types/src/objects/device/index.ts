@@ -21,3 +21,4 @@ export * from './nvr-recorder';
 export * from './nvr-exporter';
 export * from './nvr-analytics-server';
 export * from './system';
+export * from './changeset';

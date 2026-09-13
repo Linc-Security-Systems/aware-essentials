@@ -7,6 +7,8 @@ import {
   sDeviceRelationDto,
   DeviceType,
   sEventVariantDescription,
+  sDeviceDto,
+  sChangeset,
 } from '../../objects';
 
 export const sAddDeviceRequest = z.object({
@@ -96,3 +98,11 @@ export type DeviceSearchCriteria = {
 export type EventVariantDescription = z.infer<typeof sEventVariantDescription>;
 
 export type GetEventCatalogResponse = z.infer<typeof sGetEventCatalogResponse>;
+
+/** The 202 body of a device write that is being applied. */
+export const sPendingDeviceWrite = z.object({
+  device: sDeviceDto.nullable(), // import sDeviceDto from the device schemas
+  changeset: sChangeset,
+});
+
+export type PendingDeviceWrite = z.infer<typeof sPendingDeviceWrite>;
