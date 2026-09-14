@@ -9,6 +9,7 @@ import {
   sEventVariantDescription,
   sDeviceDto,
   sChangeset,
+  sRelationDeltaDto,
 } from '../../objects';
 
 export const sAddDeviceRequest = z.object({
@@ -34,6 +35,20 @@ export const sUpdateDeviceRequest = z.object({
   tags: z.array(z.string()).optional(),
   relations: z.array(sDeviceRelationSide).optional(),
   enabled: z.boolean().optional(),
+});
+
+/**
+ * A set of device changes applied as one changeset: PUT /devices/changes.
+ * Validated, planned and committed as one; 202 with the changeset while it
+ * is being applied, 409 if any touched device is held by a pending one.
+ */
+export const sApplyDeviceChangesRequest = z.object({
+  /** No id: the server assigns one. */
+  added: z.array(sAddDeviceRequest),
+  updated: z.array(sUpdateDeviceRequest),
+  removed: z.array(z.string().nonempty()),
+  /** Both ends by device id. */
+  relations: z.array(sRelationDeltaDto),
 });
 
 export const sOverrideDeviceSpecsRequest = z.object({
@@ -72,6 +87,10 @@ export const sSetUnsetRelationRequest = sDeviceRelationDto;
 export type AddDeviceRequest = z.infer<typeof sAddDeviceRequest>;
 
 export type UpdateDeviceRequest = z.infer<typeof sUpdateDeviceRequest>;
+
+export type ApplyDeviceChangesRequest = z.infer<
+  typeof sApplyDeviceChangesRequest
+>;
 
 export type OverrideDeviceSpecsRequest = z.infer<
   typeof sOverrideDeviceSpecsRequest
