@@ -57,12 +57,21 @@ export const sPlaybackTrackArea = z.object({
 });
 export type PlaybackTrackArea = z.infer<typeof sPlaybackTrackArea>;
 
+export const sImageArea = z.object({
+  area: z.string().nonempty(),
+  type: z.literal('image'),
+  fileId: z.uuid(),
+});
+
+export type ImageArea = z.infer<typeof sImageArea>;
+
 export type ViewAreaContents =
   | LayoutArea
   | LayoutSelectorArea
   | DeviceArea
   | DeviceCarouselArea
-  | PlaybackTrackArea;
+  | PlaybackTrackArea
+  | ImageArea;
 
 export const sViewAreaContents = z.union([
   sLayoutArea,
@@ -70,6 +79,7 @@ export const sViewAreaContents = z.union([
   sDeviceArea,
   sDeviceCarouselArea,
   sPlaybackTrackArea,
+  sImageArea,
 ]);
 
 export const sViewConfig = z.object({
