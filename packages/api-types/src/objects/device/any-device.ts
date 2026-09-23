@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { CAMERA, sCameraSpecs } from './camera';
+import { CAMERA, sCameraConfig, sCameraSpecs } from './camera';
 import { DOOR, sDoorSpecs } from './door';
 import { IO_BOARD, sIoBoardSpecs } from './io-board';
 import { CAMERA_LIFT, sCameraLiftSpecs } from './camera-lift';
@@ -336,3 +336,37 @@ export const deviceDtoSchemaMap = {
   [SYSTEM]: sSystemDeviceDto,
   [POSITION_TRACKER]: sPositionTrackerDto,
 } as const satisfies Record<DeviceType, z.ZodType>;
+
+// CONFIG (the `is` self relation)
+
+/**
+ * Desired whole-device configuration by device type. Each type declares its
+ * own `s<Type>Config` in full next to its specs and state; a type not listed
+ * here has nothing configurable yet and its `is` relation must stay empty.
+ *
+ * Optionality is applied here, once, to the whole object rather than to each
+ * key: the `is` relation may be missing altogether, and a key it does not
+ * carry is "unmanaged" -- nothing is planned for it and clients show the
+ * actual state -- which is how existing deployments migrate without a backfill.
+ */
+export const deviceConfigSchemaMap = {
+  [CAMERA]: sCameraConfig,
+} as const satisfies Partial<Record<DeviceType, z.ZodObject>>;
+
+const sEmptyDeviceConfig = z.object({});
+
+/** Given a device type, the type of its `is` relation data (every key optional). */
+export type DeviceConfigMap = {
+  [T in DeviceType]: T extends keyof typeof deviceConfigSchemaMap
+    ? Partial<z.infer<(typeof deviceConfigSchemaMap)[T]>>
+    : Record<string, never>;
+};
+
+export type AnyDeviceConfig = DeviceConfigMap[DeviceType];
+
+/** The schema an `is` relation's data must satisfy, chosen by the owning device's type. */
+export const deviceConfigSchema = (type: DeviceType): z.ZodObject =>
+  (
+    (deviceConfigSchemaMap as Partial<Record<DeviceType, z.ZodObject>>)[type] ??
+    sEmptyDeviceConfig
+  ).partial();

@@ -23,8 +23,21 @@ export const sDeviceRelationKind = z.enum([
   'isReadBy',
   'isIngestedBy',
   'ingests',
+  /**
+   * The self relation: a device's relation to itself, and the only kind that
+   * may have both ends on one device. Its data is the device's desired
+   * whole-device configuration, shaped by the device's type (see
+   * `deviceConfigSchema` in any-device.ts).
+   */
+  'is',
 ]);
 
+/**
+ * `kind === 'is'` if and only if `leftId === rightId`. Enforced by the
+ * server (and a database constraint); not expressed here because the
+ * relation as seen from one side (`sDeviceRelationSide`) does not know its
+ * owner's id.
+ */
 export const sDeviceRelationDto = z
   .object({
     leftId: z.string(),
@@ -64,6 +77,7 @@ export const relationKinds: Record<DeviceRelationKind, DeviceRelationKind> = {
   isReadBy: 'isReadBy',
   ingests: 'ingests',
   isIngestedBy: 'isIngestedBy',
+  is: 'is',
 };
 
 export const inverseRelationKinds: Record<
@@ -91,6 +105,7 @@ export const inverseRelationKinds: Record<
   isReadBy: 'reads',
   ingests: 'isIngestedBy',
   isIngestedBy: 'ingests',
+  is: 'is',
 };
 
 export type DeviceRelationDto = z.infer<typeof sDeviceRelationDto>;
@@ -102,6 +117,12 @@ export type DeviceRelationSide = z.infer<typeof sDeviceRelationSide>;
 export const sStreamRecorderSettings = z.object({
   retentionHours: z.number().int().positive().optional(),
   prebufferSeconds: z.number().int().nonnegative().optional(),
+  /**
+   * Whether we WANT this stream recorded. Absent means true, which is what
+   * every binding written before this key existed has always meant; the
+   * recorder's own `isRecording` state says whether it actually is.
+   */
+  enabled: z.boolean().optional(),
 });
 
 export const sRecordingRelationData = z.object({
@@ -156,6 +177,12 @@ export interface DeviceRelationDataMap {
   isReadBy: Record<string, never>;
   ingests: AiInferenceRelationData;
   isIngestedBy: AiInferenceRelationData;
+  /**
+   * Shaped by the owning device's type, which a kind-keyed map cannot know:
+   * `DeviceConfigMap[T]` is the precise type and `deviceConfigSchema(type)`
+   * the schema to validate with (any-device.ts).
+   */
+  is: Record<string, unknown>;
 }
 
 /** Runtime map: relation kind → Zod schema for its data. */
@@ -183,4 +210,6 @@ export const sDeviceRelationDataMap: {
   isReadBy: sEmptyRelationData,
   ingests: sAiInferenceRelationData,
   isIngestedBy: sAiInferenceRelationData,
+  // Validate with deviceConfigSchema(device.type) instead; see DeviceRelationDataMap.
+  is: z.record(z.string(), z.unknown()),
 };

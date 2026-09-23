@@ -10,6 +10,8 @@ export const sMountStreamCommand = z.object({
     rtspUrl: z.string().nonempty(),
     retentionHours: z.number().int().positive().optional(),
     prebufferSeconds: z.number().int().nonnegative().optional(),
+    /** Whether the stream should be recording once mounted. Absent means true. */
+    isRecording: z.boolean().optional(),
   }),
 });
 

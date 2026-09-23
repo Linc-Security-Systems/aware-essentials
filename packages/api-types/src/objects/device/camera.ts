@@ -42,6 +42,24 @@ export type WebRtcPlaybackSource = z.infer<typeof sWebRtcPlaybackSource>;
 
 export type CameraSpecs = z.infer<typeof sCameraSpecs>;
 
+// CONFIG
+
+/**
+ * What we WANT for the camera as a whole, carried on its own `is` relation.
+ *
+ * Specs describe what a camera is (discovery may rewrite them) and state
+ * reports what the outside world says is the case; this is the desired value
+ * the changeset pipeline converges the world towards. Declared in full here;
+ * `deviceConfigSchema` makes the whole object partial, because the relation
+ * may be missing and any key absent from it is "unmanaged".
+ */
+export const sCameraConfig = z.object({
+  /** Privacy mode on: feed hidden, streams unmounted, recording paused. */
+  privacyMode: z.boolean(),
+});
+
+export type CameraConfig = z.infer<typeof sCameraConfig>;
+
 // STATE
 
 export const sMotionDetectionConfiguration = z.object({
