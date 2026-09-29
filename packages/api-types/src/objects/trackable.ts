@@ -10,9 +10,9 @@ export const sTrackableImageDto = z.object({
 export type TrackableImageDto = z.infer<typeof sTrackableImageDto>;
 
 export const sTrackableProfileDto = z.object({
-  objectId: z.string(),
-  objectName: z.string().nullable(),
-  objectKind: z.string().nullable(),
+  id: z.string(),
+  name: z.string().nullable(),
+  kind: z.string().nullable(),
   isUserFavorite: z.boolean(),
   isGlobalFavorite: z.boolean(),
   images: z.array(sTrackableImageDto),
