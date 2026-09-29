@@ -20,3 +20,13 @@ export const sTrackableProfileDto = z.object({
   lastModifiedOn: z.string(),
 });
 export type TrackableProfileDto = z.infer<typeof sTrackableProfileDto>;
+
+export const sTrackableHistoryDto = z.array(
+  z.object({
+    timestamp: z.number(),
+    longitude: z.number().min(-180).max(180).optional(),
+    latitude: z.number().min(-90).max(90).optional(),
+    altitude: z.number().optional(),
+  }),
+);
+export type TrackableHistoryDto = z.infer<typeof sTrackableHistoryDto>;

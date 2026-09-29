@@ -17,6 +17,7 @@ import { SecurityLevelDto } from './security-level';
 import { UserDto } from './user';
 import { ViewDto } from './view';
 import { ZoneDto, ZoneProps } from './zone';
+import { TrackableProfileDto } from './trackable';
 
 export const sObjectKind = z.enum([
   'accessRule',
@@ -37,6 +38,7 @@ export const sObjectKind = z.enum([
   'personType',
   'agreement',
   'apiKey',
+  'trackable',
 ]);
 
 export type ObjectKind = z.infer<typeof sObjectKind>;
@@ -60,6 +62,7 @@ export type ObjectKinds = {
   personType: PersonTypeDto;
   agreement: AgreementDto;
   apiKey: ApiKeyDto;
+  trackable: TrackableProfileDto;
 };
 
 export type ObjectDto = ObjectKinds;
@@ -91,6 +94,7 @@ export const objectLabels: Record<string, string> = {
   personType: 'Person Type',
   agreement: 'Agreement',
   apiKey: 'API Key',
+  trackable: 'Trackable Profile',
 };
 
 export const objectKinds: readonly ObjectKind[] = sObjectKind.options;
