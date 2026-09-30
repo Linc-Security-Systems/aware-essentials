@@ -8,6 +8,8 @@ export const sTrackableKind = z.enum([
   'sar-aircraft',
 ]);
 
+export type TrackableKind = z.infer<typeof sTrackableKind>;
+
 export const sTrackableImageDto = z.object({
   imageId: z.uuid(),
   reviewed: z.boolean(),
