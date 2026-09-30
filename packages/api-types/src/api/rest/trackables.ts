@@ -32,3 +32,33 @@ export const sSetTrackableImageReviewedRequest = z.object({
 export type SetTrackableImageReviewedRequest = z.infer<
   typeof sSetTrackableImageReviewedRequest
 >;
+
+const refineRetention = (v: { ttlSeconds: number; outOfDateSeconds: number }) =>
+  v.outOfDateSeconds < v.ttlSeconds;
+const retentionRefineMessage = {
+  message: 'outOfDateSeconds must be less than ttlSeconds',
+  path: ['outOfDateSeconds'],
+};
+
+const sTrackableRetentionValues = z.object({
+  ttlSeconds: z.number().int().positive(),
+  outOfDateSeconds: z.number().int().positive(),
+});
+
+// Adds a policy for a specific kind (the default policy always exists)
+export const sCreateTrackableRetentionPolicyRequest = sTrackableRetentionValues
+  .extend({ objectKind: z.string().trim().min(1) })
+  .refine(refineRetention, retentionRefineMessage);
+
+export type CreateTrackableRetentionPolicyRequest = z.infer<
+  typeof sCreateTrackableRetentionPolicyRequest
+>;
+
+// Replaces both values, so the ttl/out-of-date relationship can be validated
+// here rather than against stored values
+export const sUpdateTrackableRetentionPolicyRequest =
+  sTrackableRetentionValues.refine(refineRetention, retentionRefineMessage);
+
+export type UpdateTrackableRetentionPolicyRequest = z.infer<
+  typeof sUpdateTrackableRetentionPolicyRequest
+>;

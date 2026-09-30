@@ -27,3 +27,4 @@ export * from './world-object';
 export * from './device';
 export * from './module-config';
 export * from './trackable';
+export * from './trackable-retention-policy';

@@ -18,6 +18,7 @@ import { UserDto } from './user';
 import { ViewDto } from './view';
 import { ZoneDto, ZoneProps } from './zone';
 import { TrackableProfileDto } from './trackable';
+import { TrackableRetentionPolicyDto } from './trackable-retention-policy';
 
 export const sObjectKind = z.enum([
   'accessRule',
@@ -39,6 +40,7 @@ export const sObjectKind = z.enum([
   'agreement',
   'apiKey',
   'trackable',
+  'trackableRetentionPolicy',
 ]);
 
 export type ObjectKind = z.infer<typeof sObjectKind>;
@@ -63,6 +65,7 @@ export type ObjectKinds = {
   agreement: AgreementDto;
   apiKey: ApiKeyDto;
   trackable: TrackableProfileDto;
+  trackableRetentionPolicy: TrackableRetentionPolicyDto;
 };
 
 export type ObjectDto = ObjectKinds;
@@ -95,6 +98,7 @@ export const objectLabels: Record<string, string> = {
   agreement: 'Agreement',
   apiKey: 'API Key',
   trackable: 'Trackable Profile',
+  trackableRetentionPolicy: 'Trackable Retention Policy',
 };
 
 export const objectKinds: readonly ObjectKind[] = sObjectKind.options;
