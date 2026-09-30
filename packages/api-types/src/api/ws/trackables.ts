@@ -1,12 +1,13 @@
 import { z } from 'zod';
-import { sWorldObjectId, sSpeed } from '../../primitives';
+import { sSpeed } from '../../primitives';
 import { WebSocketMessage } from './web-socket';
+import { sTrackableKind } from '../../objects/trackable';
 
 export const sTrackableUpdate = z.object({
   timestamp: z.number(),
   objectId: z.string().nonempty(),
   objectName: z.string().optional(),
-  objectKind: sWorldObjectId.optional(),
+  objectKind: sTrackableKind.optional(),
   metadata: z.record(z.string(), z.unknown()),
   longitude: z.number().min(-180).max(180).optional(),
   latitude: z.number().min(-90).max(90).optional(),

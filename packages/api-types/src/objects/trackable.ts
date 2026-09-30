@@ -1,5 +1,13 @@
 import { z } from 'zod';
 
+export const sTrackableKind = z.enum([
+  //AIS
+  'vessel',
+  'base-station',
+  'aid-to-navigation',
+  'sar-aircraft',
+]);
+
 export const sTrackableImageDto = z.object({
   imageId: z.uuid(),
   reviewed: z.boolean(),
@@ -12,7 +20,7 @@ export type TrackableImageDto = z.infer<typeof sTrackableImageDto>;
 export const sTrackableProfileDto = z.object({
   id: z.string(),
   name: z.string().nullable(),
-  kind: z.string().nullable(),
+  kind: sTrackableKind.nullable(),
   isUserFavorite: z.boolean(),
   isGlobalFavorite: z.boolean(),
   images: z.array(sTrackableImageDto),

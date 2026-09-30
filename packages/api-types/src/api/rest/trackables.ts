@@ -1,8 +1,9 @@
 import { z } from 'zod';
+import { sTrackableKind } from '../../objects/trackable';
 
 export const sTrackableProfileSnapshot = z.object({
   objectName: z.string().trim().max(255).optional(),
-  objectKind: z.string().trim().max(64).optional(),
+  objectKind: sTrackableKind.optional(),
 });
 
 export const sSetTrackableFavoriteRequest = sTrackableProfileSnapshot;
@@ -47,7 +48,7 @@ const sTrackableRetentionValues = z.object({
 
 // Adds a policy for a specific kind (the default policy always exists)
 export const sCreateTrackableRetentionPolicyRequest = sTrackableRetentionValues
-  .extend({ objectKind: z.string().trim().min(1) })
+  .extend({ objectKind: sTrackableKind })
   .refine(refineRetention, retentionRefineMessage);
 
 export type CreateTrackableRetentionPolicyRequest = z.infer<
