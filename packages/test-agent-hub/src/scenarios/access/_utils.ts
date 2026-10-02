@@ -1,11 +1,17 @@
+import { v4 } from "uuid";
 import {
   ExternalPersonProps,
   ExternalScheduleProps,
   ExternalZoneProps,
   ExternalAccessRuleProps,
+  FlagType,
 } from "@awarevue/api-types";
+import { ScenarioContext, TAG_ACCESS_PROPS } from "../../scenario.types";
 
 let seq = 0;
+
+export const refsEqual = (a: string[], b: string[]) =>
+  [...a].sort().join(",") === [...b].sort().join(",");
 export const uniqueName = () => `${Date.now()}-${seq++}`;
 
 const equalIgnoreOrders = (arr1: any[], arr2: any[]) => {
@@ -255,3 +261,146 @@ export const newRule = (): ExternalAccessRuleProps => ({
   permissions: [],
   groupPermissions: [],
 });
+
+// Built-in Aware schedules, shaped the way the server sends them to agents
+export const newFixedSchedule = (flag: FlagType): ExternalScheduleProps =>
+  flag === "always"
+    ? {
+        displayName: "All Day / All Week Days",
+        flag: "always",
+        include: {
+          repeat: "weekly",
+          startDate: null,
+          endDate: null,
+          timeIntervals: (
+            ["mon", "tue", "wed", "thu", "fri", "sat", "sun"] as const
+          ).map((weekDay) => ({ weekDay, from: 0, to: 235959 })),
+        },
+      }
+    : {
+        displayName: "No Schedule",
+        flag: "never",
+        include: {
+          repeat: null,
+          startDate: null,
+          endDate: null,
+          timeIntervals: [],
+        },
+      };
+
+// A provider supports custom schedules when it declares the 'schedule'
+// access object; otherwise it only understands the always/never flags
+export const supportsCustomSchedules = (ctx: ScenarioContext) =>
+  (
+    ctx.registerPayload.accessControlProviders?.[ctx.provider]?.accessObjects ??
+    []
+  ).includes("schedule");
+
+// ----------------------------------------------------------------
+// createTestSchedule — creates a schedule to be used as a dependency
+//   (e.g. by an access rule) and registers its cleanup.
+//   - custom-schedule providers: a new weekly schedule; validate +
+//     apply + describe/compare (TAG_ACCESS_PROPS). `flag` is ignored.
+//   - fixed-only providers: the built-in `flag` schedule; validate +
+//     apply + re-merge keeps refs. Never described, since such
+//     providers don't support describing schedules.
+// ----------------------------------------------------------------
+
+export const createTestSchedule = async (
+  ctx: ScenarioContext,
+  flag: FlagType,
+) => {
+  const custom = supportsCustomSchedules(ctx);
+  const awareId = v4();
+  const props = custom ? newSchedule() : newFixedSchedule(flag);
+  const label = custom ? "custom schedule" : `'${flag}' schedule`;
+
+  const mergeRequest = (refs: string[]) => ({
+    provider: ctx.provider,
+    refMap: { schedule: { [awareId]: refs } },
+    devices: {},
+    mutations: [
+      {
+        kind: "merge" as const,
+        objectId: awareId,
+        objectKind: "schedule" as const,
+        original: props,
+        props,
+      },
+    ],
+  });
+
+  const validateResult = await ctx.getReply({
+    kind: "validate-change",
+    ...mergeRequest([]),
+  });
+  if (validateResult.issues.length > 0) {
+    throw new Error(
+      `createTestSchedule (${label}): expected 0 issues, got ${validateResult.issues.length}: ${JSON.stringify(validateResult.issues)}`,
+    );
+  }
+
+  const applyResult = await ctx.getReply({
+    kind: "apply-change",
+    ...mergeRequest([]),
+  });
+  const refs = applyResult.refs.schedule?.[awareId] ?? [];
+  if (refs.length < 1) {
+    throw new Error(
+      `createTestSchedule (${label}): expected at least 1 reference, got ${refs.length}`,
+    );
+  }
+  ctx.log(`Created ${label} with ref(s) [${refs}]`);
+
+  ctx.registerCleanup(`schedule ${awareId}`, async () => {
+    await ctx.getReply({
+      kind: "apply-change",
+      provider: ctx.provider,
+      refMap: { schedule: { [awareId]: refs } },
+      devices: {},
+      mutations: [
+        {
+          kind: "delete",
+          objectId: awareId,
+          objectKind: "schedule",
+          original: props,
+        },
+      ],
+    });
+  });
+
+  if (!custom) {
+    const reMerge = await ctx.getReply({
+      kind: "apply-change",
+      ...mergeRequest(refs),
+    });
+    // Empty refs on an update means the agent updated in-place — that is success
+    const refs2 = reMerge.refs.schedule?.[awareId] ?? [];
+    if (refs2.length > 0 && !refsEqual(refs, refs2)) {
+      throw new Error(
+        `createTestSchedule (${label}): re-merge changed refs: original [${refs}], got [${refs2}]`,
+      );
+    }
+    ctx.log(`Re-merged ${label}, refs unchanged`);
+  } else if (ctx.tags.includes(TAG_ACCESS_PROPS)) {
+    const describeResult = await ctx.getReply({
+      kind: "describe-object",
+      provider: ctx.provider,
+      objectKind: "schedule",
+      objectAssignedRef: refs.join(","),
+    });
+    if (describeResult.object === null) {
+      throw new Error(
+        `describe-object returned null for schedule with ref(s): ${refs.join(",")}`,
+      );
+    }
+    if (!schedulesMatch(describeResult.object.data as any, props)) {
+      throw new Error(
+        `Schedule props mismatch after save. Expected: ${JSON.stringify(props)}, Got: ${JSON.stringify(describeResult.object.data)}`,
+      );
+    }
+    ctx.log(`Props comparison passed: agent returned correct schedule props`);
+  }
+
+  return { awareId, refs, props, custom };
+};

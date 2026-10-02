@@ -12,12 +12,11 @@ import {
   TAG_ACCESS,
 } from "../../scenario.types";
 import {
+  createTestSchedule,
   newPerson,
   newRule,
-  newSchedule,
   personsMatch,
   rulesMatch,
-  schedulesMatch,
 } from "./_utils";
 
 // ----------------------------------------------------------------
@@ -175,105 +174,6 @@ const deletePerson = async (
 };
 
 // ----------------------------------------------------------------
-// mergeSchedule — validate + apply + optional prop verification
-//   registers its own best-effort cleanup automatically
-// ----------------------------------------------------------------
-
-const mergeSchedule = async (ctx: ScenarioContext) => {
-  const awareId = v4();
-  const props = newSchedule();
-
-  const validateResult = await ctx.getReply({
-    kind: "validate-change",
-    provider: ctx.provider,
-    refMap: { schedule: { [awareId]: [] } },
-    devices: {},
-    mutations: [
-      {
-        kind: "merge",
-        objectId: awareId,
-        objectKind: "schedule",
-        original: props,
-        props,
-      },
-    ],
-  });
-
-  if (validateResult.issues.length > 0) {
-    throw new Error(
-      `mergeSchedule: expected 0 issues, got ${validateResult.issues.length}`,
-    );
-  }
-  ctx.log(`Validation passed with 0 issues as expected`);
-
-  const applyResult = await ctx.getReply({
-    kind: "apply-change",
-    provider: ctx.provider,
-    refMap: { schedule: { [awareId]: [] } },
-    devices: {},
-    mutations: [
-      {
-        kind: "merge",
-        objectId: awareId,
-        objectKind: "schedule",
-        original: props,
-        props,
-      },
-    ],
-  });
-
-  const refs = applyResult.refs.schedule?.[awareId] ?? [];
-  if (refs.length < 1) {
-    throw new Error(
-      `mergeSchedule: expected at least 1 reference, got ${refs.length}`,
-    );
-  }
-  ctx.log(`Apply succeeded with ${refs.length} reference(s) as expected`);
-
-  ctx.registerCleanup(`schedule ${awareId}`, async () => {
-    await ctx.getReply({
-      kind: "apply-change",
-      provider: ctx.provider,
-      refMap: { schedule: { [awareId]: refs } },
-      devices: {},
-      mutations: [
-        {
-          kind: "delete",
-          objectId: awareId,
-          objectKind: "schedule",
-          original: props,
-        },
-      ],
-    });
-  });
-
-  if (ctx.tags.includes(TAG_ACCESS_PROPS)) {
-    const describeResult = await ctx.getReply({
-      kind: "describe-object",
-      provider: ctx.provider,
-      objectKind: "schedule",
-      objectAssignedRef: refs.join(","),
-    });
-
-    if (describeResult.object === null) {
-      throw new Error(
-        `describe-object returned null for schedule with ref(s): ${refs.join(",")}`,
-      );
-    }
-
-    if (!schedulesMatch(describeResult.object.data as any, props)) {
-      throw new Error(
-        `Schedule props mismatch after save. Expected: ${JSON.stringify(props)}, Got: ${JSON.stringify(describeResult.object.data)}`,
-      );
-    }
-
-    ctx.log(`Props comparison passed: agent returned correct schedule props`);
-  }
-
-  return { awareId, refs, props };
-};
-
-// ----------------------------------------------------------------
 // deleteSchedule — test assertion: delete + verify describe returns null
 // ----------------------------------------------------------------
 
@@ -397,8 +297,9 @@ const mergeAccessRule = async (ctx: ScenarioContext) => {
   // Create real prerequisite objects (each registers its own cleanup)
   const p1 = await mergePerson(ctx, []);
   const p2 = await mergePerson(ctx, []);
-  const s1 = await mergeSchedule(ctx);
-  const s2 = await mergeSchedule(ctx);
+  // Fixed-schedule providers get 'always' + 'never' so the deny path is exercised
+  const s1 = await createTestSchedule(ctx, "always");
+  const s2 = await createTestSchedule(ctx, "never");
 
   const reader1Id = v4();
   const reader2Id = v4();
@@ -545,8 +446,9 @@ const mergeAccessRule = async (ctx: ScenarioContext) => {
   );
   await deletePerson(ctx, p1.awareId, p1.refs, p1.props);
   await deletePerson(ctx, p2.awareId, p2.refs, p2.props);
-  await deleteSchedule(ctx, s1.awareId, s1.refs, s1.props);
-  await deleteSchedule(ctx, s2.awareId, s2.refs, s2.props);
+  // Fixed schedules can't be described, so the runner's cleanup deletes them
+  if (s1.custom) await deleteSchedule(ctx, s1.awareId, s1.refs, s1.props);
+  if (s2.custom) await deleteSchedule(ctx, s2.awareId, s2.refs, s2.props);
 };
 
 const mergeZone = async () => {
@@ -587,7 +489,7 @@ const s: Scenario = {
 
     if (accessObjects.includes("schedule")) {
       ctx.log(`Provider supports 'schedule' access object, testing merge...`);
-      const schedule = await mergeSchedule(ctx);
+      const schedule = await createTestSchedule(ctx, "always");
       await deleteSchedule(
         ctx,
         schedule.awareId,

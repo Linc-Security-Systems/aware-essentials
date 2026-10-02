@@ -10,6 +10,7 @@ import {
 import {
   sAccessRuleGroupPermissionDto,
   sAccessRulePermissionDto,
+  sFlagType,
   sScheduleDetailsRequest,
 } from '../../objects';
 import { sTrackableUpdatePayload } from '../ws/trackables';
@@ -288,6 +289,7 @@ export const sExternalPersonProps = z.object({
 export const sExternalScheduleProps = z.object({
   displayName: z.string().nonempty(),
   include: sScheduleDetailsRequest,
+  flag: sFlagType.nullable().optional(),
 });
 
 export const sExternalAccessRuleProps = z.object({

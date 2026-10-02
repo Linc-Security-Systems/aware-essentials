@@ -12,17 +12,16 @@ import {
   TAG_ACCESS_PROPS,
 } from "../../scenario.types";
 import {
+  createTestSchedule,
   newPerson,
   newRule,
   newSchedule,
   personsMatch,
+  refsEqual,
   rulesMatch,
   schedulesMatch,
   uniqueName,
 } from "./_utils";
-
-const refsEqual = (a: string[], b: string[]) =>
-  [...a].sort().join(",") === [...b].sort().join(",");
 
 // ----------------------------------------------------------------
 // testPersonIdempotence
@@ -368,7 +367,8 @@ const testScheduleIdempotence = async (ctx: ScenarioContext) => {
 // ----------------------------------------------------------------
 // testAccessRuleIdempotence
 //   Requires ≥2 readers; skipped otherwise.
-//   1. create prereq persons + schedules
+//   1. create prereq persons + schedules (always/never for providers
+//      without custom schedules)
 //   2. create access rule
 //   3. re-merge with identical props  → same refs (no duplicate)
 //   4. PATCH: change displayName only → same refs, describe verifies
@@ -391,7 +391,7 @@ const testAccessRuleIdempotence = async (ctx: ScenarioContext) => {
   }
   const [reader1, reader2] = readers;
 
-  // Minimal helpers that create objects and register their own cleanups
+  // Minimal helper that creates a person and registers its cleanup
   const createPerson = async () => {
     const id = v4();
     const p = newPerson([]);
@@ -428,46 +428,11 @@ const testAccessRuleIdempotence = async (ctx: ScenarioContext) => {
     return { awareId: id, refs, props: p };
   };
 
-  const createSchedule = async () => {
-    const id = v4();
-    const p = newSchedule();
-    const r = await ctx.getReply({
-      kind: "apply-change",
-      provider: ctx.provider,
-      refMap: { schedule: { [id]: [] } },
-      devices: {},
-      mutations: [
-        {
-          kind: "merge",
-          objectId: id,
-          objectKind: "schedule",
-          original: p,
-          props: p,
-        },
-      ],
-    });
-    const refs = r.refs.schedule?.[id] ?? [];
-    if (refs.length < 1) {
-      throw new Error(`createSchedule: expected ≥1 ref, got ${refs.length}`);
-    }
-    ctx.registerCleanup(`schedule ${id}`, async () => {
-      await ctx.getReply({
-        kind: "apply-change",
-        provider: ctx.provider,
-        refMap: { schedule: { [id]: refs } },
-        devices: {},
-        mutations: [
-          { kind: "delete", objectId: id, objectKind: "schedule", original: p },
-        ],
-      });
-    });
-    return { awareId: id, refs, props: p };
-  };
-
   const p1 = await createPerson();
   const p2 = await createPerson();
-  const s1 = await createSchedule();
-  const s2 = await createSchedule();
+  // Fixed-schedule providers get 'always' + 'never' so the deny path is exercised
+  const s1 = await createTestSchedule(ctx, "always");
+  const s2 = await createTestSchedule(ctx, "never");
 
   const reader1Id = v4();
   const reader2Id = v4();
