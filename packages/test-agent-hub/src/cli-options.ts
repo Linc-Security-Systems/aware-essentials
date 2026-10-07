@@ -11,6 +11,12 @@ export interface CLIOptions {
   /** Per-scenario timeout in milliseconds */
   timeout: number;
 
+  /**
+   * How long to wait for the agent to reply to a request, in milliseconds.
+   * Defaults to the Aware server's own reply timeout; progress messages reset it.
+   */
+  replyTimeout: number;
+
   /** How long to wait for agent to connect in milliseconds */
   connectionTimeout: number;
 
@@ -19,6 +25,9 @@ export interface CLIOptions {
 
   /** Provider config loaded from a JSON file (via --config) */
   providerConfig?: Record<string, unknown>;
+
+  /** An operator is present to perform physical actions when asked */
+  interactive: boolean;
 
   /** Show detailed internal logs */
   verbose: boolean;

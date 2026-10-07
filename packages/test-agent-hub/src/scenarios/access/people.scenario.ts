@@ -5,6 +5,7 @@ import {
   ScenarioResult,
   scenarioFail,
   scenarioPass,
+  scenarioSkip,
   TAG_ACCESS,
 } from "../../scenario.types";
 import { newPerson } from "./_utils";
@@ -204,13 +205,16 @@ const s: Scenario = {
 
       await deletePeople(ctx, people);
     }
+    const skipped = accessObjects.includes("person")
+      ? undefined
+      : `Provider does not support 'person'`;
 
     await ctx.getReply({
       kind: "stop",
       provider: ctx.provider,
     });
 
-    return scenarioPass();
+    return skipped ? scenarioSkip(skipped) : scenarioPass();
   },
 };
 

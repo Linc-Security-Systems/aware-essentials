@@ -6,12 +6,12 @@ The **Test Agent Hub** is an automated integration-testing harness for Aware pla
 
 Key goals:
 
-| Goal | Detail |
-|---|---|
-| **Protocol conformance** | Verify that agents implement the Aware agent protocol correctly (registration, start/stop, request/reply sequencing). |
-| **Behavioral coverage** | Test domain-specific behaviors (device discovery, door lock/unlock, access-sync validation) without a live Aware backend. |
-| **CI-friendly** | Run headless, exit with a non-zero code on failure, and optionally emit a JUnit XML report for CI pipelines. |
-| **Extensibility** | New scenarios are added by dropping a `*.scenario.ts` file into the `scenarios/` directory — no wiring required. |
+| Goal                     | Detail                                                                                                                    |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------- |
+| **Protocol conformance** | Verify that agents implement the Aware agent protocol correctly (registration, start/stop, request/reply sequencing).     |
+| **Behavioral coverage**  | Test domain-specific behaviors (device discovery, door lock/unlock, access-sync validation) without a live Aware backend. |
+| **CI-friendly**          | Run headless, exit with a non-zero code on failure, and optionally emit a JUnit XML report for CI pipelines.              |
+| **Extensibility**        | New scenarios are added by dropping a `*.scenario.ts` file into the `scenarios/` directory — no wiring required.          |
 
 ---
 
@@ -56,20 +56,22 @@ Key goals:
 
 Parses command-line arguments via **yargs**:
 
-| Flag | Default | Purpose |
-|---|---|---|
-| `--agentId` | *(required)* | Agent ID the hub expects to connect |
-| `--tags` | `""` | Comma-separated scenario tags for filtering |
-| `--port` | `3005` | WebSocket listen port |
-| `--timeout` | `30 000` | Per-scenario timeout (ms) |
-| `--connectionTimeout` | `30 000` | Max wait for agent to connect (ms) |
-| `--report` | — | Path for JUnit XML output |
-| `--config` | — | Path to a JSON file with provider configuration |
-| `--list` | `false` | List available scenarios and exit (no `--agentId` required) |
-| `--verbose` | `false` | Show detailed NestJS/protocol debug logs |
-| `--quiet` | `false` | Suppress all output except errors and the final summary |
-| `--version` | — | Print version and exit |
-| `--help` | — | Print usage and exit |
+| Flag                  | Default      | Purpose                                                                                          |
+| --------------------- | ------------ | ------------------------------------------------------------------------------------------------ |
+| `--agentId`           | _(required)_ | Agent ID the hub expects to connect                                                              |
+| `--tags`              | `""`         | Comma-separated scenario tags for filtering                                                      |
+| `--port`              | `3005`       | WebSocket listen port                                                                            |
+| `--timeout`           | `30 000`     | Per-scenario timeout (ms)                                                                        |
+| `--replyTimeout`      | `10 000`     | Max wait for an agent reply (ms), same as the Aware server; `progress` messages reset it         |
+| `--connectionTimeout` | `30 000`     | Max wait for agent to connect (ms)                                                               |
+| `--report`            | —            | Path for JUnit XML output                                                                        |
+| `--config`            | —            | Path to a JSON file with provider configuration                                                  |
+| `--interactive`       | `false`      | An operator is present: run scenarios that ask for physical actions. Without it they are skipped |
+| `--list`              | `false`      | List available scenarios and exit (no `--agentId` required)                                      |
+| `--verbose`           | `false`      | Show detailed NestJS/protocol debug logs                                                         |
+| `--quiet`             | `false`      | Suppress all output except errors and the final summary                                          |
+| `--version`           | —            | Print version and exit                                                                           |
+| `--help`              | —            | Print usage and exit                                                                             |
 
 After parsing, it creates a NestJS application with `AppModule.forRoot(options)`, starts listening, runs all scenarios through `RunnerService.run()`, and exits with the resulting code (`0` = all passed, `1` = any failure, `2` = invalid arguments/config).
 
@@ -91,11 +93,11 @@ agent-tester --agentId my-agent --quiet --report results/junit.xml
 
 #### Exit codes
 
-| Code | Meaning |
-|---|---|
-| `0` | All scenarios passed |
-| `1` | One or more scenarios failed (or connection error) |
-| `2` | Invalid arguments or configuration error |
+| Code | Meaning                                            |
+| ---- | -------------------------------------------------- |
+| `0`  | All scenarios passed                               |
+| `1`  | One or more scenarios failed (or connection error) |
+| `2`  | Invalid arguments or configuration error           |
 
 ### 2. `cli-options.ts` — Configuration Token
 
@@ -119,10 +121,10 @@ Responsibilities:
 
 #### Key SDK primitives used
 
-| SDK Type | Role in HubService |
-|---|---|
-| `InMemoryHub` | Multiplexed peer manager — tracks connections, routes messages, emits join/leave events. |
-| `DuplexTransport` | Abstraction over a single bidirectional channel. `WsServerDuplexTransport` implements it for accepted server-side sockets. |
+| SDK Type                  | Role in HubService                                                                                                                                                          |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `InMemoryHub`             | Multiplexed peer manager — tracks connections, routes messages, emits join/leave events.                                                                                    |
+| `DuplexTransport`         | Abstraction over a single bidirectional channel. `WsServerDuplexTransport` implements it for accepted server-side sockets.                                                  |
 | `AgentProtocol<'server'>` | Typed request/reply handler. Wraps outbound messages in protocol envelopes (auto-ID, timestamps), correlates replies by `requestId`, and supports RxJS-based `getReply$()`. |
 
 ### 5. `ws-server-transport.ts` — Server-side WebSocket Transport
@@ -150,17 +152,19 @@ The central execution engine:
 
 #### `ScenarioContext` helpers
 
-| Helper | Description |
-|---|---|
-| `protocol` | Direct access to the `AgentProtocol` for raw send/subscribe. |
-| `registerPayload` | The agent's registration message (providers, capabilities). |
-| `provider` / `config` | The chosen provider name and its config object. |
-| `log(msg)` | Append a line to the scenario's log section in the report. |
-| `getReply(payload)` | Send a typed request and await its typed reply (promise-based). |
-| `waitForMessage(pred, timeout?)` | Wait for the next inbound message matching a predicate. |
-| `waitForSomeMessages(pred, timeout?)` | Collect all matching messages within a timeout window, resolve with the batch. |
-| `waitForAllMessages(preds, timeout?)` | Wait until every predicate in the list has been satisfied by a distinct message. |
-| `waitForKind(kind, timeout?)` | Shorthand — wait for the next message of a specific `kind`. |
+| Helper                                            | Description                                                                                                                                                |
+| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `protocol`                                        | Direct access to the `AgentProtocol` for raw send/subscribe.                                                                                               |
+| `registerPayload`                                 | The agent's registration message (providers, capabilities).                                                                                                |
+| `provider` / `config`                             | The chosen provider name and its config object.                                                                                                            |
+| `log(msg)`                                        | Append a line to the scenario's log section in the report.                                                                                                 |
+| `getReply(payload)`                               | Send a typed request and await its typed reply (promise-based).                                                                                            |
+| `waitForMessage(pred, timeout?)`                  | Wait for the next inbound message matching a predicate.                                                                                                    |
+| `waitForSomeMessages(pred, timeout?)`             | Collect all matching messages within a timeout window, resolve with the batch.                                                                             |
+| `waitForAllMessages(preds, timeout?)`             | Wait until every predicate in the list has been satisfied by a distinct message.                                                                           |
+| `waitForKind(kind, timeout?)`                     | Shorthand — wait for the next message of a specific `kind`.                                                                                                |
+| `interactive` / `askOperator(instruction, until)` | Whether `--interactive` was given; show an instruction to the operator and wait for `until`, or `"skipped"` if they press Enter.                           |
+| `tellOperator(message)`                           | Show the operator a progress message straight away (logs only print at the end), e.g. that their action was seen or that nothing more is needed from them. |
 
 ### 7. `loader.ts` — Scenario Discovery
 
@@ -180,21 +184,33 @@ Defines the interfaces that scenario authors implement:
 
 Two reporters:
 
-- **Console** — ANSI-colored pass/fail per scenario with duration and error details. A summary line at the end.
-- **JUnit XML** — Standard `<testsuites>` format consumable by CI systems (Jenkins, GitHub Actions, etc.).
+- **Console** — ANSI-colored pass / passed with warnings (`⚠`) / fail / skipped (`○`, with the reason) per scenario with duration and error details. Warnings are highlighted in the scenario's log. A summary line at the end.
+- **JUnit XML** — Standard `<testsuites>` format consumable by CI systems (Jenkins, GitHub Actions, etc.). Skipped scenarios get a `<skipped message="…"/>` element; warnings of a passing scenario go in `<system-out>`.
+
+A scenario returns `scenarioSkip(reason)` when it could test nothing against this agent or setup (an unsupported feature, no events, no operator). Skipped scenarios do not affect the exit code. A scenario calls `ctx.warn(msg)` for something that did not fully work but is acceptable for some agents (e.g. an event derived from live state that cannot be replayed); it still passes, reported as "passed with warnings". When only part of a scenario cannot run (e.g. a sub-test needing readers), it logs that and still passes on what it did test.
 
 ### 10. `scenarios/` — Test Cases
 
 Scenarios are self-contained files, each default-exporting a `Scenario` object.
 
-| Scenario | Tags | What it verifies |
-|---|---|---|
-| `register` | `core` | Agent sends a valid registration with ≥ 1 provider, each having a non-empty `title` and valid `configSchema`. |
-| `start-stop` | `core`, `lifecycle` | Agent responds correctly to `start` and `stop` commands. |
-| `device-discovery` | `core`, `devices` | After start, `get-available-devices` returns a well-formed device list. |
-| `communicates-bad-references` | `access` | A `validate-change` with a fabricated reference yields exactly one `BAD_REFERENCE` issue. |
-| `communicates-init-door-states` | `doors` | After start, the agent emits a `state` message (with `connected` in `mergeProps`) for every discovered door device. |
-| `door-lock-unlock` | `doors` | After start, connected doors can receive a `door.unlock` command without error. |
+| Scenario                        | Tags                | What it verifies                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ------------------------------- | ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `register`                      | `core`              | Agent sends a valid registration with ≥ 1 provider, each having a non-empty `title` and valid `configSchema`.                                                                                                                                                                                                                                                                                                               |
+| `start-stop`                    | `core`, `lifecycle` | Agent responds correctly to `start` and `stop` commands.                                                                                                                                                                                                                                                                                                                                                                    |
+| `device-discovery`              | `core`, `devices`   | After start, `get-available-devices` returns a well-formed device list.                                                                                                                                                                                                                                                                                                                                                     |
+| `communicates-bad-references`   | `access`            | A `validate-change` with a fabricated reference yields exactly one `BAD_REFERENCE` issue.                                                                                                                                                                                                                                                                                                                                   |
+| `communicates-init-door-states` | `doors`             | After start, the agent emits a `state` message (with `connected` in `mergeProps`) for every discovered door device.                                                                                                                                                                                                                                                                                                         |
+| `door-lock-unlock`              | `doors`             | After start, connected doors can receive a `door.unlock` command without error.                                                                                                                                                                                                                                                                                                                                             |
+| `validate-config`               | `core`              | Without starting, the working config validates with no issues; removing a required field or mistyping a field (picked from `configSchema`) yields an issue whose `paths` name it.                                                                                                                                                                                                                                           |
+| `restart`                       | `core`, `lifecycle` | `stop` then `start` on the same connection (how Aware applies a config change): same devices discovered, and every device that reported `connected` reports it again.                                                                                                                                                                                                                                                       |
+| `device-discovery-consistency`  | `core`, `devices`   | Discovery matches the schema, `foreignRef`s are unique, relations point at discovered devices, and a second discovery returns the same devices.                                                                                                                                                                                                                                                                             |
+| `batched-mutations`             | `access`            | Several mutations in one request: a resync-style batch creating people and a schedule, and moving a person between rules (`[merge old rule {appliedTo}, merge new rule]`).                                                                                                                                                                                                                                                  |
+| `reference-recovery`            | `access`            | `BAD_REFERENCE` / `NOT_FOUND` issues carry `objectKind` + `objectId`; after resyncing the reported objects the change validates and applies.                                                                                                                                                                                                                                                                                |
+| `person-validity-dates`         | `access`            | `validFrom` / `validTo` sent as `YYYY-MM-DD` are stored on the right day, changed and cleared. Day slips from UTC parsing only show when the agent runs west of UTC. A provider that cannot store "no date" may report a start of today or earlier / an end ≥ 5 years away (compared by day) — accepted with a log note, since describe should report `null`.                                                               |
+| `person-suspension`             | `access`            | `{accessSuspended}` partial merges suspend and reinstate a person without losing other props.                                                                                                                                                                                                                                                                                                                               |
+| `person-extra-fields`           | `access`            | Person merges carrying fields outside the schema (credential notes, position, custom fields, whole DTO) are accepted and change nothing else.                                                                                                                                                                                                                                                                               |
+| `partial-merge-without-refs`    | `access`            | A partial merge for an object with no refs creates it from `{ ...original, ...props }`.                                                                                                                                                                                                                                                                                                                                     |
+| `operator-events`               | `doors`             | `--interactive` only: asks the operator for a request-to-exit, a forced door and a card (an unknown card is fine). Checks each event's kind, a token on the card event, a timestamp matching when it happened, and that access events (`door-access`, `reader-auth`) are replayed after a restart; other events not replayed (e.g. a `door-force` derived from live state) are only noted. Steps can be skipped with Enter. |
 
 ---
 
@@ -237,21 +253,25 @@ Scenarios are self-contained files, each default-exporting a `Scenario` object.
 2. Default-export an object satisfying `Scenario`:
 
 ```typescript
-import { Scenario, scenarioPass, scenarioFail } from '..';
+import { Scenario, scenarioPass, scenarioFail } from "..";
 
 const scenario: Scenario = {
-  name: 'my-feature',
-  description: 'Verifies that my feature works correctly',
-  tags: ['custom'],
+  name: "my-feature",
+  description: "Verifies that my feature works correctly",
+  tags: ["custom"],
 
   async run(ctx) {
     // Use ctx.getReply, ctx.waitForMessage, etc.
-    const reply = await ctx.getReply({ kind: 'start', provider: ctx.provider, config: ctx.config });
+    const reply = await ctx.getReply({
+      kind: "start",
+      provider: ctx.provider,
+      config: ctx.config,
+    });
     ctx.log(`Start reply received`);
 
     // ... assertions ...
 
-    await ctx.getReply({ kind: 'stop' });
+    await ctx.getReply({ kind: "stop" });
     return scenarioPass();
   },
 };
@@ -308,22 +328,22 @@ jobs:
 
 ### Exit codes
 
-| Code | Meaning |
-|---|---|
-| `0` | All scenarios passed |
-| `1` | One or more scenarios failed (or connection error) |
-| `2` | Invalid arguments or configuration error |
+| Code | Meaning                                            |
+| ---- | -------------------------------------------------- |
+| `0`  | All scenarios passed                               |
+| `1`  | One or more scenarios failed (or connection error) |
+| `2`  | Invalid arguments or configuration error           |
 
 ---
 
 ## Dependencies
 
-| Package | Role |
-|---|---|
-| `@awarevue/agent-sdk` | `AgentProtocol`, `InMemoryHub`, `DuplexTransport` — core protocol and transport abstractions. |
+| Package               | Role                                                                                              |
+| --------------------- | ------------------------------------------------------------------------------------------------- |
+| `@awarevue/agent-sdk` | `AgentProtocol`, `InMemoryHub`, `DuplexTransport` — core protocol and transport abstractions.     |
 | `@awarevue/api-types` | Typed message definitions (`FromAgent`, `FromServer`, `RegisterRq`, etc.) and validation helpers. |
-| `@nestjs/*` | Dependency injection, HTTP server bootstrap, lifecycle hooks. |
-| `ws` | WebSocket server implementation. |
-| `rxjs` | Reactive message streams, filtering, timeouts. |
-| `yargs` | CLI argument parsing. |
-| `uuid` | Unique ID generation for protocol envelopes. |
+| `@nestjs/*`           | Dependency injection, HTTP server bootstrap, lifecycle hooks.                                     |
+| `ws`                  | WebSocket server implementation.                                                                  |
+| `rxjs`                | Reactive message streams, filtering, timeouts.                                                    |
+| `yargs`               | CLI argument parsing.                                                                             |
+| `uuid`                | Unique ID generation for protocol envelopes.                                                      |

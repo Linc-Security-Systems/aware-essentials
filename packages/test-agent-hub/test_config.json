@@ -1,10 +1,7 @@
 {
-    "serverUrl": "https://yachtaware.ddns.net:8443",
-    "username": "api",
-    "password": "admin",
-    "clientId": "06c22559-3114-4164-80ba-2038ec36474c",
-    "stateUpdateRetryInterval": 50000,
-    "eventPollInterval": 10000,
-    "statePollInterval": 2000
-  }
-  
+  "baseUrl": "https://192.168.1.144:443",
+  "username": "admin",
+  "password": "linc2025",
+  "pageSize": 1000,
+  "eventPollingInterval": 1000
+}
