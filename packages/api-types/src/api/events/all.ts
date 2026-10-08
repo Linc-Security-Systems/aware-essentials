@@ -18,6 +18,10 @@ import {
   NvrExporterEvent,
   nvrExporterEventSchemasByKind,
 } from './nvr-exporter';
+import {
+  PlaybackServerEvent,
+  playbackServerEventSchemasByKind,
+} from './playback-server';
 import { DeviceType } from '../../objects/device';
 import { NotificationSeverity } from '../../primitives';
 
@@ -90,6 +94,7 @@ export type AnyDeviceEvent =
   | PresenceTrackerEvent
   | IoBoardEvent
   | NvrExporterEvent
+  | PlaybackServerEvent
   | SensorActivatedEvent;
 
 export const sEventHeader = z.object({
@@ -151,6 +156,9 @@ export const eventKindLabels: Record<DeviceEvent['kind'], string> = {
   'door-closed': 'Door Closed',
   'nvr-export-started': 'NVR Export Started',
   'nvr-export-deleted': 'NVR Export Deleted',
+  'playback-session-opened': 'Playback Session Opened',
+  'playback-session-closed': 'Playback Session Closed',
+  'playback-session-link-issued': 'Playback Session Link Issued',
   'notification-created': 'Notification Created',
   'notification-acknowledged': 'Notification Acknowledged',
   'user-logged-in': 'User Logged In',
@@ -170,6 +178,7 @@ export const eventSchemaByKind = {
   ...presenceTrackerEventSchemaByKind,
   ...readerEventSchemaByKind,
   ...nvrExporterEventSchemasByKind,
+  ...playbackServerEventSchemasByKind,
   'motion-detected': sMotionDetected,
   'device-command': sDeviceCommandTriggered,
   'device-connected': sDeviceConnectedEvent,
@@ -194,6 +203,9 @@ export const eventsByDeviceType: Partial<
   'generic-sensor': ['sensor-activated' as const],
   'nvr-exporter': Object.keys(
     nvrExporterEventSchemasByKind,
+  ) as DeviceEvent['kind'][],
+  'playback-server': Object.keys(
+    playbackServerEventSchemasByKind,
   ) as DeviceEvent['kind'][],
 };
 

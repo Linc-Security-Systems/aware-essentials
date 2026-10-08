@@ -17,6 +17,7 @@ import { PRESENCE_TRACKER } from './presence-tracker';
 import { DISPLAY } from './display';
 import { NVR_RECORDER, sRecorderSpecs } from './nvr-recorder';
 import { NVR_EXPORTER, sExporterSpecs } from './nvr-exporter';
+import { PLAYBACK_SERVER, sPlaybackServerSpecs } from './playback-server';
 import {
   NVR_ANALYTICS_SERVER,
   sAnalyticsServerSpecs,
@@ -44,6 +45,7 @@ export const DEVICE_TYPES = [
   DISPLAY,
   NVR_RECORDER,
   NVR_EXPORTER,
+  PLAYBACK_SERVER,
   NVR_ANALYTICS_SERVER,
   POSITION_TRACKER,
   SYSTEM,
@@ -100,6 +102,10 @@ export const sNvrExporterSpecsWithType = sExporterSpecs.extend({
   type: z.literal(NVR_EXPORTER),
 });
 
+export const sPlaybackServerSpecsWithType = sPlaybackServerSpecs.extend({
+  type: z.literal(PLAYBACK_SERVER),
+});
+
 export const sNvrAnalyticsServerSpecsWithType = sAnalyticsServerSpecs.extend({
   type: z.literal(NVR_ANALYTICS_SERVER),
 });
@@ -127,6 +133,7 @@ export const sAnyDeviceSpecs = z.discriminatedUnion('type', [
   sDisplaySpecsWithType,
   sRecorderSpecsWithType,
   sNvrExporterSpecsWithType,
+  sPlaybackServerSpecsWithType,
   sNvrAnalyticsServerSpecsWithType,
   sSystemDeviceSpecsWithType,
   sPositionTrackerSpecsWithType,
@@ -225,6 +232,10 @@ export const sNvrExporterDto = sNvrExporterSpecsWithType
   .and(sDeviceMgmtInfo)
   .and(sForeignDeviceInfo);
 
+export const sPlaybackServerDto = sPlaybackServerSpecsWithType
+  .and(sDeviceMgmtInfo)
+  .and(sForeignDeviceInfo);
+
 export const sNvrAnalyticsServerDto = sNvrAnalyticsServerSpecsWithType
   .and(sDeviceMgmtInfo)
   .and(sForeignDeviceInfo);
@@ -277,6 +288,7 @@ export type IntercomOperatorDto = z.infer<typeof sIntercomOperatorDto>;
 export type DisplayDto = z.infer<typeof sDisplayDto>;
 export type RecorderDto = z.infer<typeof sRecorderDto>;
 export type NvrExporterDto = z.infer<typeof sNvrExporterDto>;
+export type PlaybackServerDto = z.infer<typeof sPlaybackServerDto>;
 export type NvrAnalyticsServerDto = z.infer<typeof sNvrAnalyticsServerDto>;
 export type SystemDeviceDto = z.infer<typeof sSystemDeviceDto>;
 export type EventDescription = z.infer<typeof sEventDescription>;
@@ -303,6 +315,7 @@ export interface DeviceTypeToDtoMap {
   [DISPLAY]: DisplayDto;
   [NVR_RECORDER]: RecorderDto;
   [NVR_EXPORTER]: NvrExporterDto;
+  [PLAYBACK_SERVER]: PlaybackServerDto;
   [NVR_ANALYTICS_SERVER]: NvrAnalyticsServerDto;
   [SYSTEM]: SystemDeviceDto;
   [GENERIC_SENSOR]: GenericSensorDto;
@@ -332,6 +345,7 @@ export const deviceDtoSchemaMap = {
   [DISPLAY]: sDisplayDto,
   [NVR_RECORDER]: sRecorderDto,
   [NVR_EXPORTER]: sNvrExporterDto,
+  [PLAYBACK_SERVER]: sPlaybackServerDto,
   [NVR_ANALYTICS_SERVER]: sNvrAnalyticsServerDto,
   [SYSTEM]: sSystemDeviceDto,
   [POSITION_TRACKER]: sPositionTrackerDto,
