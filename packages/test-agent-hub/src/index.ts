@@ -7,5 +7,6 @@ export {
   DeviceState,
   scenarioPass,
   scenarioFail,
+  scenarioSkip,
 } from "./scenario.types";
 export { DeviceStateStoreImpl } from "./helpers/device-state-store";

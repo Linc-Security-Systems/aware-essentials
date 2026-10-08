@@ -89,6 +89,13 @@ async function main(): Promise<void> {
       describe: "Per-scenario timeout in milliseconds",
       group: "Connection:",
     })
+    .option("replyTimeout", {
+      type: "number",
+      default: 10000,
+      describe:
+        "How long to wait for the agent to reply to a request (ms). Matches the Aware server; progress messages reset it",
+      group: "Connection:",
+    })
     .option("connectionTimeout", {
       type: "number",
       default: 30000,
@@ -111,6 +118,13 @@ async function main(): Promise<void> {
       describe:
         "List available scenarios and exit (does not require --agentId)",
       group: "Output:",
+    })
+    .option("interactive", {
+      type: "boolean",
+      default: false,
+      describe:
+        "An operator is present: run scenarios that ask for physical actions (pressing exit buttons, presenting cards, forcing doors)",
+      group: "Filtering:",
     })
     .option("verbose", {
       type: "boolean",
@@ -139,6 +153,10 @@ async function main(): Promise<void> {
       "Run core scenarios, write JUnit report",
     )
     .example("$0 --agentId my-agent --quiet --report junit.xml", "CI mode")
+    .example(
+      "$0 --agentId my-agent --tags doors --interactive",
+      "Run door scenarios, including those that ask an operator for physical actions",
+    )
     .example("$0 --list", "Print all available scenarios")
     .example("$0 --list --tags doors", 'Print scenarios tagged "doors"')
     .epilogue(
@@ -205,9 +223,11 @@ async function main(): Promise<void> {
       : [],
     port: argv.port,
     timeout: argv.timeout,
+    replyTimeout: argv.replyTimeout,
     connectionTimeout: argv.connectionTimeout,
     report: argv.report,
     providerConfig,
+    interactive: argv.interactive,
     verbose: argv.verbose,
     quiet,
   };
@@ -247,7 +267,7 @@ async function main(): Promise<void> {
   if (!quiet) {
     console.log(
       `${DIM}  Listening on port ${RESET}${BOLD}${options.port}${RESET}` +
-        `${DIM} · Timeout ${options.timeout}ms · Connection timeout ${options.connectionTimeout}ms${RESET}`,
+        `${DIM} · Timeout ${options.timeout}ms · Reply timeout ${options.replyTimeout}ms · Connection timeout ${options.connectionTimeout}ms${RESET}`,
     );
     if (options.tags.length > 0) {
       console.log(`${DIM}  Tags: ${options.tags.join(", ")}${RESET}`);

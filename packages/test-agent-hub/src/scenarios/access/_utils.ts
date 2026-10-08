@@ -1,5 +1,6 @@
 import { v4 } from "uuid";
 import {
+  AccessMutation,
   ExternalPersonProps,
   ExternalScheduleProps,
   ExternalZoneProps,
@@ -117,20 +118,35 @@ const isTodayOrEarlier = (date: string): boolean => {
   return d <= today;
 };
 
+// Compared by day, so an end written as "now + 5 years" still counts
+// when checked moments later
 const isAtLeastFiveYearsFromNow = (date: string): boolean => {
   const d = new Date(date);
   const fiveYearsFromNow = new Date();
   fiveYearsFromNow.setFullYear(fiveYearsFromNow.getFullYear() + 5);
+  fiveYearsFromNow.setHours(0, 0, 0, 0);
+  d.setHours(0, 0, 0, 0);
   return d >= fiveYearsFromNow;
 };
 
+// Fields already warned about per scenario, so each stand-in is raised once
+const notedStandIns = new WeakMap<(msg: string) => void, Set<string>>();
+
+// A null validFrom / validTo from Aware means open-ended. Providers that
+// cannot store "no date" may report a stand-in (a start of today or earlier,
+// an end at least 5 years away); that is accepted, but each one is raised via
+// `warn` when the person matches, since describe should report null.
 export const personsMatch = ({
   provider,
   aware,
+  warn,
 }: {
   provider: ExternalPersonProps;
   aware: ExternalPersonProps;
+  warn?: (msg: string) => void;
 }) => {
+  const standIns: [field: string, value: string][] = [];
+
   // Basic fields must match exactly
   if (provider.firstName !== aware.firstName) return false;
   if (provider.lastName !== aware.lastName) return false;
@@ -142,8 +158,9 @@ export const personsMatch = ({
     if (!isSameDate(aware.validFrom, provider.validFrom)) return false;
   } else {
     // If aware validFrom is null, provider should be null or today or earlier
-    if (provider.validFrom !== null && !isTodayOrEarlier(provider.validFrom)) {
-      return false;
+    if (provider.validFrom !== null) {
+      if (!isTodayOrEarlier(provider.validFrom)) return false;
+      standIns.push(["validFrom", provider.validFrom]);
     }
   }
 
@@ -153,14 +170,23 @@ export const personsMatch = ({
     if (!isSameDate(aware.validTo, provider.validTo)) return false;
   } else {
     // If aware validTo is null, provider should be null or at least 5 years from now
-    if (
-      provider.validTo !== null &&
-      !isAtLeastFiveYearsFromNow(provider.validTo)
-    ) {
-      return false;
+    if (provider.validTo !== null) {
+      if (!isAtLeastFiveYearsFromNow(provider.validTo)) return false;
+      standIns.push(["validTo", provider.validTo]);
     }
   }
 
+  if (warn) {
+    const noted = notedStandIns.get(warn) ?? new Set<string>();
+    notedStandIns.set(warn, noted);
+    for (const [field, value] of standIns) {
+      if (noted.has(field)) continue;
+      noted.add(field);
+      warn(
+        `Aware sent no ${field} but the provider reports ${value} — accepted as open-ended, but describe should report null for it`,
+      );
+    }
+  }
   return true;
 };
 
@@ -403,4 +429,310 @@ export const createTestSchedule = async (
   }
 
   return { awareId, refs, props, custom };
+};
+
+// ----------------------------------------------------------------
+// Helpers shared by scenarios that reproduce the exact shapes the
+// Aware server sends (see aware-api access/sync and command-handlers)
+// ----------------------------------------------------------------
+
+export type RefMap = Record<string, Record<string, string[]>>;
+export type Devices = Record<string, Record<string, unknown>>;
+
+export const accessObjectsOf = (ctx: ScenarioContext) =>
+  ctx.registerPayload.accessControlProviders?.[ctx.provider]?.accessObjects ??
+  [];
+
+// Aware sends validFrom / validTo as date-only strings (YYYY-MM-DD)
+export const toDateOnly = (d: Date) =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+
+export const daysFromToday = (days: number) => {
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  return toDateOnly(d);
+};
+
+// A provider value represents the date-only `expected` when it starts with
+// it ("2027-03-01", "2027-03-01T00:00:00Z") or falls on it in local time
+export const representsDate = (value: string | null, expected: string) =>
+  value !== null &&
+  (value.slice(0, 10) === expected || toDateOnly(new Date(value)) === expected);
+
+// The fields of Aware's PersonDto that are not part of ExternalPersonProps.
+// update-person sends whatever the user edited plus lastModifiedOn; a resync
+// sends the whole DTO (minus id and accessRules) as props.
+export const personDtoExtras = (provider: string) => ({
+  position: "Deckhand",
+  avatarId: null,
+  staffMember: true,
+  createdOn: new Date().toISOString(),
+  lastModifiedOn: new Date().toISOString(),
+  refs: { [`${provider}-other`]: ["other-provider-ref"] },
+  version: 1,
+  archived: false,
+  customFields: { cabin: "A12" },
+  type: null,
+  agreements: [],
+});
+
+export const getReaders = async (ctx: ScenarioContext, max: number) => {
+  const devicesResponse = await ctx.getReply({
+    kind: "get-available-devices",
+    provider: ctx.provider,
+  });
+  return devicesResponse.devices
+    .filter((d) => d.type === "reader")
+    .slice(0, max);
+};
+
+export const describeObject = async (
+  ctx: ScenarioContext,
+  objectKind: "person" | "schedule" | "accessRule",
+  refs: string[],
+) => {
+  const r = await ctx.getReply({
+    kind: "describe-object",
+    provider: ctx.provider,
+    objectKind,
+    objectAssignedRef: refs.join(","),
+  });
+  if (r.object === null) {
+    throw new Error(
+      `describe-object returned null for ${objectKind} with ref(s) [${refs}]`,
+    );
+  }
+  return r.object.data;
+};
+
+// ----------------------------------------------------------------
+// createTestPerson — apply + register cleanup that deletes the
+//   person using whatever props are current at cleanup time
+// ----------------------------------------------------------------
+
+export const createTestPerson = async (
+  ctx: ScenarioContext,
+  props: ExternalPersonProps,
+) => {
+  const awareId = v4();
+  const state = { props, refs: [] as string[] };
+
+  const r = await ctx.getReply({
+    kind: "apply-change",
+    provider: ctx.provider,
+    refMap: { person: { [awareId]: [] } },
+    devices: {},
+    mutations: [
+      {
+        kind: "merge",
+        objectId: awareId,
+        objectKind: "person",
+        original: props,
+        props,
+      },
+    ],
+  });
+  state.refs = r.refs.person?.[awareId] ?? [];
+  if (state.refs.length < 1) {
+    throw new Error(
+      `createTestPerson: expected ≥1 ref, got ${state.refs.length}`,
+    );
+  }
+  trackPersonCleanup(ctx, awareId, state);
+
+  return { awareId, state };
+};
+
+export const trackPersonCleanup = (
+  ctx: ScenarioContext,
+  awareId: string,
+  state: { props: ExternalPersonProps; refs: string[] },
+) =>
+  ctx.registerCleanup(`person ${awareId}`, async () => {
+    await ctx.getReply({
+      kind: "apply-change",
+      provider: ctx.provider,
+      refMap: { person: { [awareId]: state.refs } },
+      devices: {},
+      mutations: [
+        {
+          kind: "delete",
+          objectId: awareId,
+          objectKind: "person",
+          original: state.props,
+        },
+      ],
+    });
+  });
+
+// ----------------------------------------------------------------
+// createTestRule — creates one schedule per reader ('always', then
+//   'never' for fixed-schedule providers) and an access rule applied
+//   to `people`, granting reader[i] on schedule[i]. Registers cleanup
+//   that deletes the rule using the state current at cleanup time.
+//   Returns everything needed to send further merges for the rule.
+// ----------------------------------------------------------------
+
+export const createTestRule = async (
+  ctx: ScenarioContext,
+  people: { awareId: string; state: { refs: string[] } }[],
+  readers: Awaited<ReturnType<typeof getReaders>>,
+) => {
+  const flags = ["always", "never"] as const;
+  const grants = [];
+  for (const [i, reader] of readers.entries()) {
+    const schedule = await createTestSchedule(ctx, flags[i % 2]);
+    grants.push({ readerId: v4(), reader, schedule });
+  }
+
+  const ruleId = v4();
+  const props: ExternalAccessRuleProps = {
+    ...newRule(),
+    appliedTo: people.map((p) => p.awareId),
+    permissions: grants.map((g) => ({
+      deviceId: g.readerId,
+      scheduleId: g.schedule.awareId,
+    })),
+    groupPermissions: [],
+  };
+  // refs of everything the rule can point at
+  const dependencyRefs: RefMap = {
+    person: Object.fromEntries(people.map((p) => [p.awareId, p.state.refs])),
+    schedule: Object.fromEntries(
+      grants.map((g) => [g.schedule.awareId, g.schedule.refs]),
+    ),
+    device: Object.fromEntries(
+      grants.map((g) => [g.readerId, [g.reader.foreignRef]]),
+    ),
+  };
+  const devices: Devices = Object.fromEntries(
+    grants.map((g) => [
+      g.readerId,
+      { ...g.reader.providerMetadata } as Record<string, unknown>,
+    ]),
+  );
+
+  const r = await ctx.getReply({
+    kind: "apply-change",
+    provider: ctx.provider,
+    refMap: { ...dependencyRefs, accessRule: { [ruleId]: [] } },
+    devices,
+    mutations: [
+      {
+        kind: "merge",
+        objectId: ruleId,
+        objectKind: "accessRule",
+        original: props,
+        props,
+      },
+    ],
+  });
+  const state = { props, refs: r.refs.accessRule?.[ruleId] ?? [] };
+  if (state.refs.length < 1) {
+    throw new Error(
+      `createTestRule: expected ≥1 ref, got ${state.refs.length}`,
+    );
+  }
+
+  ctx.registerCleanup(`accessRule ${ruleId}`, async () => {
+    await ctx.getReply({
+      kind: "apply-change",
+      provider: ctx.provider,
+      refMap: { ...dependencyRefs, accessRule: { [ruleId]: state.refs } },
+      devices,
+      mutations: [
+        {
+          kind: "delete",
+          objectId: ruleId,
+          objectKind: "accessRule",
+          original: state.props,
+        },
+      ],
+    });
+  });
+
+  // The third party returns its own local refs, not Aware IDs — this maps
+  // rule props to what describe-object should return
+  const ref = (kind: string, id: string) =>
+    (dependencyRefs[kind][id] ?? []).join(",");
+  const toProviderRefs = (p: ExternalAccessRuleProps) => ({
+    ...p,
+    appliedTo: p.appliedTo.map((id) => ref("person", id)),
+    permissions: p.permissions.map((perm) => ({
+      deviceId: ref("device", perm.deviceId),
+      scheduleId: ref("schedule", perm.scheduleId),
+    })),
+  });
+
+  return { ruleId, state, dependencyRefs, devices, grants, toProviderRefs };
+};
+
+// Verifies (via describe-object) that the provider holds the expected rule
+export const assertRuleDescribed = async (
+  ctx: ScenarioContext,
+  label: string,
+  rule: Pick<
+    Awaited<ReturnType<typeof createTestRule>>,
+    "state" | "toProviderRefs"
+  >,
+) => {
+  const got = (await describeObject(
+    ctx,
+    "accessRule",
+    rule.state.refs,
+  )) as ExternalAccessRuleProps;
+  const expected = rule.toProviderRefs(rule.state.props);
+  if (!rulesMatch(got, expected)) {
+    throw new Error(
+      `${label}: access rule mismatch. Expected: ${JSON.stringify(expected)}, Got: ${JSON.stringify(got)}`,
+    );
+  }
+};
+
+// ----------------------------------------------------------------
+// updateTestPerson — validate + apply a person merge with the given
+//   props (sent as-is, so they may carry fields outside the schema)
+//   and `original` = the current state. The person must keep its refs
+//   (empty refs mean updated in place). `apply` merges into the state.
+// ----------------------------------------------------------------
+
+export const updateTestPerson = async (
+  ctx: ScenarioContext,
+  label: string,
+  person: {
+    awareId: string;
+    state: { props: ExternalPersonProps; refs: string[] };
+  },
+  props: Record<string, unknown>,
+  apply: Partial<ExternalPersonProps>,
+) => {
+  const request = {
+    provider: ctx.provider,
+    refMap: { person: { [person.awareId]: person.state.refs } },
+    devices: {},
+    mutations: [
+      {
+        kind: "merge",
+        objectId: person.awareId,
+        objectKind: "person",
+        original: person.state.props,
+        props,
+      } as AccessMutation,
+    ],
+  };
+
+  const v = await ctx.getReply({ kind: "validate-change", ...request });
+  if (v.issues.length > 0) {
+    throw new Error(
+      `${label}: expected 0 issues, got ${v.issues.length}: ${JSON.stringify(v.issues)}`,
+    );
+  }
+  const r = await ctx.getReply({ kind: "apply-change", ...request });
+  const newRefs = r.refs.person?.[person.awareId] ?? [];
+  if (newRefs.length > 0 && !refsEqual(newRefs, person.state.refs)) {
+    throw new Error(
+      `${label}: refs changed from [${person.state.refs}] to [${newRefs}]`,
+    );
+  }
+  person.state.props = { ...person.state.props, ...apply };
 };

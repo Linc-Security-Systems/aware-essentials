@@ -7,6 +7,7 @@ import {
   Scenario,
   ScenarioContext,
   scenarioPass,
+  scenarioSkip,
   TAG_ACCESS,
   TAG_ACCESS_PROPS,
 } from "../../scenario.types";
@@ -281,6 +282,7 @@ const updateCredentials = async (
     !personsMatch({
       provider: pr.object.data as ExternalPersonProps,
       aware: updated,
+      warn: ctx.warn,
     })
   ) {
     throw new Error(
@@ -332,6 +334,8 @@ const s: Scenario = {
   description:
     "Verifies that credentials can be added to and removed from an existing person who is assigned to an access rule, without changing refs or breaking the rule",
   run: async (ctx) => {
+    let skipped: string | undefined;
+
     await ctx.getReply({
       kind: "start",
       provider: ctx.provider,
@@ -374,7 +378,7 @@ const s: Scenario = {
         "Remove credential",
       );
     } else {
-      ctx.log(`Provider does not support 'person' — nothing to test`);
+      skipped = `Provider does not support 'person'`;
     }
 
     await ctx.runCleanups();
@@ -384,7 +388,7 @@ const s: Scenario = {
       provider: ctx.provider,
     });
 
-    return scenarioPass();
+    return skipped ? scenarioSkip(skipped) : scenarioPass();
   },
 };
 
