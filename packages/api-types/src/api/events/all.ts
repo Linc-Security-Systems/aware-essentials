@@ -166,6 +166,7 @@ export const eventKindLabels: Record<DeviceEvent['kind'], string> = {
   'sensor-activated': 'Sensor Activated',
   'macro-activated': 'Macro Activated',
   'access-path-activated': 'Access Path Activated',
+  'time-zone-changed': 'Time Zone Changed',
 };
 
 export const eventSchemaByKind = {

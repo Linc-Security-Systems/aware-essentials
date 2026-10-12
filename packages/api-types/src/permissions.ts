@@ -178,6 +178,8 @@ export const sPermissionId = z.union([
     .describe('Manage global trackable favourites'),
   z.literal('trackable:manage').describe('Manage trackables'),
   z.literal('trackable:image-manage').describe('Manage trackable images'),
+  //Time Zone
+  z.literal('time-zone:update').describe('Change time zone'),
 ]);
 
 export type PermissionArea =
@@ -216,7 +218,8 @@ export type PermissionArea =
   | 'api-key'
   | 'access-authority'
   | 'notification'
-  | 'trackable';
+  | 'trackable'
+  | 'time-zone';
 
 const permissionsToRecord = (
   permissions: typeof sPermissionId,

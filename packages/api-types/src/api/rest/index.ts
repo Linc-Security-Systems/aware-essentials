@@ -35,3 +35,4 @@ export * from './io-device';
 export * from './device';
 export * from './camera';
 export * from './trackables';
+export * from './time-zone';
