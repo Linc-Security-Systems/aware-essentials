@@ -21,5 +21,5 @@ export type ServerState = {
   accessControlProviders: Record<string, AccessControlProviderState>;
   citadelMode: boolean;
   deviceChanges: ConfigState;
-  timeZone: string | null;
+  timeZone: string;
 };

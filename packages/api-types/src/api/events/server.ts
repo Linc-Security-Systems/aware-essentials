@@ -87,7 +87,7 @@ export type AccessPathActivated = z.infer<typeof sAccessPathActivated>;
 export const sTimeZoneChanged = z.object({
   kind: z.literal('time-zone-changed'),
   timeZone: z.string(), // new IANA zone, e.g. 'Africa/Cairo' or 'Etc/GMT-3'
-  previousTimeZone: z.string().nullable(), // null the first time it is set
+  previousTimeZone: z.string(),
   userId: z.string().optional(), // matches the other server events
 });
 export type TimeZoneChanged = z.infer<typeof sTimeZoneChanged>;
