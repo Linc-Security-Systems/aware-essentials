@@ -28,3 +28,4 @@ export * from './device';
 export * from './module-config';
 export * from './trackable';
 export * from './trackable-retention-policy';
+export * from './filter-preset';
