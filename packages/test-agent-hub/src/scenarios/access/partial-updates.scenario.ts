@@ -194,12 +194,16 @@ const createPerson = async (
 
 // ----------------------------------------------------------------
 // testPersonPartialUpdates
-//   create with a card → {firstName} → {credentials} → {validTo}
+//   create with a card and a pin → {firstName} → {credentials} → {validTo}
+//   The pin catches agents that clear it when props has no credentials
 // ----------------------------------------------------------------
 
 const testPersonPartialUpdates = async (ctx: ScenarioContext) => {
-  const person = await createPerson(ctx, [{ type: "card", value: "24681357" }]);
-  ctx.log(`Created person with 1 card`);
+  const person = await createPerson(ctx, [
+    { type: "card", value: "24681357" },
+    { type: "pin", value: "8642" },
+  ]);
+  ctx.log(`Created person with 1 card and 1 pin`);
 
   const update = async (changes: Partial<ExternalPersonProps>) => {
     person.state.props = await partialUpdate(ctx, {
