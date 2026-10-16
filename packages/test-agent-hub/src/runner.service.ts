@@ -53,6 +53,7 @@ export class RunnerService {
       tags: tagsFromOptions,
       timeout: scenarioTimeout,
       connectionTimeout,
+      scenarioDelay,
       report,
     } = this.options;
 
@@ -108,7 +109,13 @@ export class RunnerService {
     // 4. Run each scenario sequentially
     const reports: ScenarioReport[] = [];
 
-    for (const scenario of scenarios) {
+    for (const [i, scenario] of scenarios.entries()) {
+      // Most scenarios start the provider, which usually logs in to the
+      // system; back-to-back logins can trip its rate limiting
+      if (i > 0 && scenarioDelay > 0) {
+        await new Promise((resolve) => setTimeout(resolve, scenarioDelay));
+      }
+
       const logs: string[] = [];
       const warnings: string[] = [];
       const start = Date.now();

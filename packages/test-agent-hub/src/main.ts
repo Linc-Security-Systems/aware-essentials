@@ -102,6 +102,13 @@ async function main(): Promise<void> {
       describe: "How long to wait for agent to connect (ms)",
       group: "Connection:",
     })
+    .option("scenarioDelay", {
+      type: "number",
+      default: 2000,
+      describe:
+        "Pause between scenarios (ms), for systems that rate limit logins. Raise it if the agent reports rate limiting",
+      group: "Connection:",
+    })
     .option("report", {
       type: "string",
       describe: "Path to write JUnit XML report (for CI integration)",
@@ -225,6 +232,7 @@ async function main(): Promise<void> {
     timeout: argv.timeout,
     replyTimeout: argv.replyTimeout,
     connectionTimeout: argv.connectionTimeout,
+    scenarioDelay: argv.scenarioDelay,
     report: argv.report,
     providerConfig,
     interactive: argv.interactive,
@@ -267,7 +275,7 @@ async function main(): Promise<void> {
   if (!quiet) {
     console.log(
       `${DIM}  Listening on port ${RESET}${BOLD}${options.port}${RESET}` +
-        `${DIM} · Timeout ${options.timeout}ms · Reply timeout ${options.replyTimeout}ms · Connection timeout ${options.connectionTimeout}ms${RESET}`,
+        `${DIM} · Timeout ${options.timeout}ms · Reply timeout ${options.replyTimeout}ms · Connection timeout ${options.connectionTimeout}ms · Scenario delay ${options.scenarioDelay}ms${RESET}`,
     );
     if (options.tags.length > 0) {
       console.log(`${DIM}  Tags: ${options.tags.join(", ")}${RESET}`);

@@ -64,6 +64,7 @@ Parses command-line arguments via **yargs**:
 | `--timeout`           | `30 000`     | Per-scenario timeout (ms)                                                                        |
 | `--replyTimeout`      | `10 000`     | Max wait for an agent reply (ms), same as the Aware server; `progress` messages reset it         |
 | `--connectionTimeout` | `30 000`     | Max wait for agent to connect (ms)                                                               |
+| `--scenarioDelay`     | `2 000`      | Pause between scenarios (ms), so systems that rate limit logins (e.g. Paxton) are not tripped    |
 | `--report`            | —            | Path for JUnit XML output                                                                        |
 | `--config`            | —            | Path to a JSON file with provider configuration                                                  |
 | `--interactive`       | `false`      | An operator is present: run scenarios that ask for physical actions. Without it they are skipped |

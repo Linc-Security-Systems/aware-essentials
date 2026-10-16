@@ -20,6 +20,12 @@ export interface CLIOptions {
   /** How long to wait for agent to connect in milliseconds */
   connectionTimeout: number;
 
+  /**
+   * Pause between scenarios in milliseconds, so systems that rate limit
+   * logins (e.g. Paxton) are not hit by back-to-back starts.
+   */
+  scenarioDelay: number;
+
   /** Optional path to write JUnit XML report */
   report?: string;
 
