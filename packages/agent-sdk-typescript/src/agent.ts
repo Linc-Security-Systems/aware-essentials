@@ -14,7 +14,7 @@ import {
 } from '@awarevue/api-types';
 import { Observable } from 'rxjs';
 import { DeviceActivity } from './agent-app';
-import { AgentProgressMessage } from './index.browser';
+import { AgentProgressMessage } from './agent-error';
 
 export type Context = {
   provider: string;
@@ -47,9 +47,7 @@ export interface Agent {
   getConfigIssues$: (
     context: Context,
   ) => Observable<ValidateProviderConfigRs['issues']>;
-  getDevicesAndRelations$: (
-    context: Context,
-  ) => Observable<DeviceDiscoveryDto | AgentProgressMessage>;
+  getDevicesAndRelations$: (context: Context) => Observable<DeviceDiscoveryDto>;
   run$: (context: RunContext) => Observable<DeviceActivity>;
   runCommand$: (
     context: RunCommandContext,

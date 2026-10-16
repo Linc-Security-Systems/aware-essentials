@@ -65,7 +65,8 @@ export class AgentApp {
 
   private handleResponse$ =
     <T>(requestId: string, responseBuilder?: (result: T) => FromAgent) =>
-    (obs: Observable<T>) =>
+    // progress messages are sent as they come, so the builder only gets T
+    (obs: Observable<T | AgentProgressMessage>) =>
       obs.pipe(
         mergeMap((result) =>
           result instanceof AgentProgressMessage
@@ -235,14 +236,15 @@ export class AgentApp {
             );
 
           case 'validate-change':
-            let validateOb$: Observable<AccessValidateChangeRs['issues']> =
-              throwError(
-                () =>
-                  new AgentError(
-                    `Agent ${context.provider} does not support access change validation`,
-                    'NOT_SUPPORTED',
-                  ),
-              );
+            let validateOb$: Observable<
+              AccessValidateChangeRs['issues'] | AgentProgressMessage
+            > = throwError(
+              () =>
+                new AgentError(
+                  `Agent ${context.provider} does not support access change validation`,
+                  'NOT_SUPPORTED',
+                ),
+            );
             if (this.agent.validateAccessChange$) {
               const v$ = this.agent.validateAccessChange$;
               // validate access change
