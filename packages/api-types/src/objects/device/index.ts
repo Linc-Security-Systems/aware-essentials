@@ -19,6 +19,7 @@ export * from './presence-tracker';
 export * from './display';
 export * from './nvr-recorder';
 export * from './nvr-exporter';
+export * from './playback-server';
 export * from './nvr-analytics-server';
 export * from './system';
 export * from './changeset';

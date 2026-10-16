@@ -18,6 +18,12 @@ import {
   NvrExporterQueryResponseMap,
 } from './nvr-exporter';
 import {
+  playbackServerRequestSchemas,
+  playbackServerResponseSchemas,
+  PlaybackServerQueryRequestMap,
+  PlaybackServerQueryResponseMap,
+} from './playback-server';
+import {
   nvrRecorderRequestSchemas,
   nvrRecorderResponseSchemas,
   NvrRecorderQueryRequestMap,
@@ -45,6 +51,7 @@ export type EventCapsQueryResponse = z.infer<typeof sEventCapsQueryResponse>;
 export const requestSchemasByType = {
   ...nvrRecorderRequestSchemas,
   ...nvrExporterRequestSchemas,
+  ...playbackServerRequestSchemas,
   ...nvrAnalyticsRequestSchemas,
   ...cameraRequestSchemas,
   ...readerRequestSchemas,
@@ -55,6 +62,7 @@ export const requestSchemasByType = {
 export const responseSchemasByType = {
   ...nvrRecorderResponseSchemas,
   ...nvrExporterResponseSchemas,
+  ...playbackServerResponseSchemas,
   ...nvrAnalyticsResponseSchemas,
   ...cameraResponseSchemas,
   ...readerResponseSchemas,
@@ -66,7 +74,8 @@ export type QueryRequestMap = NvrAnalyticsQueryRequestMap &
   NvrRecorderQueryRequestMap &
   CameraQueryRequestMap &
   ReaderQueryRequestMap &
-  NvrExporterQueryRequestMap & {
+  NvrExporterQueryRequestMap &
+  PlaybackServerQueryRequestMap & {
     [QUERY_EVENT_CAPS]: EventCapsQueryArgs;
   };
 
@@ -74,7 +83,8 @@ export type QueryResponseMap = NvrAnalyticsQueryResponseMap &
   NvrRecorderQueryResponseMap &
   CameraQueryResponseMap &
   ReaderQueryResponseMap &
-  NvrExporterQueryResponseMap & {
+  NvrExporterQueryResponseMap &
+  PlaybackServerQueryResponseMap & {
     [QUERY_EVENT_CAPS]: EventCapsQueryResponse;
   };
 

@@ -7,6 +7,10 @@ import { IoBoardCommand, ioBoardCommands } from './io-board';
 import { NvrExporterCommand, nvrExporterCommandSchemas } from './nvr-exporter';
 import { PbxCommand, pbxCommands } from './pbx';
 import {
+  PlaybackServerCommand,
+  playbackServerCommandSchemas,
+} from './playback-server';
+import {
   PresenceTrackerCommand,
   presenceTrackerCommands,
 } from './presence-tracker';
@@ -30,6 +34,7 @@ export type AnyDeviceCommand =
   | DisplayCommand
   | NvrRecorderCommand
   | NvrExporterCommand
+  | PlaybackServerCommand
   | NvrAnalyticsServerCommand;
 
 export type CommandRun<TCommand extends AnyDeviceCommand = AnyDeviceCommand> = {
@@ -50,6 +55,7 @@ export const commandSchemas = {
   ...displayCommands,
   ...nvrRecorderCommandSchemas,
   ...nvrExporterCommandSchemas,
+  ...playbackServerCommandSchemas,
   ...nvrAnalyticsServerCommandSchemas,
   ...serverCommands,
 } as const;
@@ -170,6 +176,26 @@ export const commandDescriptions: Record<
   'nvr-exporter.delete-export': {
     description: 'NVR Exporter Delete Export',
     permission: 'camera:playback-export',
+  },
+  'playback-server.open-session': {
+    description: 'Playback Server Open Session',
+    permission: 'camera:playback',
+  },
+  'playback-server.close-session': {
+    description: 'Playback Server Close Session',
+    permission: 'camera:playback',
+  },
+  'playback-server.play': {
+    description: 'Playback Server Play',
+    permission: 'camera:playback',
+  },
+  'playback-server.pause': {
+    description: 'Playback Server Pause',
+    permission: 'camera:playback',
+  },
+  'playback-server.seek': {
+    description: 'Playback Server Seek',
+    permission: 'camera:playback',
   },
   'nvr-recorder.start-recording': {
     description: 'NVR Recorder Start Recording',

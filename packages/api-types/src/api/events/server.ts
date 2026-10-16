@@ -84,6 +84,14 @@ export const sAccessPathActivated = z.object({
 export type MacroActivated = z.infer<typeof sMacroActivated>;
 export type AccessPathActivated = z.infer<typeof sAccessPathActivated>;
 
+export const sTimeZoneChanged = z.object({
+  kind: z.literal('time-zone-changed'),
+  timeZone: z.string(), // new IANA zone, e.g. 'Africa/Cairo' or 'Etc/GMT-3'
+  previousTimeZone: z.string(),
+  userId: z.string().optional(), // matches the other server events
+});
+export type TimeZoneChanged = z.infer<typeof sTimeZoneChanged>;
+
 export type ServerEvent =
   | ObjectCreated
   | ObjectUpdated
@@ -93,4 +101,5 @@ export type ServerEvent =
   | UserLoggedIn
   | UserLoggedOut
   | MacroActivated
-  | AccessPathActivated;
+  | AccessPathActivated
+  | TimeZoneChanged;

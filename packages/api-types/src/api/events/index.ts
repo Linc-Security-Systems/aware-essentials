@@ -9,4 +9,5 @@ export * from './alarm';
 export * from './presence-tracker';
 export * from './display';
 export * from './nvr-exporter';
+export * from './playback-server';
 export * from './all';
