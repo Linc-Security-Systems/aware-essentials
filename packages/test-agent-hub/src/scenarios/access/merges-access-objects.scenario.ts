@@ -113,6 +113,7 @@ const mergePerson = async (
       !personsMatch({
         provider: describeResult.object.data as any,
         aware: props,
+        warn: ctx.warn,
       })
     ) {
       throw new Error(

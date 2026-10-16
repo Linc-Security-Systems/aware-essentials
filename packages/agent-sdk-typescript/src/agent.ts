@@ -14,6 +14,7 @@ import {
 } from '@awarevue/api-types';
 import { Observable } from 'rxjs';
 import { DeviceActivity } from './agent-app';
+import { AgentProgressMessage } from './index.browser';
 
 export type Context = {
   provider: string;
@@ -46,21 +47,23 @@ export interface Agent {
   getConfigIssues$: (
     context: Context,
   ) => Observable<ValidateProviderConfigRs['issues']>;
-  getDevicesAndRelations$: (context: Context) => Observable<DeviceDiscoveryDto>;
+  getDevicesAndRelations$: (
+    context: Context,
+  ) => Observable<DeviceDiscoveryDto | AgentProgressMessage>;
   run$: (context: RunContext) => Observable<DeviceActivity>;
   runCommand$: (
     context: RunCommandContext,
     command: RunCommandRq,
-  ) => Observable<unknown>;
+  ) => Observable<unknown | AgentProgressMessage>;
   getResult$?: (context: Context, query: QueryRq) => Observable<unknown>;
   validateAccessChange$?: (
     context: AccessChangeContext,
     change: AccessValidateChangeRq,
-  ) => Observable<AccessChangeIssue[]>;
+  ) => Observable<AccessChangeIssue[] | AgentProgressMessage>;
   applyAccessChange$?: (
     context: AccessChangeContext,
     change: AccessApplyChange,
-  ) => Observable<AccessRefMap>;
+  ) => Observable<AccessRefMap | AgentProgressMessage>;
   find$?: <K extends AccessObjectKind>(
     context: Context,
     objectKind: K,

@@ -131,7 +131,7 @@ export class HubService implements OnModuleInit, OnModuleDestroy {
 
     const protocol = new AgentProtocol<"server">(conn, {
       id: "test-hub",
-      replyTimeout: this.options.timeout,
+      replyTimeout: this.options.replyTimeout,
     });
 
     // Send register-rs reply

@@ -1,4 +1,4 @@
-import { FromAgent, Message } from '@awarevue/api-types';
+import { FromAgent, Message } from "@awarevue/api-types";
 import {
   Observable,
   Subject,
@@ -8,10 +8,8 @@ import {
   map,
   take,
   timeout,
-  race,
-  merge,
-} from 'rxjs';
-import { DeviceState, DeviceStateStore } from '../scenario.types';
+} from "rxjs";
+import { DeviceState, DeviceStateStore } from "../scenario.types";
 
 /**
  * Concrete implementation of {@link DeviceStateStore}.
@@ -46,9 +44,9 @@ export class DeviceStateStoreImpl implements DeviceStateStore {
     this.defaultTimeoutMs = defaultTimeoutMs;
 
     this.subscription = messages$
-      .pipe(filter((msg) => msg.kind === 'state'))
+      .pipe(filter((msg) => msg.kind === "state"))
       .subscribe((msg) => {
-        if (msg.kind !== 'state') return; // type narrowing
+        if (msg.kind !== "state") return; // type narrowing
         this.reduce(msg.foreignRef, msg.mergeProps, msg.removeProps);
       });
   }
@@ -155,7 +153,7 @@ export class DeviceStateStoreImpl implements DeviceStateStore {
       const current = this.states.get(foreignRef);
       const stateDesc = current
         ? JSON.stringify(current, null, 2)
-        : 'no state received';
+        : "no state received";
       throw new Error(
         `${message} — device '${foreignRef}' current state: ${stateDesc}`,
       );

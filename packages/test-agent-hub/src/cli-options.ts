@@ -11,14 +11,29 @@ export interface CLIOptions {
   /** Per-scenario timeout in milliseconds */
   timeout: number;
 
+  /**
+   * How long to wait for the agent to reply to a request, in milliseconds.
+   * Defaults to the Aware server's own reply timeout; progress messages reset it.
+   */
+  replyTimeout: number;
+
   /** How long to wait for agent to connect in milliseconds */
   connectionTimeout: number;
+
+  /**
+   * Pause between scenarios in milliseconds, so systems that rate limit
+   * logins (e.g. Paxton) are not hit by back-to-back starts.
+   */
+  scenarioDelay: number;
 
   /** Optional path to write JUnit XML report */
   report?: string;
 
   /** Provider config loaded from a JSON file (via --config) */
   providerConfig?: Record<string, unknown>;
+
+  /** An operator is present to perform physical actions when asked */
+  interactive: boolean;
 
   /** Show detailed internal logs */
   verbose: boolean;

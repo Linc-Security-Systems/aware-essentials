@@ -109,12 +109,33 @@ export interface ScenarioResult {
   passed: boolean;
   errors: string[];
   durationMs: number;
+  /**
+   * Set when the scenario could not test anything against this agent or
+   * setup (e.g. an unsupported feature, no readers, no operator). Skipped
+   * scenarios count as passed for the exit code.
+   */
+  skipped?: string;
+  /**
+   * Things that did not fully work but are acceptable for some agents
+   * (e.g. an event that cannot be replayed). Raised with `ctx.warn`; a
+   * passing scenario with warnings is reported as "passed with warnings".
+   */
+  warnings?: string[];
 }
 
 /** Convenience: build a passing result */
 export const scenarioPass = (): Omit<ScenarioResult, "durationMs"> => ({
   passed: true,
   errors: [],
+});
+
+/** Convenience: build a skipped result, with the reason it could not test anything */
+export const scenarioSkip = (
+  reason: string,
+): Omit<ScenarioResult, "durationMs"> => ({
+  passed: true,
+  errors: [],
+  skipped: reason,
 });
 
 /** Convenience: build a failing result */
@@ -151,8 +172,36 @@ export interface ScenarioContext {
 
   tags: string[];
 
+  /** True when run with --interactive: an operator is present to perform physical actions */
+  interactive: boolean;
+
+  /**
+   * Shows `instruction` to the operator and resolves with `until` (typically a
+   * waitForMessage for the event the action should produce), or with "skipped"
+   * if the operator presses Enter because the action is not possible on their
+   * site. Rejects if `until` rejects (e.g. times out). Only use when `interactive`.
+   */
+  askOperator<T>(
+    instruction: string,
+    until: Promise<T>,
+  ): Promise<T | "skipped">;
+
+  /**
+   * Shows a progress message to the operator straight away (scenario logs
+   * only print at the end), e.g. that an action was seen or that nothing
+   * more is needed from them. Only use when `interactive`.
+   */
+  tellOperator(message: string): void;
+
   /** Collect log lines that appear in the scenario report */
   log(msg: string): void;
+
+  /**
+   * Record something that did not fully work but is not a failure. It is
+   * shown in the log, and a passing scenario is reported as "passed with
+   * warnings" so it stands out from a clean pass.
+   */
+  warn(msg: string): void;
 
   /**
    * Register a best-effort cleanup callback that runs in reverse registration
@@ -221,7 +270,7 @@ export interface Scenario {
 
   /**
    * Run the scenario.
-   * Return `scenarioPass()` / `scenarioFail(...)` or throw.
+   * Return `scenarioPass()` / `scenarioFail(...)` / `scenarioSkip(reason)` or throw.
    */
   run(ctx: ScenarioContext): Promise<Omit<ScenarioResult, "durationMs">>;
 }

@@ -1,4 +1,5 @@
 import { Injectable, Inject } from "@nestjs/common";
+import * as readline from "readline";
 import { FromAgent, Message } from "@awarevue/api-types";
 import { RequestKind, Outbound } from "@awarevue/agent-sdk";
 import {
@@ -52,6 +53,7 @@ export class RunnerService {
       tags: tagsFromOptions,
       timeout: scenarioTimeout,
       connectionTimeout,
+      scenarioDelay,
       report,
     } = this.options;
 
@@ -107,12 +109,20 @@ export class RunnerService {
     // 4. Run each scenario sequentially
     const reports: ScenarioReport[] = [];
 
-    for (const scenario of scenarios) {
+    for (const [i, scenario] of scenarios.entries()) {
+      // Most scenarios start the provider, which usually logs in to the
+      // system; back-to-back logins can trip its rate limiting
+      if (i > 0 && scenarioDelay > 0) {
+        await new Promise((resolve) => setTimeout(resolve, scenarioDelay));
+      }
+
       const logs: string[] = [];
+      const warnings: string[] = [];
       const start = Date.now();
 
       let result: ScenarioResult;
       let store: DeviceStateStoreImpl | undefined;
+      let ctx: ScenarioContext | undefined;
 
       try {
         // Build the context for this scenario (fresh state store each time)
@@ -121,10 +131,12 @@ export class RunnerService {
           provider,
           config,
           logs,
+          warnings,
           tags,
           scenarioTimeout,
         );
         store = built.store;
+        ctx = built.ctx;
 
         // Run with timeout
         if (!this.options.quiet) {
@@ -138,8 +150,21 @@ export class RunnerService {
           durationMs: elapsed,
         };
       } finally {
+        // Safety net: remove whatever a failed scenario created before it
+        // could run its own cleanups (a no-op when it already did)
+        await ctx?.runCleanups();
         // Dispose the store to prevent subscription leaks
         store?.dispose();
+      }
+
+      // A clean pass with warnings is reported as "passed with warnings";
+      // on a failure or skip they stay in the log
+      if (
+        result.passed &&
+        result.skipped === undefined &&
+        warnings.length > 0
+      ) {
+        result = { ...result, warnings };
       }
 
       reports.push({ name: scenario.name, result, logs });
@@ -169,6 +194,7 @@ export class RunnerService {
     provider: string,
     config: Record<string, unknown>,
     logs: string[],
+    warnings: string[],
     tags: string[],
     timeoutMs: number,
   ): {
@@ -186,8 +212,13 @@ export class RunnerService {
       provider,
       config,
       tags,
+      interactive: this.options.interactive,
       deviceState: store,
       log: (msg: string) => logs.push(msg),
+      warn: (msg: string) => {
+        warnings.push(msg);
+        logs.push(`⚠ ${msg}`);
+      },
       registerCleanup: (label: string, fn: () => Promise<void>) =>
         cleanups.push({ label, fn }),
       runCleanups: async () => {
@@ -199,6 +230,31 @@ export class RunnerService {
           }
         }
         cleanups.splice(0);
+      },
+
+      askOperator: async <T>(
+        instruction: string,
+        until: Promise<T>,
+      ): Promise<T | "skipped"> => {
+        logs.push(`Asked operator: ${instruction}`);
+        console.log();
+        console.log(`${BOLD}${YELLOW}  ▶ ${instruction}${RESET}`);
+        console.log(`${DIM}    Waiting... press Enter to skip${RESET}`);
+        const rl = readline.createInterface({ input: process.stdin });
+        const skipped = new Promise<"skipped">((resolve) =>
+          rl.once("line", () => resolve("skipped")),
+        );
+        try {
+          // race handles a later rejection of `until` after a skip
+          return await Promise.race([until, skipped]);
+        } finally {
+          rl.close();
+        }
+      },
+
+      tellOperator: (message: string) => {
+        logs.push(`Told operator: ${message}`);
+        console.log(`${CYAN}  ✓ ${message}${RESET}`);
       },
 
       getReply: <K extends RequestKind>(
