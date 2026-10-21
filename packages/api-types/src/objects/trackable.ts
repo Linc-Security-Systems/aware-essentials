@@ -6,6 +6,13 @@ export const sTrackableKind = z.enum([
   'base-station',
   'aid-to-navigation',
   'sar-aircraft',
+  //ADS-B
+  'aircraft',
+  'helicopter',
+  'glider',
+  'balloon',
+  'drone',
+  'ground-vehicle',
 ]);
 
 export type TrackableKind = z.infer<typeof sTrackableKind>;
