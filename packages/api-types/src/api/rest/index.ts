@@ -37,3 +37,4 @@ export * from './camera';
 export * from './trackables';
 export * from './time-zone';
 export * from './filter-preset';
+export * from './access-control-authority';

@@ -48,6 +48,18 @@ export const sTokenLimitExceededMeta = z.object({
   type: sCredentialType,
 });
 
+export const sPersonTypeNotAccessControlUserMeta = z.object({
+  personTypeId: z.string(),
+  field: z.enum(['credentials', 'accessRules', 'type']),
+  personIds: z.array(z.string()),
+});
+
+export const sPersonTypeSyncPermissionRequiredMeta = z.object({
+  personTypeId: z.string(),
+  affectedPeople: z.number(),
+  permission: z.string(),
+});
+
 export type VoidMeta = z.infer<typeof sVoidMeta>;
 export type DuplicateMeta = z.infer<typeof sDuplicateMeta>;
 export type NotFoundMeta = z.infer<typeof sNotFoundMeta>;
@@ -94,6 +106,8 @@ export enum AppErrorCode {
   TOKEN_INVALID_FORMAT = 'TOKEN_INVALID_FORMAT',
   TOKEN_LIMIT_EXCEEDED = 'TOKEN_LIMIT_EXCEEDED',
   TOKEN_IN_USE = 'TOKEN_IN_USE',
+  PERSON_TYPE_NOT_ACCESS_CONTROL_USER = 'PERSON_TYPE_NOT_ACCESS_CONTROL_USER',
+  PERSON_TYPE_SYNC_PERMISSION_REQUIRED = 'PERSON_TYPE_SYNC_PERMISSION_REQUIRED',
 
   // device
   DEVICE_NOT_FOUND = 'DEVICE_NOT_FOUND',
@@ -163,6 +177,10 @@ export const errorMetadataSchemas = {
   [AppErrorCode.TOKEN_INVALID_FORMAT]: sTokenInvalidFormatMeta,
   [AppErrorCode.TOKEN_LIMIT_EXCEEDED]: sTokenLimitExceededMeta,
   [AppErrorCode.TOKEN_IN_USE]: sConflictMeta,
+  [AppErrorCode.PERSON_TYPE_NOT_ACCESS_CONTROL_USER]:
+    sPersonTypeNotAccessControlUserMeta,
+  [AppErrorCode.PERSON_TYPE_SYNC_PERMISSION_REQUIRED]:
+    sPersonTypeSyncPermissionRequiredMeta,
   // device
   [AppErrorCode.DEVICE_NOT_FOUND]: sNotFoundMeta,
   [AppErrorCode.DEVICE_ALREADY_EXISTS]: sDuplicateMeta,
