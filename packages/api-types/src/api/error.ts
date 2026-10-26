@@ -28,6 +28,12 @@ export const sConflictMeta = z.object({
   value: z.string().optional(),
 });
 
+/** Someone else changed the resource since the requester read it, so the requester's change was not made. */
+export const sChangedMeta = z.object({
+  subject: z.string(),
+  id: z.string(),
+});
+
 export const sVoidMeta = z.object({}).strict();
 
 export const sAccessRuleConflictMeta = z.object({
@@ -65,6 +71,7 @@ export type DuplicateMeta = z.infer<typeof sDuplicateMeta>;
 export type NotFoundMeta = z.infer<typeof sNotFoundMeta>;
 export type InvalidMeta = z.infer<typeof sInvalidMeta>;
 export type ConflictMeta = z.infer<typeof sConflictMeta>;
+export type ChangedMeta = z.infer<typeof sChangedMeta>;
 
 export type AccessRuleConflictMeta = z.infer<typeof sAccessRuleConflictMeta>;
 
@@ -78,6 +85,7 @@ export enum AppErrorCode {
   RESOURCE_INVALID = 'RESOURCE_INVALID',
   RESOURCE_IN_USE = 'RESOURCE_IN_USE',
   RESOURCE_NOT_SUPPORTED = 'RESOURCE_NOT_SUPPORTED',
+  RESOURCE_CHANGED = 'RESOURCE_CHANGED',
   BAD_REFERENCE = 'BAD_REFERENCE',
   UNKNOWN = 'UNKNOWN',
   SERVER_INTERNAL_ERROR = 'SERVER_INTERNAL_ERROR',
@@ -156,6 +164,7 @@ export const errorMetadataSchemas = {
   [AppErrorCode.RESOURCE_INVALID]: sInvalidMeta,
   [AppErrorCode.RESOURCE_IN_USE]: sConflictMeta,
   [AppErrorCode.RESOURCE_NOT_SUPPORTED]: sVoidMeta,
+  [AppErrorCode.RESOURCE_CHANGED]: sChangedMeta,
   [AppErrorCode.RESOURCE_FORBIDDEN]: sVoidMeta,
   [AppErrorCode.BAD_REFERENCE]: sVoidMeta,
   // access
