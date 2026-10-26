@@ -10,12 +10,25 @@ export const sCameraPtzPresetSaved = z.object({
   assignedRef: z.string().nullable(),
 });
 
+/** A box in the picture the object was detected in, in pixels of that picture. */
 export const sBoxLocator = z.object({
   locatorKind: z.literal('box'),
   x1: z.number(),
   y1: z.number(),
   x2: z.number(),
   y2: z.number(),
+  frameWidth: z
+    .number()
+    .positive()
+    .optional()
+    .describe(
+      'Width in pixels of the picture the box is measured in, which is not necessarily the stream resolution',
+    ),
+  frameHeight: z
+    .number()
+    .positive()
+    .optional()
+    .describe('Height in pixels of the picture the box is measured in'),
 });
 
 export const sObjectLocator = sBoxLocator;
@@ -24,17 +37,47 @@ export const sObjectDetectionData = z
   .object({
     objectKind: sWorldObjectId.nullable(),
     probability: z.number(),
-    identifiedObjectId: z.string().nullable(),
+    identifiedObjectId: z
+      .string()
+      .nullable()
+      .describe(
+        'Who or what the object was identified as. For faces, the Aware person id.',
+      ),
+    identificationScore: z
+      .number()
+      .nullable()
+      .optional()
+      .describe('Confidence of identifiedObjectId, 0 to 1, when known'),
+    providerZones: z
+      .array(z.string())
+      .optional()
+      .describe(
+        "Names of the detection provider's zones the object is in now. These are the vendor's zones, not Aware Zones.",
+      ),
+    stationary: z
+      .boolean()
+      .optional()
+      .describe('Whether the object has stopped moving'),
     frameTime: z.number(),
     startTime: z.number(),
     endTime: z.number().nullable(),
   })
   .and(sObjectLocator);
 
+const sProviderAssignedRef = z
+  .string()
+  .nonempty()
+  .describe(
+    'Correlates the events of one detected object, from started to ended; unique only with the provider and camera',
+  );
+
+/**
+ * A detected object's events: started once, then any number of updated, then ended once.
+ */
 export const sObjectDetectionStarted = z
   .object({
     kind: z.literal('object-detection-started'),
-    providerAssignedRef: z.string().nonempty(),
+    providerAssignedRef: sProviderAssignedRef,
     detectionProvider: z.string().nonempty(),
   })
   .and(sObjectDetectionData);
@@ -42,7 +85,7 @@ export const sObjectDetectionStarted = z
 export const sObjectDetectionUpdated = z
   .object({
     kind: z.literal('object-detection-updated'),
-    providerAssignedRef: z.string().nonempty(),
+    providerAssignedRef: sProviderAssignedRef,
     detectionProvider: z.string().nonempty(),
   })
   .and(sObjectDetectionData);
@@ -50,7 +93,7 @@ export const sObjectDetectionUpdated = z
 export const sObjectDetectionEnded = z
   .object({
     kind: z.literal('object-detection-ended'),
-    providerAssignedRef: z.string().nonempty(),
+    providerAssignedRef: sProviderAssignedRef,
     detectionProvider: z.string().nonempty(),
   })
   .and(sObjectDetectionData);
