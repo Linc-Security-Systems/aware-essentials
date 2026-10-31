@@ -10,6 +10,18 @@ export const sCameraPtzPresetSaved = z.object({
   assignedRef: z.string().nullable(),
 });
 
+/** The camera's privacy mode was turned on: nothing is recorded or watched. */
+export const sPrivacyModeSet = z.object({
+  kind: z.literal('privacy-mode-set'),
+  userId: z.string().optional(),
+});
+
+/** The camera's privacy mode was turned off: it records and can be watched again. */
+export const sPrivacyModeUnset = z.object({
+  kind: z.literal('privacy-mode-unset'),
+  userId: z.string().optional(),
+});
+
 /** A box in the picture the object was detected in, in pixels of that picture. */
 export const sBoxLocator = z.object({
   locatorKind: z.literal('box'),
@@ -130,6 +142,8 @@ export const sSceneEnded = z
 
 export const cameraEventSchemasByKind = {
   'ptz-preset-saved': sCameraPtzPresetSaved,
+  'privacy-mode-set': sPrivacyModeSet,
+  'privacy-mode-unset': sPrivacyModeUnset,
   'object-detection-started': sObjectDetectionStarted,
   'object-detection-updated': sObjectDetectionUpdated,
   'object-detection-ended': sObjectDetectionEnded,
@@ -139,6 +153,10 @@ export const cameraEventSchemasByKind = {
 } as const;
 
 export type CameraPtzPresetSaved = z.infer<typeof sCameraPtzPresetSaved>;
+
+export type PrivacyModeSet = z.infer<typeof sPrivacyModeSet>;
+
+export type PrivacyModeUnset = z.infer<typeof sPrivacyModeUnset>;
 
 export type BoxLocator = z.infer<typeof sBoxLocator>;
 
@@ -162,6 +180,8 @@ export type SceneEnded = z.infer<typeof sSceneEnded>;
 
 export type CameraEvent =
   | CameraPtzPresetSaved
+  | PrivacyModeSet
+  | PrivacyModeUnset
   | ObjectDetectionStarted
   | ObjectDetectionUpdated
   | ObjectDetectionEnded

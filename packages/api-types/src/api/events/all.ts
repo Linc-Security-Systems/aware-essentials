@@ -141,6 +141,8 @@ export const eventKindLabels: Record<DeviceEvent['kind'], string> = {
   'object-updated': 'Object Updated',
   'object-deleted': 'Object Deleted',
   'ptz-preset-saved': 'PTZ Preset Saved on Device',
+  'privacy-mode-set': 'Privacy Mode Set',
+  'privacy-mode-unset': 'Privacy Mode Unset',
   'person-in': 'Person Checked In',
   'person-out': 'Person Checked Out',
   'object-detection-started': 'Object Detection Started',
