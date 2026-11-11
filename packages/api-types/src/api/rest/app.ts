@@ -29,6 +29,8 @@ export const sAppInfo = z.object({
       actualAssetCount: z.record(z.string(), z.number().int().nonnegative()),
     })
     .optional(),
+  /** How browsers play back recorded footage, set on the backend. */
+  playbackTransport: z.enum(['pull', 'webrtc']),
 });
 
 export type AppInfo = z.infer<typeof sAppInfo>;
