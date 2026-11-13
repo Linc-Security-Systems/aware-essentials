@@ -22,6 +22,7 @@ export * from './device-event';
 export * from './device-group';
 export * from './file';
 export * from './layout';
+export * from './layout-location';
 export * from './macros';
 export * from './module-config';
 export * from './notifications';

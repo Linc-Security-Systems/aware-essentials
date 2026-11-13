@@ -7,6 +7,7 @@ export * from './api-key';
 export * from './automation-rule';
 export * from './device-group';
 export * from './layout';
+export * from './layout-location';
 export * from './person';
 export * from './role';
 export * from './user';

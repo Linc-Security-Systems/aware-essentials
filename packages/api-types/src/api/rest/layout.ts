@@ -1,4 +1,4 @@
-import { sLayoutDeviceDto } from '../../objects/layout';
+import { sLayoutDeviceDto, sLayoutHomeSource } from '../../objects/layout';
 import z from 'zod';
 
 export const sAddLayoutRequest = z.object({
@@ -9,6 +9,8 @@ export const sAddLayoutRequest = z.object({
   devices: z.array(sLayoutDeviceDto),
   colorize: z.boolean(),
   map: z.boolean(),
+  homeSource: sLayoutHomeSource.optional(),
+  homeLocationId: z.string().nullable().optional(),
 });
 
 export type AddLayoutRequest = z.infer<typeof sAddLayoutRequest>;
@@ -22,6 +24,8 @@ export const sUpdateLayoutRequest = z.object({
   devices: z.array(sLayoutDeviceDto).optional(),
   colorize: z.boolean().optional(),
   map: z.boolean().optional(),
+  homeSource: sLayoutHomeSource.optional(),
+  homeLocationId: z.string().nullable().optional(),
 });
 
 export type UpdateLayoutRequest = { id: string } & z.infer<

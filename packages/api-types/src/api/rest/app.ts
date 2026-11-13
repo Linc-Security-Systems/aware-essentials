@@ -20,6 +20,8 @@ export const sAppInfo = z.object({
   presenceTrackerId: z.string(),
   passwordPolicy: sPasswordPolicy,
   mapTileServerUrl: z.string(),
+  /** Whether a map without a home starts at the browser's own position. */
+  mapUseBrowserLocation: z.boolean(),
   userAgentExtensions: z.array(sUaExtensionInfo),
   licenseInfo: z
     .object({

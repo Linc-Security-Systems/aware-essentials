@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { LayoutDto } from './layout';
+import { LayoutLocationDto } from './layout-location';
 import { DeviceDto } from './device';
 import { AccessRuleDto, AccessRuleProps } from './access-rule';
 import { AgreementDto } from './agreement';
@@ -30,6 +31,7 @@ export const sObjectKind = z.enum([
   'deviceGroup',
   'view',
   'layout',
+  'layoutLocation',
   'automationRule',
   'macro',
   'role',
@@ -47,6 +49,7 @@ export type ObjectKind = z.infer<typeof sObjectKind>;
 
 export type ObjectKinds = {
   layout: LayoutDto;
+  layoutLocation: LayoutLocationDto;
   view: ViewDto;
   accessRule: AccessRuleDto;
   schedule: ScheduleDto;
@@ -86,6 +89,7 @@ export const objectLabels: Record<string, string> = {
   deviceGroup: 'Device Group',
   zone: 'Zone',
   layout: 'Layout',
+  layoutLocation: 'Layout Location',
   view: 'View',
   role: 'Role',
   user: 'User',
