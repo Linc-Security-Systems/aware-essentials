@@ -1,4 +1,5 @@
 import { DeviceEvent } from '../events';
+import { z } from 'zod';
 
 export interface AlarmSearchQueryDto {
   deviceId?: string[];
@@ -11,15 +12,19 @@ export interface AlarmSearchQueryDto {
   limit?: number;
 }
 
-export interface AlarmSearchItemDto {
-  id: string;
-  triggeredOn: number;
-  acknowledgedOn: number | null;
-  acknowledgedBy: string | null;
-  triggers: {
-    id: string;
-    timestamp: number;
-    deviceId: string;
-    kind: DeviceEvent['kind'];
-  }[];
-}
+export const sAlarmSearchItemDto = z.object({
+  id: z.string(),
+  triggeredOn: z.number(),
+  acknowledgedOn: z.number().nullable(),
+  acknowledgedBy: z.string().nullable(),
+  triggers: z.array(
+    z.object({
+      id: z.string(),
+      timestamp: z.number(),
+      deviceId: z.string(),
+      kind: z.string() as z.ZodType<DeviceEvent['kind']>,
+    }),
+  ),
+});
+
+export type AlarmSearchItemDto = z.infer<typeof sAlarmSearchItemDto>;

@@ -8,11 +8,13 @@ export interface SaveProviderConfigRq {
   config: Record<string, unknown>;
 }
 
-export interface ConfigIssue {
-  paths: string[];
-  message: string;
-  provider: string;
-}
+export const sConfigIssue = z.object({
+  paths: z.array(z.string()),
+  message: z.string(),
+  provider: z.string(),
+});
+
+export type ConfigIssue = z.infer<typeof sConfigIssue>;
 
 export interface ModuleConfigSpecs {
   provider: string;

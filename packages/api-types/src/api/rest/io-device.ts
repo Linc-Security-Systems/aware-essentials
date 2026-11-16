@@ -1,5 +1,5 @@
-import z from 'zod';
-import { DeviceType } from '../../objects/device/any-device';
+import { z } from 'zod';
+import { sDeviceType } from '../../objects/device/any-device';
 
 export const sIoSlot = z.object({
   deviceId: z.string().nonempty(),
@@ -27,19 +27,23 @@ export const isDeviceFactoryProviderMetadata = (
   return obj && obj.templateName && typeof obj.templateName === 'string';
 };
 
-export interface DeviceIo {
-  name: string;
-  displayName: string;
-  dataType: 'boolean';
-}
+const sDeviceIo = z.object({
+  name: z.string(),
+  displayName: z.string(),
+  dataType: z.literal('boolean'),
+});
 
-export interface DeviceTemplate {
-  deviceType: DeviceType;
-  displayName: string;
-  description: string;
-  inputs: DeviceIo[];
-  outputs: DeviceIo[];
-}
+export type DeviceIo = z.infer<typeof sDeviceIo>;
+
+export const sDeviceTemplate = z.object({
+  deviceType: sDeviceType,
+  displayName: z.string(),
+  description: z.string(),
+  inputs: z.array(sDeviceIo),
+  outputs: z.array(sDeviceIo),
+});
+
+export type DeviceTemplate = z.infer<typeof sDeviceTemplate>;
 
 export const sAddCustomDeviceRequest = z.object({
   name: z.string().nonempty(),
@@ -57,10 +61,12 @@ export type UpdateCustomDeviceRequest = { id: string } & z.infer<
   typeof sUpdateCustomDeviceRequest
 >;
 
-export type CustomDeviceInfo = {
-  id: string;
-  name: string;
-  templateName: string;
-  inputBindings: Record<string, IoSlot>;
-  outputBindings: Record<string, IoSlot>;
-};
+export const sCustomDeviceInfo = z.object({
+  id: z.string(),
+  name: z.string(),
+  templateName: z.string(),
+  inputBindings: sInputBindings,
+  outputBindings: sOutputBindings,
+});
+
+export type CustomDeviceInfo = z.infer<typeof sCustomDeviceInfo>;

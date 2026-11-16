@@ -119,18 +119,22 @@ export type MediaSearchQueryDto = z.infer<typeof sMediaSearchQueryDto>;
 
 export type GetLatestFrameRequest = z.infer<typeof sGetLatestFrameRequest>;
 
-export type MediaSearchMatchDto = {
-  relevance: number;
-  providerAssignedRef: string;
-  deviceId: string;
-  probability: number;
-  objectKind: string;
-  subLabel: string | null;
-  startTime: number;
-  endTime: number | null;
-};
+export const sMediaSearchMatchDto = z.object({
+  relevance: z.number(),
+  providerAssignedRef: z.string(),
+  deviceId: z.string(),
+  probability: z.number(),
+  objectKind: z.string(),
+  subLabel: z.string().nullable(),
+  startTime: z.number(),
+  endTime: z.number().nullable(),
+});
 
-export type MediaFacePeopleDto = {
-  id: string;
-  name: string;
-};
+export type MediaSearchMatchDto = z.infer<typeof sMediaSearchMatchDto>;
+
+export const sMediaFacePeopleDto = z.object({
+  id: z.string(),
+  name: z.string(),
+});
+
+export type MediaFacePeopleDto = z.infer<typeof sMediaFacePeopleDto>;
