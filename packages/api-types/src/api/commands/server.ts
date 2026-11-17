@@ -3,6 +3,7 @@ import {
   sDeviceParam,
   sMacroId,
   sNotificationSeverity,
+  sSecurityLevelId,
 } from '../../primitives';
 
 // COMMANDS
@@ -26,13 +27,24 @@ export const sNotify = z.object({
   }),
 });
 
+export const sSetSecurityLevelCommand = z.object({
+  command: z.literal('server.set-security-level'),
+  params: z.object({
+    // null leaves no security level active
+    securityLevelId: sSecurityLevelId.nullable(),
+  }),
+});
+
 export type RunMacro = z.infer<typeof sRunMacroCommand>;
 
 export type Notify = z.infer<typeof sNotify>;
 
+export type SetSecurityLevel = z.infer<typeof sSetSecurityLevelCommand>;
+
 export const serverCommands = {
   'server.run-macro': sRunMacroCommand,
   'server.notify': sNotify,
+  'server.set-security-level': sSetSecurityLevelCommand,
 } as const;
 
-export type ServerCommand = RunMacro | Notify;
+export type ServerCommand = RunMacro | Notify | SetSecurityLevel;

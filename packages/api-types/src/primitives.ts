@@ -20,6 +20,7 @@ export const sPersonId = z.string().nonempty();
 export const sPersonTypeId = z.string().nonempty();
 export const sZoneId = z.string().nonempty();
 export const sMacroId = z.string().nonempty();
+export const sSecurityLevelId = z.uuid();
 export const sUserId = z.string().nonempty();
 
 export const sWorldObjectId = z.string().nonempty();

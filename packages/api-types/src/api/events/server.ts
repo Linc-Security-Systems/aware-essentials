@@ -1,6 +1,6 @@
 import { ObjectKinds } from '../../objects';
 import { z } from 'zod';
-import { sUserId } from '../../primitives';
+import { sSecurityLevelId, sUserId } from '../../primitives';
 
 // EVENTS
 
@@ -92,6 +92,21 @@ export const sTimeZoneChanged = z.object({
 });
 export type TimeZoneChanged = z.infer<typeof sTimeZoneChanged>;
 
+// null when no security level is active; names are snapshots taken at the time of the change
+export const sSecurityLevelChanged = z.object({
+  kind: z.literal('security-level-changed'),
+  securityLevelId: sSecurityLevelId.nullable(),
+  name: z.string().nullable(),
+  previousSecurityLevelId: sSecurityLevelId.nullable(),
+  previousName: z.string().nullable(),
+  userId: z.string().optional(),
+});
+export type SecurityLevelChanged = z.infer<typeof sSecurityLevelChanged>;
+
+export const serverEventSchemasByKind = {
+  'security-level-changed': sSecurityLevelChanged,
+} as const;
+
 export type ServerEvent =
   | ObjectCreated
   | ObjectUpdated
@@ -102,4 +117,5 @@ export type ServerEvent =
   | UserLoggedOut
   | MacroActivated
   | AccessPathActivated
-  | TimeZoneChanged;
+  | TimeZoneChanged
+  | SecurityLevelChanged;

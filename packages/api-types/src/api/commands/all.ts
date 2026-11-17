@@ -165,6 +165,10 @@ export const commandDescriptions: Record<
     description: 'Publish Notification',
     permission: 'notification:create',
   },
+  'server.set-security-level': {
+    description: 'Set Security Level',
+    permission: 'security-level:update',
+  },
   'display.set-view': {
     description: 'Display Set View',
     permission: 'display:read',

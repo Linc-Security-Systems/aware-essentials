@@ -13,7 +13,7 @@ import {
   presenceTrackerEventSchemaByKind,
 } from './presence-tracker';
 import { ReaderEvent, readerEventSchemaByKind } from './reader';
-import { ServerEvent } from './server';
+import { ServerEvent, serverEventSchemasByKind } from './server';
 import {
   NvrExporterEvent,
   nvrExporterEventSchemasByKind,
@@ -169,6 +169,7 @@ export const eventKindLabels: Record<DeviceEvent['kind'], string> = {
   'macro-activated': 'Macro Activated',
   'access-path-activated': 'Access Path Activated',
   'time-zone-changed': 'Time Zone Changed',
+  'security-level-changed': 'Security Level Changed',
 };
 
 export const eventSchemaByKind = {
@@ -182,6 +183,7 @@ export const eventSchemaByKind = {
   ...readerEventSchemaByKind,
   ...nvrExporterEventSchemasByKind,
   ...playbackServerEventSchemasByKind,
+  ...serverEventSchemasByKind,
   'motion-detected': sMotionDetected,
   'device-command': sDeviceCommandTriggered,
   'device-connected': sDeviceConnectedEvent,
