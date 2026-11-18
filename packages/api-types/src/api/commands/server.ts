@@ -3,7 +3,7 @@ import {
   sDeviceParam,
   sMacroId,
   sNotificationSeverity,
-  sSecurityLevelId,
+  sSecurityLevelRef,
 } from '../../primitives';
 
 // COMMANDS
@@ -30,8 +30,8 @@ export const sNotify = z.object({
 export const sSetSecurityLevelCommand = z.object({
   command: z.literal('server.set-security-level'),
   params: z.object({
-    // null leaves no security level active
-    securityLevelId: sSecurityLevelId.nullable(),
+    // NO_SECURITY_LEVEL leaves no security level active
+    securityLevelId: sSecurityLevelRef,
   }),
 });
 

@@ -21,6 +21,14 @@ export const sPersonTypeId = z.string().nonempty();
 export const sZoneId = z.string().nonempty();
 export const sMacroId = z.string().nonempty();
 export const sSecurityLevelId = z.uuid();
+/** Stands for "no security level is active" where a level reference must not be null. */
+export const NO_SECURITY_LEVEL = 'none' as const;
+/** A security level id, or NO_SECURITY_LEVEL when no level is active. */
+export const sSecurityLevelRef = z.union([
+  sSecurityLevelId,
+  z.literal(NO_SECURITY_LEVEL),
+]);
+export type SecurityLevelRef = z.infer<typeof sSecurityLevelRef>;
 export const sUserId = z.string().nonempty();
 
 export const sWorldObjectId = z.string().nonempty();
