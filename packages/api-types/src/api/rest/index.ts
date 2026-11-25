@@ -37,5 +37,7 @@ export * from './device';
 export * from './camera';
 export * from './trackables';
 export * from './time-zone';
+export * from './password-policy';
+export * from './event-retention';
 export * from './filter-preset';
 export * from './access-control-authority';

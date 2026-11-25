@@ -184,6 +184,8 @@ export const sPermissionId = z.union([
   z.literal('layout-location:create').describe('Create layout location'),
   z.literal('layout-location:update').describe('Update layout location'),
   z.literal('layout-location:delete').describe('Delete layout location'),
+  //System Configuration
+  z.literal('config:update').describe('Change system configuration'),
 ]);
 
 export type PermissionArea =
@@ -224,7 +226,8 @@ export type PermissionArea =
   | 'notification'
   | 'trackable'
   | 'time-zone'
-  | 'layout-location';
+  | 'layout-location'
+  | 'config';
 
 const permissionsToRecord = (
   permissions: typeof sPermissionId,

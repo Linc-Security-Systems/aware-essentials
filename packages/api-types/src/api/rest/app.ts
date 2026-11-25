@@ -7,6 +7,8 @@ export const sPasswordPolicy = z.object({
   minDigits: z.number().min(0).default(0),
 });
 
+export type PasswordPolicy = z.infer<typeof sPasswordPolicy>;
+
 export const sUaExtensionInfo = z.object({
   name: z.string().nonempty(),
   url: z.string().nonempty(),
