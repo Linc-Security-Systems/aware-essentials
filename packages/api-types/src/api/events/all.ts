@@ -170,6 +170,7 @@ export const eventKindLabels: Record<DeviceEvent['kind'], string> = {
   'access-path-activated': 'Access Path Activated',
   'time-zone-changed': 'Time Zone Changed',
   'security-level-changed': 'Security Level Changed',
+  'config-updated': 'Config Updated',
 };
 
 export const eventSchemaByKind = {

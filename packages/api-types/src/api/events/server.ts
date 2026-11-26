@@ -103,8 +103,19 @@ export const sSecurityLevelChanged = z.object({
 });
 export type SecurityLevelChanged = z.infer<typeof sSecurityLevelChanged>;
 
+// paths only, never values: module sections hold credentials
+export const sConfigUpdated = z.object({
+  kind: z.literal('config-updated'),
+  section: z.string(), // 'app' for app settings, else the module's provider
+  paths: z.array(z.string()), // dotted paths that changed, e.g. 'auth.password.minLength'
+  enabled: z.boolean().optional(), // modules only: whether it is enabled after the save
+  userId: z.string().optional(),
+});
+export type ConfigUpdated = z.infer<typeof sConfigUpdated>;
+
 export const serverEventSchemasByKind = {
   'security-level-changed': sSecurityLevelChanged,
+  'config-updated': sConfigUpdated,
 } as const;
 
 export type ServerEvent =
@@ -118,4 +129,5 @@ export type ServerEvent =
   | MacroActivated
   | AccessPathActivated
   | TimeZoneChanged
-  | SecurityLevelChanged;
+  | SecurityLevelChanged
+  | ConfigUpdated;
